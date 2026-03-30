@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.periodic-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1rem;
+}
+.neon-glow-primary:hover {
+    box-shadow: 0 0 20px rgba(1, 118, 211, 0.4);
+    transform: translateY(-4px);
+}
+.neon-glow-secondary:hover {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+    transform: translateY(-4px);
+}
+.neon-glow-tertiary:hover {
+    box-shadow: 0 0 20px rgba(255, 51, 102, 0.4);
+    transform: translateY(-4px);
+}
+.glass-panel {
+    background: rgba(27, 27, 31, 0.7);
+    backdrop-filter: blur(20px);
+}
