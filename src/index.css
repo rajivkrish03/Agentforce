@@ -7,13 +7,35 @@
   --secondary: #FFDB3C;
   --tertiary: #E31754;
   --service: #06A59A;
-  --surface: #1B1B1F;
+  
+  /* Dark Theme Tokens (Default) */
   --background: #0B0B0F;
+  --surface: #131317;
+  --surface-container: #1B1B1F;
+  --on-surface: #FFFFFF;
+  --on-surface-variant: #94A3B8;
+  --border: rgba(255, 255, 255, 0.08);
+  --glass: rgba(27, 27, 31, 0.6);
+  --nav-bg: rgba(11, 11, 15, 0.8);
+}
+
+.light {
+  /* Light Theme Tokens */
+  --background: #F1F5F9;
+  --surface: #FFFFFF;
+  --surface-container: #F8FAFC;
+  --on-surface: #0F172A;
+  --on-surface-variant: #64748B;
+  --border: rgba(0, 0, 0, 0.06);
+  --glass: rgba(255, 255, 255, 0.7);
+  --nav-bg: rgba(255, 255, 255, 0.85);
 }
 
 @layer base {
   body {
-    @apply bg-background text-on-surface antialiased;
+    background-color: var(--background);
+    color: var(--on-surface);
+    @apply antialiased transition-colors duration-500;
     background-image: 
       radial-gradient(at 0% 0%, rgba(1, 118, 211, 0.05) 0px, transparent 50%),
       radial-gradient(at 100% 0%, rgba(227, 23, 84, 0.05) 0px, transparent 50%);
@@ -45,10 +67,22 @@
 }
 
 .glass-panel {
-    background: rgba(27, 27, 31, 0.6);
+    background: var(--glass);
     backdrop-filter: blur(24px) saturate(180%);
     -webkit-backdrop-filter: blur(24px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border);
+}
+
+@layer utilities {
+  .bg-surface-container-low {
+    background-color: var(--surface);
+  }
+  .bg-surface-container-high {
+    background-color: var(--surface-container);
+  }
+  .text-on-surface-variant {
+    color: var(--on-surface-variant);
+  }
 }
 
 .animate-in {
