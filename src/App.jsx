@@ -461,87 +461,91 @@ function App() {
   return (
     <div className="bg-background min-h-screen text-on-surface">
       {/* Top Nav */}
-      <nav className="fixed top-0 w-full z-50 bg-[var(--nav-bg)] backdrop-blur-2xl border-b border-[var(--border)] flex justify-between items-center px-10 h-24 shadow-2xl transition-colors duration-500">
-        <div className="flex items-center gap-12">
-          <h1 className="font-headline font-black tracking-tighter text-on-surface uppercase text-2xl flex items-center gap-1">
+      <nav className="fixed top-0 w-full z-50 bg-[var(--nav-bg)] backdrop-blur-2xl border-b border-[var(--border)] flex justify-between items-center px-10 h-24 shadow-2xl transition-all duration-500">
+        <div className="flex items-center gap-8">
+          <h1 className="font-headline font-black tracking-tighter text-on-surface uppercase text-xl flex items-center gap-1 shrink-0">
             SALESFORCE <span className="text-[#0176D3]">AI EXPLORER</span>
           </h1>
           
-          <div className="flex items-center gap-1">
-            <span className="font-mono text-[#06A59A] text-lg tracking-widest font-light opacity-80 uppercase">CUSTOMER_</span>
-            <div className="flex items-center gap-8 ml-4">
-              {CLOUDS.map(cloud => (
-                <button
-                  key={cloud.id}
-                  onClick={() => {
-                    if (cloud.id !== 'service') {
-                      alert(`${cloud.label} Cloud AI nodes coming soon!`);
-                    } else {
-                      setActiveCloud(cloud.id);
-                      setActiveChannel(null);
-                    }
-                  }}
-                  className={`font-headline font-bold tracking-tight px-4 py-2 rounded-xl transition-all flex items-center gap-2 group relative overflow-hidden ${
-                    activeCloud === cloud.id 
-                      ? 'text-on-surface bg-on-surface/5' 
-                      : 'text-on-surface-variant hover:text-on-surface'
-                  }`}
+          <div className="h-8 w-px bg-[var(--border)]"></div>
+
+          <div className="flex items-center gap-4 overflow-x-auto no-scrollbar">
+            {CLOUDS.map(cloud => (
+              <button
+                key={cloud.id}
+                onClick={() => {
+                  setActiveCloud(cloud.id);
+                  setActiveChannel(null);
+                  setActiveFilter('all');
+                }}
+                className={`font-headline font-bold tracking-tight px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 group relative whitespace-nowrap ${
+                  activeCloud === cloud.id 
+                    ? 'text-on-surface bg-on-surface/5' 
+                    : 'text-on-surface-variant hover:text-on-surface'
+                }`}
+              >
+                <div 
+                  className={`p-1.5 rounded-lg transition-transform duration-500 ${activeCloud === cloud.id ? 'scale-110 shadow-lg' : 'opacity-60 grayscale group-hover:grayscale-0'}`}
+                  style={{ backgroundColor: activeCloud === cloud.id ? `${cloud.accent}20` : 'transparent', border: activeCloud === cloud.id ? `1px solid ${cloud.accent}40` : '1px solid transparent' }}
                 >
-                  <span className={`material-symbols-outlined text-xl transition-all duration-500 ${activeCloud === cloud.id ? 'scale-110 opacity-100' : 'opacity-40 group-hover:opacity-100'}`} style={{ color: cloud.accent }}>{cloud.icon}</span>
-                  <span className="text-xs uppercase tracking-widest">{cloud.label}</span>
-                  {activeCloud === cloud.id && (
-                    <div className="absolute bottom-0 left-1/4 w-1/2 h-[2px] shadow-[0_0_12px] brightness-150" style={{ backgroundColor: cloud.accent }}></div>
-                  )}
-                  {cloud.id !== 'service' && (
-                    <div className="absolute top-0 right-0 p-1 opacity-0 group-hover:opacity-40 transition-opacity">
-                      <span className="material-symbols-outlined text-[8px]">lock</span>
-                    </div>
-                  )}
-                </button>
-              ))}
-            </div>
+                  <span className="material-symbols-outlined text-xl" style={{ color: cloud.accent }}>{cloud.icon}</span>
+                </div>
+                <span className="text-xs uppercase tracking-widest">{cloud.label}</span>
+                {activeCloud === cloud.id && (
+                  <div className="absolute -bottom-[26px] left-0 w-full h-[3px] rounded-full scale-x-75" style={{ backgroundColor: cloud.accent }}></div>
+                )}
+              </button>
+            ))}
           </div>
         </div>
 
         <div className="flex items-center gap-6">
           <button 
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="p-2.5 rounded-xl border border-[var(--border)] hover:bg-on-surface/5 transition-all text-on-surface-variant hover:text-on-surface flex items-center justify-center bg-surface-container-low"
+            className="p-2.5 rounded-xl border border-[var(--border)] hover:bg-on-surface/5 transition-all text-on-surface-variant hover:text-on-surface flex items-center justify-center bg-surface-container"
           >
             <span className="material-symbols-outlined text-xl">
               {theme === 'dark' ? 'light_mode' : 'dark_mode'}
             </span>
           </button>
           
-          <div className="flex flex-col items-right text-right">
-             <span className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-widest">Global Status</span>
+          <div className="flex flex-col items-right text-right shrink-0">
+             <div className="flex items-center gap-2 justify-end mb-0.5">
+               <span className="font-mono text-[#06A59A] text-[10px] tracking-widest font-bold opacity-80 uppercase">CUSTOMER_</span>
+               <span className="material-symbols-outlined text-[12px] text-[#06A59A]">public</span>
+             </div>
              <span className="text-[10px] font-bold text-[#06A59A] uppercase tracking-widest animate-pulse flex items-center gap-2 justify-end">
-               <span className="w-1.5 h-1.5 rounded-full bg-[#06A59A]"></span> Live Updates
+               <span className="w-1 h-1 rounded-full bg-[#06A59A]"></span> Live Updates
              </span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-surface-container-low overflow-hidden border border-[var(--border)] p-0.5 shadow-lg">
+          <div className="w-12 h-12 rounded-2xl bg-surface-container overflow-hidden border border-[var(--border)] p-0.5 shadow-lg shrink-0">
             <img className="w-full h-full rounded-xl object-cover" alt="User" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAl7HNdRh4m28X12qumcIYi_5JhrRAv62KzeWHVQtiszYtiWSmgayu7ti-_4Gk_O4k6BOPX7wKXJYQz_Vzr7a3jaGV-PI7EVocqgs__PIZdoQVk4nCQ5qANCqGCeMWcOLbv8PS7-lRIWSNl7IwSVunMPPTdRp-rCeq-cpFLkiU9aPCobDwTTNafwpki27dsRCd2UXOPAIf2cZzUwU1VLpcfXP8APhHeOchTBWuAFvCJI7jcZ15xtTwAweVcZfClHvms9hTr1lno78VF"/>
           </div>
         </div>
       </nav>
 
       {/* Sidebar */}
-      <aside className="h-screen w-64 fixed left-0 top-24 bg-surface-container-low border-r border-[var(--border)] py-8 flex flex-col gap-8 transition-colors duration-500 shadow-xl overflow-hidden">
+      <aside className="h-screen w-64 fixed left-0 top-24 bg-surface-container border-r border-[var(--border)] py-8 flex flex-col gap-8 transition-colors duration-500 shadow-xl overflow-hidden z-40">
         <div>
-          <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-on-surface-variant/40 mb-4">AI Era</p>
-          <nav className="flex flex-col gap-1">
+          <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-on-surface-variant/40 mb-4">AI Frameworks</p>
+          <nav className="flex flex-col gap-1 px-3">
             {ERAS.map(era => (
               <button
                 key={era.id}
                 onClick={() => setActiveFilter(era.id)}
-                className={`group px-6 py-3 flex items-center gap-4 transition-all text-left ${
+                className={`group px-3 py-3 rounded-xl flex items-center justify-between transition-all text-left ${
                   activeFilter === era.id 
-                    ? 'bg-surface-container-high text-on-surface border-l-2 border-primary' 
-                    : 'text-on-surface-variant hover:bg-on-surface/5 border-l-2 border-transparent'
+                    ? 'bg-on-surface/5 text-on-surface ring-1 ring-[var(--border)]' 
+                    : 'text-on-surface-variant hover:bg-on-surface/5'
                 }`}
               >
-                <span className={`material-symbols-outlined text-xl transition-colors ${activeFilter === era.id ? 'opacity-100' : 'opacity-40'}`} style={{ color: activeFilter === era.id ? era.color : 'inherit' }}>{era.icon}</span>
-                <span className="font-headline text-xs font-bold uppercase tracking-widest" style={{ color: activeFilter === era.id ? 'var(--on-surface)' : 'inherit' }}>{era.label}</span>
+                <div className="flex items-center gap-3">
+                  <span className={`material-symbols-outlined text-lg transition-colors ${activeFilter === era.id ? 'opacity-100' : 'opacity-40'}`} style={{ color: activeFilter === era.id ? era.color : 'inherit' }}>{era.icon}</span>
+                  <span className="font-headline text-[11px] font-black uppercase tracking-widest">{era.label}</span>
+                </div>
+                {activeFilter === era.id && (
+                  <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: era.color }}></span>
+                )}
               </button>
             ))}
           </nav>
@@ -576,7 +580,33 @@ function App() {
 
       {/* Main Content */}
       <main className="ml-64 pt-32 p-12 min-h-screen transition-colors duration-500">
-        {(!activeChannel && activeFilter === 'all') ? (
+        {activeCloud !== 'service' ? (
+          /* Placeholder for other clouds */
+          <div className="flex flex-col items-center justify-center h-[70vh] text-center animate-in fade-in zoom-in-95 duration-700">
+            <div className="w-32 h-32 rounded-3xl bg-surface-container-low border border-[var(--border)] flex items-center justify-center mb-10 shadow-2xl relative group">
+               <div className="absolute inset-0 bg-primary/10 rounded-3xl blur-2xl group-hover:bg-primary/20 transition-all"></div>
+               <span className="material-symbols-outlined text-7xl relative z-10" style={{ color: CLOUDS.find(c => c.id === activeCloud).accent }}>
+                 {CLOUDS.find(c => c.id === activeCloud).icon}
+               </span>
+            </div>
+            <h2 className="text-6xl font-black text-on-surface tracking-tighter uppercase mb-4 italic">
+              {activeCloud} <span className="text-on-surface-variant/40">Observatory</span>
+            </h2>
+            <div className="flex items-center gap-3 justify-center mb-8">
+               <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+               <p className="text-sm font-bold uppercase tracking-[0.4em] text-primary">Intelligence Nodes incoming</p>
+            </div>
+            <p className="text-on-surface-variant max-w-md mx-auto text-lg leading-relaxed mb-12">
+              We are currently mapping the AI capabilities for the {activeCloud} ecosystem. Check back soon for the full node discovery experience.
+            </p>
+            <button 
+              onClick={() => setActiveCloud('service')}
+              className="px-10 py-4 bg-primary-container text-white font-black rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-all text-xs tracking-widest uppercase"
+            >
+              Return to Service Cloud
+            </button>
+          </div>
+        ) : (!activeChannel && activeFilter === 'all') ? (
           /* Channel Overview Grid (Default Landing) */
           <div className="animate-in fade-in duration-700">
             <header className="mb-12">
