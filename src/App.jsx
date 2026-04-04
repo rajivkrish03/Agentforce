@@ -417,9 +417,10 @@ const CAPABILITIES = [
 
 
 const ERAS = [
-  { id: 'predictive', label: 'Predictive Era', subtitle: 'The Foundation', icon: 'analytics', color: 'primary-container' },
-  { id: 'generative', label: 'Generative Era', subtitle: 'The Assistant', icon: 'auto_awesome', color: 'secondary-container' },
-  { id: 'agentic', label: 'Agentic Era', subtitle: 'Autonomous Force', icon: 'memory', color: 'tertiary-container' },
+  { id: 'all', label: 'All', icon: 'grid_view', color: '#FFFFFF' },
+  { id: 'predictive', label: 'Predictive', icon: 'analytics', color: '#0176D3' },
+  { id: 'generative', label: 'Generative', icon: 'auto_awesome', color: '#FFDB3C' },
+  { id: 'agentic', label: 'Agentic', icon: 'memory', color: '#E31754' },
 ];
 
 function App() {
@@ -444,12 +445,14 @@ function App() {
   });
 
   const handleCapabilityClick = (capability) => {
-    if (activeChannel) {
+    if (activeChannel || activeFilter !== 'all') {
       setHoveredCapability(capability);
     } else {
       setSelectedCapability(capability);
     }
   };
+
+  const currentEra = ERAS.find(e => e.id === activeFilter);
 
   return (
     <div className="bg-background min-h-screen text-on-surface">
@@ -464,7 +467,7 @@ function App() {
           {CLOUDS.map(cloud => (
             <button
               key={cloud.id}
-              onClick={() => { setActiveCloud(cloud.id); setActiveChannel(null); }}
+              onClick={() => { setActiveCloud(cloud.id); setActiveChannel(null); setActiveFilter('all'); }}
               className={`font-headline font-bold tracking-tight h-full px-2 pt-1 transition-all border-b-2 flex items-center gap-2 relative group ${
                 activeCloud === cloud.id 
                   ? 'text-white' 
@@ -499,14 +502,14 @@ function App() {
               <button
                 key={era.id}
                 onClick={() => setActiveFilter(era.id)}
-                className={`group px-6 py-2.5 flex items-center gap-4 transition-all text-left ${
+                className={`group px-6 py-3 flex items-center gap-4 transition-all text-left ${
                   activeFilter === era.id 
-                    ? 'bg-primary-container/10 text-primary-container border-l-4 border-primary-container' 
-                    : 'text-slate-500 hover:bg-white/5 border-l-4 border-transparent'
+                    ? 'bg-surface-container-high text-white border-l-2 border-primary' 
+                    : 'text-on-surface-variant hover:bg-white/5 border-l-2 border-transparent'
                 }`}
               >
-                <span className="material-symbols-outlined text-xl">{era.icon}</span>
-                <span className="font-headline text-xs font-bold uppercase tracking-widest">{era.id}</span>
+                <span className={`material-symbols-outlined text-xl transition-colors ${activeFilter === era.id ? 'opacity-100' : 'opacity-40'}`} style={{ color: activeFilter === era.id ? era.color : 'inherit' }}>{era.icon}</span>
+                <span className="font-headline text-xs font-bold uppercase tracking-widest" style={{ color: activeFilter === era.id ? 'white' : 'inherit' }}>{era.label}</span>
               </button>
             ))}
           </nav>
@@ -532,24 +535,24 @@ function App() {
           </nav>
         </div>
 
-        <div className="mt-auto px-6">
+        <div className="mt-auto px-6 pb-24">
           <button className="w-full py-4 bg-[#0176D3] text-white font-black rounded-xl shadow-lg shadow-[#0176D3]/20 hover:scale-[1.02] active:scale-95 transition-all uppercase text-[10px] tracking-[0.2em]">
-            Explore Use Cases
+            Deploy Agent
           </button>
         </div>
       </aside>
 
       {/* Main Content */}
       <main className="ml-64 pt-28 p-12 min-h-screen">
-        {!activeChannel ? (
-          /* Channel Overview Grid */
-          <div>
+        {(!activeChannel && activeFilter === 'all') ? (
+          /* Channel Overview Grid (Default) */
+          <div className="animate-in fade-in duration-700">
             <header className="mb-12">
               <h2 className="text-5xl font-black tracking-tighter text-white mb-2">Service Cloud</h2>
               <p className="text-on-surface-variant text-lg">AI-powered service delivery across every touchpoint.</p>
             </header>
             
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-3 gap-8">
               {CHANNELS.map(channel => (
                 <div 
                   key={channel.id}
@@ -573,66 +576,92 @@ function App() {
             </div>
           </div>
         ) : (
-          /* Channel Detail View */
-          <div className="flex flex-col h-full">
-            <header className="mb-8 flex items-start justify-between">
+          /* Feature Grid (Narrowed by Channel and/or Era) */
+          <div className="flex flex-col h-full animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <header className="mb-10 flex items-start justify-between">
               <div>
                 <button 
-                  onClick={() => { setActiveChannel(null); setHoveredCapability(null); }}
+                  onClick={() => { setActiveChannel(null); setActiveFilter('all'); setHoveredCapability(null); }}
                   className="flex items-center gap-2 text-primary-container hover:text-white transition-colors mb-4 group"
                 >
                   <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">arrow_back</span>
-                  <span className="text-[10px] font-bold uppercase tracking-widest">Back to Roadmap</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest">Back to Overview</span>
                 </button>
                 <div className="flex items-center gap-4 mb-2">
-                  <div className="w-12 h-12 rounded-xl bg-primary-container/20 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-primary-container text-3xl">{CHANNELS.find(c => c.id === activeChannel).icon}</span>
+                  <div className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-primary-container text-3xl">
+                      {activeChannel ? CHANNELS.find(c => c.id === activeChannel).icon : currentEra.icon}
+                    </span>
                   </div>
-                  <h2 className="text-4xl font-black tracking-tighter text-white capitalize">{activeChannel.replace('_', ' ')}</h2>
+                  <div>
+                     <h2 className="text-4xl font-black tracking-tighter text-white capitalize leading-none">
+                       {activeChannel ? activeChannel.replace('_', ' ') : `${activeFilter} AI Nodes`}
+                     </h2>
+                     <p className="text-on-surface-variant text-xs mt-2 font-bold uppercase tracking-widest">{activeChannel ? 'Service Channel' : 'Global Era View'}</p>
+                  </div>
                 </div>
-                <div className="flex gap-3 mt-4">
-                  {['all', 'predictive', 'generative', 'agentic'].map(f => (
+                <div className="flex gap-4 mt-8">
+                  {ERAS.map(e => (
                     <button
-                      key={f}
-                      onClick={() => setActiveFilter(f)}
-                      className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${
-                        activeFilter === f ? 'bg-primary-container text-white' : 'bg-surface-container-highest text-on-surface-variant hover:text-white'
+                      key={e.id}
+                      onClick={() => setActiveFilter(e.id)}
+                      className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all flex items-center gap-2 ${
+                        activeFilter === e.id 
+                          ? 'bg-white text-black shadow-lg scale-105' 
+                          : 'bg-white/5 text-on-surface-variant hover:text-white border border-white/5'
                       }`}
                     >
-                      {f === 'all' ? 'All capabilities' : `${f} AI`}
+                      <span className="material-symbols-outlined text-sm" style={{ color: activeFilter === e.id ? e.color : 'inherit' }}>{e.icon}</span>
+                      {e.label}
                     </button>
                   ))}
                 </div>
               </div>
             </header>
 
-            <div className="flex gap-8 items-start">
+            <div className="flex gap-10 items-start">
               {/* Left: Periodic Grid */}
-              <div className="w-3/5 periodic-grid">
-                {ERAS.map(era => {
-                  const eraCaps = filteredCapabilities.filter(c => c.era === era.id);
-                  if (eraCaps.length === 0) return null;
+              <div className="w-3/5 periodic-grid pb-24">
+                {(activeChannel ? [activeChannel] : CHANNELS.map(c => c.id)).map(channelId => {
+                  const channelCaps = filteredCapabilities.filter(c => c.channels.includes(channelId));
+                  if (channelCaps.length === 0) return null;
+                  
                   return (
-                    <React.Fragment key={era.id}>
-                      <div className="col-span-12 mt-4 mb-2 border-l-2 pl-4 py-1 border-white/10">
-                        <h3 className="text-on-surface-variant text-[10px] font-black uppercase tracking-[0.2em]">{era.label}</h3>
+                    <React.Fragment key={channelId}>
+                      <div className="col-span-12 mt-6 mb-4 flex items-center gap-4">
+                        <div className="h-[1px] flex-1 bg-white/5"></div>
+                        <h3 className="text-on-surface-variant text-[10px] font-black uppercase tracking-[0.4em] whitespace-nowrap">
+                          {CHANNELS.find(c => c.id === channelId).label}
+                        </h3>
+                        <div className="h-[1px] flex-1 bg-white/5"></div>
                       </div>
-                      {eraCaps.map(cap => (
+                      {channelCaps.map(cap => (
                         <div 
                           key={cap.id} 
                           onClick={() => handleCapabilityClick(cap)}
-                          className={`${cap.featured ? 'col-span-4' : 'col-span-3'} group cursor-pointer transition-all duration-300 transform hover:-translate-y-1`}
+                          className={`${cap.featured ? 'col-span-4' : 'col-span-3'} group cursor-pointer transition-all duration-300 transform hover:-translate-y-2`}
                         >
-                          <div className={`bg-surface-container-low p-6 rounded-xl border ${hoveredCapability?.id === cap.id ? 'border-[#0176D3]' : 'border-white/5'} flex flex-col justify-between h-32 relative overflow-hidden transition-all duration-500 ${cap.glowClass}`}>
-                            <span className="text-3xl font-black leading-none mb-1" style={{ color: `var(--md-sys-color-${cap.colorClass.replace('-container', '')})` }}>{cap.symbol}</span>
+                          <div 
+                            className={`bg-surface-container-low p-6 rounded-2xl border transition-all duration-500 overflow-hidden flex flex-col justify-between h-40 relative group/card`}
+                            style={{ 
+                              borderColor: hoveredCapability?.id === cap.id ? (ERAS.find(e => e.id === cap.era).color) : 'rgba(255,255,255,0.05)',
+                              boxShadow: hoveredCapability?.id === cap.id ? `0 0 40px ${ERAS.find(e => e.id === cap.era).color}20` : 'none'
+                            }}
+                          >
+                            <span className="text-4xl font-black leading-none mb-1 transition-transform group-hover/card:scale-110" style={{ color: ERAS.find(e => e.id === cap.era).color }}>{cap.symbol}</span>
                             <div>
-                              <p className="text-[10px] font-black text-white uppercase tracking-tighter truncate">{cap.name}</p>
-                              <p className="text-[8px] text-on-surface-variant uppercase font-bold tracking-widest opacity-60">
-                                {cap.era}
-                              </p>
+                              <p className="text-xs font-black text-white uppercase tracking-tighter truncate mb-0.5">{cap.name}</p>
+                              <div className="flex items-center gap-1.5">
+                                <span className="material-symbols-outlined text-[10px]" style={{ color: ERAS.find(e => e.id === cap.era).color }}>{ERAS.find(e => e.id === cap.era).icon}</span>
+                                <p className="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest opacity-60">
+                                  {cap.era}
+                                </p>
+                              </div>
                             </div>
-                            <div className="absolute right-2 top-2 opacity-10">
-                              <span className="material-symbols-outlined text-4xl">{cap.icon}</span>
+                            
+                            {/* Decorative background icon */}
+                            <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover/card:opacity-10 transition-opacity">
+                              <span className="material-symbols-outlined text-[120px] leading-none" style={{ color: ERAS.find(e => e.id === cap.era).color }}>{cap.icon}</span>
                             </div>
                           </div>
                         </div>

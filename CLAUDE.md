@@ -79,12 +79,15 @@ Add the following React state to the existing monolithic component (no new packa
 Evolve the app toward a "Salesforce AI Capabilities Explorer" with this architecture:
 
 - **Top-level clouds**: Service | Sales | Marketing | Agentforce (nav tabs)
-- **Service Cloud channels** (left sidebar second section below AI Era filters):
-  - Cases, Messaging, Voice, Email, Field Service, Knowledge
-- **Default view** (no channel selected): 3-column channel overview grid — each card shows channel icon, name, tagline, and three era badges (Predictive count / Generative count / Agentic count)
-- **Channel detail view** (after clicking a channel): two-column layout
-  - Left 60%: periodic-table feature grid filtered to that channel's capabilities
-  - Right 40%: Storyline / Use Case panel — empty state prompts user to click a card; after click shows feature description, numbered storyline steps, use case bullets, related feature chips, and See Demo / Read Docs buttons
+- **Left sidebar** has two independent filter sections:
+  - **AI Era** (top): All | Predictive | Generative | Agentic — filters the feature grid regardless of channel
+  - **Channel** (below): Cases, Messaging, Voice, Email, Field Service, Knowledge — narrows to a specific channel
+- **View states** (driven by sidebar selections):
+  - **Default — no era, no channel selected**: 3-column channel overview grid — each card shows channel icon, name, tagline, and three era badges (Predictive count / Generative count / Agentic count)
+  - **Era selected, no channel**: full-width periodic-table grid of ALL features for that era across every channel, grouped by channel with a section header (channel icon + name). Era filter pills (All / Predictive / Generative / Agentic) above the grid stay in sync with the sidebar. "All" shows every feature with era-colored cards intermixed.
+  - **Channel selected, no era filter**: two-column layout — Left 60% periodic-table grid of all features for that channel (cards colored by era); Right 40% Storyline / Use Case panel
+  - **Both era + channel selected**: same two-column layout but grid is filtered to only that era's features within the channel
+- Selecting an era in the sidebar while a channel is active updates the era pill filter in the channel detail view (and vice versa — they stay in sync)
 - Each cloud gets its own accent color (see Cloud Product Colors table above)
 
 ## Service Cloud — Confirmed Feature List
@@ -121,30 +124,40 @@ Four top-level clouds in the nav: Service, Sales, Marketing, Agentforce. Service
 
 **Left Sidebar (fixed, 256px)**
 - Section label: "AI Era" in small caps, muted
-- Three filter items: Predictive (analytics icon) | Generative (auto_awesome icon) | Agentic (memory icon, active by default with blue left border)
+- Four filter items with active state (blue left border + filled bg): All (grid_view icon) | Predictive (analytics icon) | Generative (auto_awesome icon) | Agentic (memory icon)
 - Second section label: "Channel" in small caps, muted
 - Channel items for Service Cloud: Cases (description icon) | Messaging (chat icon) | Voice (phone icon) | Email (mail icon) | Field Service (build icon) | Knowledge (book icon)
+- Both sections are independent filters — selecting an era shows all features for that era across all channels; selecting a channel narrows to that channel; selecting both filters by era within the channel
 - Bottom: blue "Explore Use Cases" CTA button
 
-**Main Content — Default (no channel selected): Channel Overview Grid**
+**Main Content — View A: Default (no era, no channel)**
 Six large channel cards in a 3-column grid (~280px tall each, dark glass panel):
 - Large 48px channel icon in Salesforce blue
 - Channel name in bold white + tagline subtitle
-- Bottom row: three colored era badges — Blue "3 Predictive", Yellow "4 Generative", Pink "2 Agentic"
+- Bottom row: three colored era badges — Blue "N Predictive", Yellow "N Generative", Pink "N Agentic"
 - Hover: blue neon glow + card lift
 
-**Main Content — Channel Detail View (after clicking e.g. Cases)**
+**Main Content — View B: Era selected, no channel (e.g. "Agentic" active in sidebar)**
+- Header: era icon + era name (e.g. "Agentic AI") + total feature count badge
+- Era filter pills (All | Predictive | Generative | Agentic) in sync with sidebar selection
+- Full-width periodic-table grid of ALL features for that era, grouped by channel:
+  - Channel section header: channel icon + channel name in small caps, muted divider line
+  - Feature cards below: same card style (2-letter symbol in era color, feature name, channel sub-label)
+  - Grid: 4–5 columns, cards ~140px tall
+- Example for Agentic view: grouped sections for Cases (Agentforce Service Assistant, Agentforce Service Planner), Messaging (Agentforce Service Agent, Proactive Service for Self-Service), Voice (Agentforce Voice), Email (Agentforce Service Agent), Field Service (Agentforce Field Service Agent, Agentforce Scheduling Agent), Knowledge (Agentforce Service Agent)
+
+**Main Content — View C: Channel selected (e.g. "Cases"), optionally filtered by era**
 - Breadcrumb: back arrow + "Service Cloud > Cases"
 - Channel H2 + short description
-- AI era filter pills: All | Predictive AI | Generative AI | Agentic AI
+- AI era filter pills: All | Predictive AI | Generative AI | Agentic AI (in sync with sidebar era selection)
 
 Two-column layout:
 LEFT (60%) — Feature Periodic Grid (4 columns):
   Each card ~140px tall: 2-letter symbol (era color, large bold), feature name (white bold), sub-label (muted small caps), faint icon watermark
-  Example cards for Cases (real Service Cloud features):
-  Predictive (blue): Ar (Article Rec) | Af (Article Flows) | Eb (Einstein Bots) | Ec (Classification) | Rr (Reply Rec) | Cm (Conv Mining)
-  Generative (yellow): Kc (Knowledge Creation) | Es (Enhanced Summaries) | Ws (Work Summaries) | Sg (AI Grounding) | Sr (Service Replies)
-  Agentic (pink): As (Service Agent, col-span-2 featured) | Aa (Svc Assistant) | Ps (Proactive Svc)
+  Filtered by active era pill. Example for Cases / All:
+  Predictive (blue): Einstein Case Classification | Einstein Case Routing | Einstein Case Wrap-Up | Einstein Article Recommendations | Einstein Conversation Mining
+  Generative (yellow): Einstein Work Summaries | Enhanced Summaries | Einstein Knowledge Creation | Einstein Service Replies | Einstein Search Answers
+  Agentic (pink): Agentforce Service Assistant (col-span-2 featured) | Agentforce Service Planner
 
 RIGHT (40%) — Storyline Panel:
   Default: dashed border placeholder "Click a feature card to explore use cases"
