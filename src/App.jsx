@@ -8,343 +8,413 @@ const CLOUDS = [
 ];
 
 const CHANNELS = [
-  { id: 'cases', label: 'Cases', icon: 'description', tagline: 'Omni-channel case management', counts: { predictive: 3, generative: 2, agentic: 1 } },
-  { id: 'messaging', label: 'Messaging', icon: 'chat', tagline: 'Real-time chat & SMS', counts: { predictive: 2, generative: 2, agentic: 2 } },
-  { id: 'voice', label: 'Voice', icon: 'phone', tagline: 'AI-powered voice interactions', counts: { predictive: 1, generative: 1, agentic: 1 } },
-  { id: 'email', label: 'Email', icon: 'mail', tagline: 'Intelligent email automation', counts: { predictive: 1, generative: 2, agentic: 1 } },
-  { id: 'field_service', label: 'Field Service', icon: 'build', tagline: 'Connected mobile workforce', counts: { predictive: 1, generative: 0, agentic: 1 } },
-  { id: 'knowledge', label: 'Knowledge', icon: 'book', tagline: 'Smart self-service help', counts: { predictive: 2, generative: 1, agentic: 1 } },
+  { id: 'cases', label: 'Cases', icon: 'description', tagline: 'Unified case lifecycle', counts: { predictive: 5, generative: 5, agentic: 2 } },
+  { id: 'messaging', label: 'Messaging', icon: 'chat', tagline: 'Real-time conversational AI', counts: { predictive: 2, generative: 4, agentic: 2 } },
+  { id: 'voice', label: 'Voice', icon: 'phone', tagline: 'AI-infused voice interactions', counts: { predictive: 3, generative: 3, agentic: 1 } },
+  { id: 'email', label: 'Email', icon: 'mail', tagline: 'Intelligent automated email', counts: { predictive: 2, generative: 4, agentic: 1 } },
+  { id: 'field_service', label: 'Field Service', icon: 'build', tagline: 'Mobile workforce intelligence', counts: { predictive: 2, generative: 2, agentic: 2 } },
+  { id: 'knowledge', label: 'Knowledge', icon: 'book', tagline: 'Self-service grounding', counts: { predictive: 1, generative: 3, agentic: 1 } },
 ];
 
 const CAPABILITIES = [
-  // Agentic Era
+  // CASES
   {
-    id: 'as',
-    symbol: 'As',
-    name: 'Service Agent',
-    fullName: 'Agentforce Service Agent — autonomous AI agent handling end-to-end service interactions',
-    era: 'agentic',
-    channels: ['cases', 'messaging', 'voice', 'email', 'field_service'],
-    description: 'Agentforce Service Agent manages the transition from simple chatbots to sophisticated agents. Using advanced reasoning and planning, it breaks down complex customer requests into actionable tasks, coordinating between CRM data and external systems without human intervention.',
-    storyline: [
-      'Customer initiates request via any channel (Chat, WhatsApp, Voice)',
-      'Agentforce reasons over the request and identifies intent',
-      'Agent executes actions across CRM and external systems',
-      'Resolution is delivered autonomously without human intervention'
-    ],
-    useCases: [
-      'Autonomous returns and order tracking',
-      'Booking and rescheduling service appointments',
-      'Troubleshooting complex technical issues'
-    ],
-    specs: { reasoning: 'Atlas Reasoning Engine', knowledge: 'Data Cloud Real-time Sync' },
-    colorClass: 'tertiary-container',
-    glowClass: 'neon-glow-tertiary',
-    featured: true,
-    icon: 'memory'
-  },
-  {
-    id: 'aa',
-    symbol: 'Aa',
-    name: 'Svc Assistant',
-    fullName: 'Agentforce Service Assistant — agent-assisted experience for service reps',
-    era: 'agentic',
-    channels: ['cases', 'voice'],
-    description: 'Empowers service representatives with proactive AI assistance directly in their workspace, helping them navigate complex cases and provide faster resolutions.',
-    storyline: [
-      'Agent opens a complex case or answers a voice call',
-      'Assistant analyzes live context and suggests "Next Best Action"',
-      'Agent confirms and executes suggested automation'
-    ],
-    useCases: [
-      'Guidance for complex insurance claims',
-      'Proactive suggestions for up-selling during service'
-    ],
-    specs: { integration: 'Service Console SDK', assistance: 'Proactive Sidebar' },
-    colorClass: 'tertiary-container',
-    glowClass: 'neon-glow-tertiary',
-    featured: false,
-    icon: 'memory'
-  },
-  {
-    id: 'ps',
-    symbol: 'Ps',
-    name: 'Proactive Svc',
-    fullName: 'Proactive Service for Self-Service — agent-driven proactive engagement',
-    era: 'agentic',
-    channels: ['field_service', 'cases'],
-    description: 'Anticipates customer needs before they reach out, initiating self-service resolutions or proactive outreach based on business signals.',
-    storyline: [
-      'An IoT signal detects a failing device or missed appointment',
-      'Agentforce triggers a proactive outreach via SMS/Push',
-      'Customer chooses a resolution (reschedule/cancel) via Agent interaction'
-    ],
-    useCases: [
-      'Automatic rescheduling for technician delays',
-      'Proactive hardware failure notification'
-    ],
-    specs: { triggers: 'Flow Builder Rules', outreach: 'Multi-channel' },
-    colorClass: 'tertiary-container',
-    glowClass: 'neon-glow-tertiary',
-    featured: false,
-    icon: 'memory'
-  },
-  // Generative Era
-  {
-    id: 'kc',
-    symbol: 'Kc',
-    name: 'Knowledge Creation',
-    fullName: 'Einstein Knowledge Creation — generates knowledge articles from cases/conversations',
-    era: 'generative',
-    channels: ['knowledge', 'email'],
-    description: 'Automatically drafts knowledge articles from resolved cases and customer conversations, accelerating institutional knowledge sharing.',
-    storyline: [
-      'A unique case is resolved by an agent',
-      'Einstein identifies a knowledge gap and drafts an article',
-      'Knowledge Manager reviews and publishes the draft'
-    ],
-    useCases: [
-      'Scaling self-service with crowd-sourced knowledge',
-      'Drafting FAQs from trending support themes'
-    ],
-    specs: { language: 'Multi-lingual LLM', source: 'Case & Chat History' },
-    colorClass: 'secondary-container',
-    glowClass: 'neon-glow-secondary',
-    featured: false,
-    icon: 'auto_awesome'
-  },
-  {
-    id: 'es',
-    symbol: 'Es',
-    name: 'Enhanced Summaries',
-    fullName: 'Enhanced Summaries — generates conversation/case summaries',
-    era: 'generative',
-    channels: ['cases', 'voice'],
-    description: 'Provides concise, high-quality summaries of long customer interactions, ensuring agents have instant context when picking up a case.',
-    storyline: [
-      'Long thread of customer emails or transcripts is selected',
-      'Einstein generates a structured summary highlight key issues',
-      'Successive agents see the summary instead of reading everything'
-    ],
-    useCases: [
-      'Reducing average handle time during case transfers',
-      'Manager overview of escalated cases'
-    ],
-    specs: { model: 'summarization_optimized', latency: '< 500ms' },
-    colorClass: 'secondary-container',
-    glowClass: 'neon-glow-secondary',
-    featured: false,
-    icon: 'auto_awesome'
-  },
-  {
-    id: 'ws',
-    symbol: 'Ws',
-    name: 'Work Summaries',
-    fullName: 'Einstein Work Summaries — generates post-interaction work summaries',
-    era: 'generative',
-    channels: ['messaging', 'voice'],
-    description: 'Generates wrap-up summaries for agents at the end of an interaction, saving time on administrative tasks.',
-    storyline: [
-      'Interaction concludes (Chat/Voice)',
-      'Einstein drafts the summary, issue, and resolution',
-      'Agent saves without manual typing'
-    ],
-    useCases: [
-      'Standardized reporting for call centers',
-      'Immediate logging for compliance'
-    ],
-    specs: { speed: 'Near-instant', format: 'Structured Fields' },
-    colorClass: 'secondary-container',
-    glowClass: 'neon-glow-secondary',
-    featured: false,
-    icon: 'auto_awesome'
-  },
-  {
-    id: 'sg',
-    symbol: 'Sg',
-    name: 'AI Grounding',
-    fullName: 'Service AI Grounding — grounds generative responses with relevant knowledge/data',
-    era: 'generative',
-    channels: ['knowledge'],
-    description: 'Ensures AI-generated responses are accurate and trustworthy by anchoring them in your company\'s verified knowledge and real-time CRM data.',
-    storyline: [
-      'Agent prompts the AI to draft a response',
-      'Einstein searches Data Cloud and Knowledge for ground truth',
-      'The response is generated ONLY using the provided source data'
-    ],
-    useCases: [
-      'Safe generative AI for highly regulated industries',
-      'Accurate quoting and technical support'
-    ],
-    specs: { safety: 'Einstein Trust Layer', data: 'Knowledge & Data Cloud' },
-    colorClass: 'secondary-container',
-    glowClass: 'neon-glow-secondary',
-    featured: false,
-    icon: 'auto_awesome'
-  },
-  {
-    id: 'sr',
-    symbol: 'Sr',
-    name: 'Service Replies',
-    fullName: 'Einstein Service Replies — LLM-generated reply drafts grounded in knowledge and case context',
-    era: 'generative',
-    channels: ['messaging', 'email'],
-    description: 'Drafts real-time, context-aware responses for agents across chat, messaging, and email channels.',
-    storyline: [
-      'Customer asks a complex question in chat',
-      'Einstein drafts a full reply with embedded technical details',
-      'Agent clicks "Apply" to send the perfectly formatted response'
-    ],
-    useCases: [
-      'Speeding up response times for chat agents',
-      'Ensuring consistent brand voice in email'
-    ],
-    specs: { channels: 'Omni-Channel', tone: 'Brand Aligned' },
-    colorClass: 'secondary-container',
-    glowClass: 'neon-glow-secondary',
-    featured: false,
-    icon: 'auto_awesome'
-  },
-  // Predictive Era
-  {
-    id: 'ar',
-    symbol: 'Ar',
-    name: 'Article Rec',
-    fullName: 'Einstein Article Recommendations — predicts relevant articles based on case context',
-    era: 'predictive',
-    channels: ['knowledge'],
-    description: 'Uses machine learning to suggest the most relevant knowledge articles to agents as they work on cases.',
-    storyline: [
-      'Agent types case subject "Refund policy"',
-      'Einstein immediately surfaces the "Standard Refund Policy" article',
-      'Agent attaches the article to the case'
-    ],
-    useCases: [
-      'New agent onboarding speed',
-      'Improving self-service resolution rates'
-    ],
-    specs: { model: 'BERT-based ranking', accuracy: '95%+' },
-    colorClass: 'primary-container',
-    glowClass: 'neon-glow-primary',
-    featured: false,
-    icon: 'analytics'
-  },
-  {
-    id: 'af',
-    symbol: 'Af',
-    name: 'Article Flows',
-    fullName: 'Einstein Article Recommendations for Flows — predictive article surfacing within Flow automations',
-    era: 'predictive',
-    channels: ['knowledge'],
-    description: 'Easily integrate article recommendations into your custom automated workflows using Flow Builder.',
-    storyline: [
-      'Customer uses a "Troubleshooter" Flow',
-      'Einstein surfaces relevant articles within the Flow screen',
-      'Customer resolves the issue before creating a case'
-    ],
-    useCases: [
-      'Automated deflection in self-service portals',
-      'Multi-step guided help'
-    ],
-    specs: { tools: 'Flow Builder', integration: 'No-code' },
-    colorClass: 'primary-container',
-    glowClass: 'neon-glow-primary',
-    featured: false,
-    icon: 'analytics'
-  },
-  {
-    id: 'eb',
-    symbol: 'Eb',
-    name: 'Einstein Bots',
-    fullName: 'Einstein Bots — rule/ML-based bots with predictive intent classification',
-    era: 'predictive',
-    channels: ['messaging'],
-    description: 'Deliver instant resolution to common questions with intelligent chatbots powered by natural language understanding.',
-    storyline: [
-      'Customer types "Where is my order?"',
-      'Bot identifies "Order Status" intent',
-      'Bot fetches status from ERP and presents it'
-    ],
-    useCases: [
-      'Handling high-volume, low-complexity queries',
-      '24/7 basic support coverage'
-    ],
-    specs: { engine: 'Einstein NLU', capabilities: 'Multi-lingual' },
-    colorClass: 'primary-container',
-    glowClass: 'neon-glow-primary',
-    featured: false,
-    icon: 'analytics'
-  },
-  {
-    id: 'ec',
+    id: 'ecc',
     symbol: 'Ec',
-    name: 'Classification',
-    fullName: 'Einstein Classification Apps — predicts field values (case category, priority, etc.)',
+    name: 'Case Classification',
+    fullName: 'Einstein Case Classification — predicts field values based on historical data',
     era: 'predictive',
     channels: ['cases'],
-    description: 'Automatically populates case fields based on historical data, reducing manual entry and improving data consistency.',
-    storyline: [
-      'New case email arrives',
-      'Einstein predicts "Category: Billing" and "Priority: High"',
-      'Case is automatically routed to the right queue'
-    ],
-    useCases: [
-      'Eliminating manual triaging',
-      'Improving reporting accuracy'
-    ],
-    specs: { model: 'AutoML', field_types: 'Picklists & Checkboxes' },
+    description: 'Predicts picklist and checkbox field values on new cases based on past cases to reduce manual entry.',
+    storyline: ['Case arrives', 'Einstein analyzes subject/description', 'Fields are predicted automatically'],
+    useCases: ['Faster case triaging', 'Improved data quality'],
+    specs: { model: 'AutoML', target: 'Case Fields' },
     colorClass: 'primary-container',
     glowClass: 'neon-glow-primary',
-    featured: false,
     icon: 'analytics'
   },
   {
-    id: 'rr',
-    symbol: 'Rr',
-    name: 'Reply Rec',
-    fullName: 'Einstein Reply Recommendations — ML-based ranking of pre-existing reply templates/macros',
+    id: 'ecr',
+    symbol: 'Er',
+    name: 'Case Routing',
+    fullName: 'Einstein Case Routing — routes cases based on predicted values',
+    era: 'predictive',
+    channels: ['cases'],
+    description: 'Uses predicted field values to ensure cases reach the right agent or queue immediately.',
+    storyline: ['Einstein predicts case category', 'Omni-Channel uses prediction to find expert', 'Case is pushed to agent'],
+    useCases: ['Reducing transfers', 'Faster first response'],
+    specs: { logic: 'Omni-Channel', trigger: 'Classification' },
+    colorClass: 'primary-container',
+    glowClass: 'neon-glow-primary',
+    icon: 'analytics'
+  },
+  {
+    id: 'ecw',
+    symbol: 'Ew',
+    name: 'Case Wrap-Up',
+    fullName: 'Einstein Case Wrap-Up — predicts closing values for cases',
+    era: 'predictive',
+    channels: ['cases'],
+    description: 'Suggests values for fields like "Resolution" or "Root Cause" when an agent is closing a case.',
+    storyline: ['Agent begins closing case', 'Einstein suggests wrap-up values', 'Agent confirms and saves'],
+    useCases: ['Streamlined closing', 'Better trend reporting'],
+    specs: { trigger: 'Status: Closed', feedback: 'Real-time' },
+    colorClass: 'primary-container',
+    glowClass: 'neon-glow-primary',
+    icon: 'analytics'
+  },
+  {
+    id: 'ear',
+    symbol: 'Ar',
+    name: 'Article Recs',
+    fullName: 'Einstein Article Recommendations — surfaces relevant knowledge articles',
+    era: 'predictive',
+    channels: ['cases', 'messaging', 'voice', 'email', 'knowledge'],
+    description: 'Automatically finds and recommends the best knowledge articles to resolve cases faster.',
+    storyline: ['Agent views case', 'Einstein searches knowledge base', 'Top articles are surfaced in sidebar'],
+    useCases: ['Agent enablement', 'Consistency in support'],
+    specs: { tech: 'Vectorized Search', accuracy: 'High' },
+    colorClass: 'primary-container',
+    glowClass: 'neon-glow-primary',
+    icon: 'analytics'
+  },
+  {
+    id: 'ecm',
+    symbol: 'Em',
+    name: 'Conv Mining',
+    fullName: 'Einstein Conversation Mining — extracts intents from logs',
+    era: 'predictive',
+    channels: ['cases', 'messaging', 'voice'],
+    description: 'Analyzes case and chat transcripts to uncover common customer problems and automation opportunities.',
+    storyline: ['Manager selects transcripts', 'Einstein extracts recurring patterns', 'New bot intents are identified'],
+    useCases: ['Data-driven bot strategy', 'Process optimization'],
+    specs: { insight: 'Unsupervised ML', output: 'Intent Map' },
+    colorClass: 'primary-container',
+    glowClass: 'neon-glow-primary',
+    icon: 'analytics'
+  },
+  {
+    id: 'ews',
+    symbol: 'Ws',
+    name: 'Work Summaries',
+    fullName: 'Einstein Work Summaries — generates post-interaction summaries',
+    era: 'generative',
+    channels: ['cases', 'messaging', 'voice', 'field_service'],
+    description: 'Automatically drafts case summaries, issues, and resolutions based on interaction history.',
+    storyline: ['Interaction ends', 'Einstein drafts the wrap-up summary', 'Agent saves to record'],
+    useCases: ['Reduced after-call work', 'Standardized logging'],
+    specs: { model: 'LLM Generative', speed: 'Near-instant' },
+    colorClass: 'secondary-container',
+    glowClass: 'neon-glow-secondary',
+    icon: 'auto_awesome'
+  },
+  {
+    id: 'esc',
+    symbol: 'Gs',
+    name: 'Enhanced Summaries',
+    fullName: 'Enhanced Summaries (Case) — summarized context for long records',
+    era: 'generative',
+    channels: ['cases'],
+    description: 'Provides agents with a concise overview of complex, long-running cases they are inheriting.',
+    storyline: ['Agent opens old case', 'GenAI summarizes 20+ emails/notes', 'Agent is briefed in seconds'],
+    useCases: ['Faster case transfers', 'Manager escalation reviews'],
+    specs: { volume: 'Multi-document', length: 'Concise' },
+    colorClass: 'secondary-container',
+    glowClass: 'neon-glow-secondary',
+    icon: 'auto_awesome'
+  },
+  {
+    id: 'ekc',
+    symbol: 'Kc',
+    name: 'Knowledge Creation',
+    fullName: 'Einstein Knowledge Creation — drafts articles from cases',
+    era: 'generative',
+    channels: ['cases', 'messaging', 'email', 'knowledge'],
+    description: 'Drafts articles directly from resolved cases to grow the company knowledge base organically.',
+    storyline: ['Success! Case resolved', 'Einstein drafts a "How-to"', 'Article is reviewed for publishing'],
+    useCases: ['Closing knowledge gaps', 'Crowdsourced expertise'],
+    specs: { workflow: 'Integrated Review', source: 'Case + Conversations' },
+    colorClass: 'secondary-container',
+    glowClass: 'neon-glow-secondary',
+    icon: 'auto_awesome'
+  },
+  {
+    id: 'esre',
+    symbol: 'Sr',
+    name: 'Service Replies',
+    fullName: 'Einstein Service Replies — LLM-generated email/message drafts',
+    era: 'generative',
+    channels: ['cases', 'messaging', 'email'],
+    description: 'Generates personalized, grounded drafts for agents to use when replying to customers.',
+    storyline: ['Customer sends query', 'Einstein drafts perfect response', 'Agent clicks send'],
+    useCases: ['Speeding up replies', 'Consistent brand voice'],
+    specs: { base: 'Knowledge Articles', grounding: 'CRM Data' },
+    colorClass: 'secondary-container',
+    glowClass: 'neon-glow-secondary',
+    icon: 'auto_awesome'
+  },
+  {
+    id: 'esa',
+    symbol: 'Sa',
+    name: 'Search Answers',
+    fullName: 'Einstein Search Answers — direct answers from knowledge search',
+    era: 'generative',
+    channels: ['cases', 'knowledge'],
+    description: 'Provides a direct, generated answer at the top of search results instead of just listing links.',
+    storyline: ['Agent searches "Policy"', 'Einstein reads top article', 'Einstein generates summary answer'],
+    useCases: ['Faster information retrieval', 'Reduced reading time'],
+    specs: { tech: 'RAG', trust: 'Einstein Trust Layer' },
+    colorClass: 'secondary-container',
+    glowClass: 'neon-glow-secondary',
+    icon: 'auto_awesome'
+  },
+  {
+    id: 'asa',
+    symbol: 'Aa',
+    name: 'Svc Assistant',
+    fullName: 'Agentforce Service Assistant — co-pilot experience for service reps',
+    era: 'agentic',
+    channels: ['cases', 'messaging'],
+    description: 'An intelligent companion in the Service Console that plans actions and assists agents in real-time.',
+    storyline: ['Agent asks "Can you help?"', 'Assistant plans investigation', 'Assistant suggests deep actions'],
+    useCases: ['Expert guidance for all agents', 'Workflow automation'],
+    specs: { engine: 'Atlas Reasoning', interface: 'Sidepanel' },
+    colorClass: 'tertiary-container',
+    glowClass: 'neon-glow-tertiary',
+    icon: 'memory'
+  },
+  {
+    id: 'asp',
+    symbol: 'Ap',
+    name: 'Service Planner',
+    fullName: 'Agentforce Service Planner — autonomous planning for complex service tasks',
+    era: 'agentic',
+    channels: ['cases'],
+    description: 'The reasoning engine that breaks down high-level service goals into granular steps.',
+    storyline: ['Complex goal identified', 'Planner maps dependencies', 'Planner coordinates execution'],
+    useCases: ['Managing multi-step resolutions', 'Coordination of CRM tasks'],
+    specs: { tech: 'Dynamic Reasoning', outcome: 'Goal-oriented' },
+    colorClass: 'tertiary-container',
+    glowClass: 'neon-glow-tertiary',
+    icon: 'memory'
+  },
+  // MESSAGING (New & Unique to Messaging)
+  {
+    id: 'ebots',
+    symbol: 'Eb',
+    name: 'Einstein Bots',
+    fullName: 'Einstein Bots — rule/ML based conversational bots',
     era: 'predictive',
     channels: ['messaging'],
-    description: 'Recommends the best chat responses and macros for agents to use when chatting with customers.',
-    storyline: [
-      'Customer asks about store hours',
-      'Einstein suggests "Store Hours Template"',
-      'Agent clicks once to send'
-    ],
-    useCases: [
-      'Streamlining chat agent engagement',
-      'Promising consistent service language'
-    ],
-    specs: { language: 'English supported', mode: 'Pilot' },
+    description: 'Intelligent chatbots that automate common tasks and deflect basic queries via messaging.',
+    storyline: ['Customer types "Hello"', 'Bot identifies intent', 'Bot executes automated flow'],
+    useCases: ['24/7 basic support', 'Handling high volumes'],
+    specs: { engine: 'NLU', tools: 'Flow Builder' },
     colorClass: 'primary-container',
     glowClass: 'neon-glow-primary',
-    featured: false,
     icon: 'analytics'
   },
   {
-    id: 'cm',
-    symbol: 'Cm',
-    name: 'Conv Mining',
-    fullName: 'Einstein Conversation Mining — surfaces insights from conversations',
+    id: 'cs',
+    symbol: 'Cs',
+    name: 'Conv Summaries',
+    fullName: 'Conversation Summaries — real-time interaction summaries',
+    era: 'generative',
+    channels: ['messaging', 'voice'],
+    description: 'Generates concise summaries of ongoing or completed conversations for faster context.',
+    storyline: ['Chat reaches 50+ lines', 'Einstein creates contextual snippet', 'New agent reads it in 2 seconds'],
+    useCases: ['Improved hand-offs', 'Supervisor monitoring'],
+    specs: { latency: 'Real-time', precision: 'Detailed' },
+    colorClass: 'secondary-container',
+    glowClass: 'neon-glow-secondary',
+    icon: 'auto_awesome'
+  },
+  {
+    id: 'cc',
+    symbol: 'Cc',
+    name: 'Conv Catch-Up',
+    fullName: 'Conversation Catch-Up — brief for agents joining a chat',
+    era: 'generative',
+    channels: ['messaging', 'voice'],
+    description: 'Provides a "catch-up" summary specifically for agents being transferred into a live chat.',
+    storyline: ['Agent 1 transfers chat', 'Agent 2 gets "Catch-up" alert', 'Agent 2 responds with full context'],
+    useCases: ['Eliminating repetitive questions', 'Seamless transfers'],
+    specs: { trigger: 'Transfer event', speed: 'Instant' },
+    colorClass: 'secondary-container',
+    glowClass: 'neon-glow-secondary',
+    icon: 'auto_awesome'
+  },
+  {
+    id: 'asa_m',
+    symbol: 'As',
+    name: 'Service Agent',
+    fullName: 'Agentforce Service Agent — autonomous conversational agent',
+    era: 'agentic',
+    channels: ['messaging', 'email', 'knowledge'],
+    description: 'Fully autonomous AI agent that manages entire customer interactions across messaging channels.',
+    storyline: ['Customer asks for refund', 'Agent reasons over policy', 'Agent initiates refund securely'],
+    useCases: ['End-to-end automation', 'Scaling without hiring'],
+    specs: { logic: 'Atlas Engine', safety: ' Einstein Trust Layer' },
+    colorClass: 'tertiary-container',
+    glowClass: 'neon-glow-tertiary',
+    icon: 'memory'
+  },
+  {
+    id: 'psss',
+    symbol: 'Ps',
+    name: 'Proactive Svc',
+    fullName: 'Proactive Service for Self-Service — anticipatory customer assistance',
+    era: 'agentic',
+    channels: ['messaging'],
+    description: 'Initiates self-service help proactively based on business signals (e.g., shipment delay).',
+    storyline: ['Event: Item out of stock', 'Agent triggers messaging outreach', 'Customer resolves via Bot'],
+    useCases: ['Reducing inbound inquiries', 'Improving CSAT'],
+    specs: { trigger: 'Data Cloud Signals', outreach: 'Digital' },
+    colorClass: 'tertiary-container',
+    glowClass: 'neon-glow-tertiary',
+    icon: 'memory'
+  },
+  // VOICE
+  {
+    id: 'cis',
+    symbol: 'Ci',
+    name: 'Conv Intelligence',
+    fullName: 'Conversation Intelligence Service (Pilot) — predictive voice insights',
     era: 'predictive',
-    channels: ['messaging', 'cases'],
-    description: 'Analyzes chat and case logs to identify common customer issues and opportunities for automation.',
-    storyline: [
-      'Manager runs a mining job on 10k transcripts',
-      'Einstein identifies 5 new intents for Bots',
-      'Manager exports data to jumpstart Bot training'
-    ],
-    useCases: [
-      'Data-driven roadmap for Bot automation',
-      'Identifying training gaps for agents'
-    ],
-    specs: { analysis: 'Unsupervised Learning', visualization: 'Heatmaps' },
+    channels: ['voice'],
+    description: 'Finds key moments, action items, and trends in voice call transcripts.',
+    storyline: ['Call recorded & transcribed', 'Einstein finds "Cancellation" trend', 'Manager adjusts policy'],
+    useCases: ['Quality assurance automation', 'Coaching reps'],
+    specs: { status: 'Pilot', tech: 'Audio processing' },
     colorClass: 'primary-container',
     glowClass: 'neon-glow-primary',
-    featured: false,
     icon: 'analytics'
   },
+  {
+    id: 'av',
+    symbol: 'Av',
+    name: 'Agentforce Voice',
+    fullName: 'Agentforce Voice — AI-driven voice conversation handling',
+    era: 'agentic',
+    channels: ['voice'],
+    description: 'Enables autonomous AI to conduct voice-based customer support with natural language understanding.',
+    storyline: ['Phone rings', 'Vocal agent answers fluently', 'Task resolved via voice command'],
+    useCases: ['High-scale phone support', 'Personalized IVR'],
+    specs: { tech: 'VoiceBot', NLP: 'Deep Learning' },
+    colorClass: 'tertiary-container',
+    glowClass: 'neon-glow-tertiary',
+    icon: 'memory'
+  },
+  // EMAIL (Unique/Different)
+  {
+    id: 'eet',
+    symbol: 'Et',
+    name: 'Email Templates',
+    fullName: 'Einstein Email Templates — gen-AI template generation',
+    era: 'generative',
+    channels: ['email'],
+    description: 'Helps admins generate beautiful, context-relevant email templates in seconds.',
+    storyline: ['Admin needs "Renewal" template', 'Einstein drafts HTML & text', 'Template deployed across org'],
+    useCases: ['Faster setup', 'Better formatting'],
+    specs: { type: 'Content creation', grounding: 'Org Metadata' },
+    colorClass: 'secondary-container',
+    glowClass: 'neon-glow-secondary',
+    icon: 'auto_awesome'
+  },
+  // FIELD SERVICE
+  {
+    id: 'nba',
+    symbol: 'Nb',
+    name: 'Next Best Action',
+    fullName: 'Einstein Next Best Action — predictive recommendations for field reps',
+    era: 'predictive',
+    channels: ['field_service'],
+    description: 'Recommends optimal up-sell and cross-sell opportunities at the moment of job completion.',
+    storyline: ['Technician finishes repair', 'Einstein suggests "Battery Upgrade"', 'Technician adds to work order'],
+    useCases: ['Increasing field revenue', 'Proactive maintenance'],
+    specs: { tech: 'Recommendation Engine', UI: 'App & Console' },
+    colorClass: 'primary-container',
+    glowClass: 'neon-glow-primary',
+    icon: 'analytics'
+  },
+  {
+    id: 'erb',
+    symbol: 'Rb',
+    name: 'Recommend Builder',
+    fullName: 'Einstein Recommendation Builder — custom predictions for Field Service',
+    era: 'predictive',
+    channels: ['field_service'],
+    description: 'Allows builds of custom recommendation models to predict parts, skills, or objects for field jobs.',
+    storyline: ['Historical work orders analyzed', 'Einstein predicts "Skill: HVAC Senior"', 'Dispatcher assigns correctly'],
+    useCases: ['Optimizing first-time fix rates', 'Resource allocation'],
+    specs: { tool: 'Declarative Builder', target: 'Any Standard Object' },
+    colorClass: 'primary-container',
+    glowClass: 'neon-glow-primary',
+    icon: 'analytics'
+  },
+  {
+    id: 'pwb',
+    symbol: 'Pb',
+    name: 'Pre-Work Brief',
+    fullName: 'Pre-Work Brief (GenAI) — summarized brief for field technicians',
+    era: 'generative',
+    channels: ['field_service'],
+    description: 'Gathers all customer history and asset info into a short, easy-to-read brief for a mobile technician.',
+    storyline: ['Technician arrives on site', 'Opens mobile phone', 'GenAI gives 3-point summary of the asset history'],
+    useCases: ['Better prepared technicians', 'Enhanced customer experience'],
+    specs: { output: 'Mobile Optimized', source: 'Asset & Case History' },
+    colorClass: 'secondary-container',
+    glowClass: 'neon-glow-secondary',
+    icon: 'auto_awesome'
+  },
+  {
+    id: 'afsa',
+    symbol: 'Af',
+    name: 'FS Agent',
+    fullName: 'Agentforce Field Service Agent — autonomous help for field crews',
+    era: 'agentic',
+    channels: ['field_service'],
+    description: 'An autonomous agent that manages technician questions and administrative field tasks.',
+    storyline: ['Technician asks "How many bolts?"', 'Agent checks PDF manual', 'Agent supplies specs instantly'],
+    useCases: ['Mobile self-sufficiency', 'Reduced back-office calls'],
+    specs: { tech: 'Retrieval Augmented Plan', UI: 'FSL Mobile App' },
+    colorClass: 'tertiary-container',
+    glowClass: 'neon-glow-tertiary',
+    icon: 'memory'
+  },
+  {
+    id: 'asa_sched',
+    symbol: 'As',
+    name: 'Scheduling Agent',
+    fullName: 'Agentforce Scheduling Agent — autonomous appointment management',
+    era: 'agentic',
+    channels: ['field_service'],
+    description: 'Manages complex rescheduling and scheduling tasks autonomously for customers.',
+    storyline: ['Customer texts "Can\'t make it"', 'Agent finds new slot', 'Agent updates job in FSL'],
+    useCases: ['Appointment flexibility', 'Dispatcher relief'],
+    specs: { logic: 'Optimization Engine', flow: 'Conversational' },
+    colorClass: 'tertiary-container',
+    glowClass: 'neon-glow-tertiary',
+    icon: 'memory'
+  },
+  // KNOWLEDGE
+  {
+    id: 'eke',
+    symbol: 'Ke',
+    name: 'Knowledge Edits',
+    fullName: 'Einstein Knowledge Edits — gen-AI assisted editing',
+    era: 'generative',
+    channels: ['knowledge'],
+    description: 'Helps knowledge managers rewrite, shorten, or change the tone of existing articles.',
+    storyline: ['Clunky article text highlighted', 'Einstein rewrites for clarity', 'Manager publishes professional version'],
+    useCases: ['Faster article lifecycle', 'Better readability'],
+    specs: { feature: 'Tone & Style control', tool: 'Knowledge Console' },
+    colorClass: 'secondary-container',
+    glowClass: 'neon-glow-secondary',
+    icon: 'auto_awesome'
+  },
 ];
+
 
 const ERAS = [
   { id: 'predictive', label: 'Predictive Era', subtitle: 'The Foundation', icon: 'analytics', color: 'primary-container' },

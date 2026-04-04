@@ -91,34 +91,16 @@ Evolve the app toward a "Salesforce AI Capabilities Explorer" with this architec
 
 These are the real capabilities to use as card data. Replace all placeholder cards with these.
 
-### Agentic Era (`era: "agentic"`, color: tertiary/pink)
+### Channel × Era Feature Matrix
 
-| Symbol | Name | Full Name |
-|---|---|---|
-| `As` | Service Agent | Agentforce Service Agent — autonomous AI agent handling end-to-end service interactions |
-| `Aa` | Svc Assistant | Agentforce Service Assistant — agent-assisted experience for service reps |
-| `Ps` | Proactive Svc | Proactive Service for Self-Service — agent-driven proactive engagement |
-
-### Generative Era (`era: "generative"`, color: secondary/yellow)
-
-| Symbol | Name | Full Name |
-|---|---|---|
-| `Kc` | Knowledge Creation | Einstein Knowledge Creation — generates knowledge articles from cases/conversations |
-| `Es` | Enhanced Summaries | Enhanced Summaries — generates conversation/case summaries |
-| `Ws` | Work Summaries | Einstein Work Summaries — generates post-interaction work summaries |
-| `Sg` | AI Grounding | Service AI Grounding — grounds generative responses with relevant knowledge/data |
-| `Sr` | Service Replies | Einstein Service Replies — LLM-generated reply drafts grounded in knowledge and case context |
-
-### Predictive Era (`era: "predictive"`, color: primary/blue)
-
-| Symbol | Name | Full Name |
-|---|---|---|
-| `Ar` | Article Rec | Einstein Article Recommendations — predicts relevant articles based on case context |
-| `Af` | Article Flows | Einstein Article Recommendations for Flows — predictive article surfacing within Flow automations |
-| `Eb` | Einstein Bots | Einstein Bots — rule/ML-based bots with predictive intent classification |
-| `Ec` | Classification | Einstein Classification Apps — predicts field values (case category, priority, etc.) |
-| `Rr` | Reply Rec | Einstein Reply Recommendations — ML-based ranking of pre-existing reply templates/macros |
-| `Cm` | Conv Mining | Einstein Conversation Mining — surfaces insights from conversations |
+| Channel | 🔵 Predictive | 🟡 Generative | 🩷 Agentic |
+|---|---|---|---|
+| **Cases** | Einstein Case Classification, Einstein Case Routing, Einstein Case Wrap-Up, Einstein Article Recommendations, Einstein Conversation Mining | Einstein Work Summaries, Enhanced Summaries (Case), Einstein Knowledge Creation, Einstein Service Replies (Email), Einstein Search Answers | Agentforce Service Assistant, Agentforce Service Planner |
+| **Messaging** | Einstein Bots, Einstein Article Recommendations | Einstein Service Replies (Messaging), Conversation Summaries, Conversation Catch-Up, Einstein Knowledge Creation | Agentforce Service Agent, Proactive Service for Self-Service |
+| **Voice** | Einstein Conversation Mining, Einstein Article Recommendations, Conversation Intelligence Service (Pilot) | Conversation Summaries (Voice), Conversation Catch-Up (Voice), Einstein Work Summaries (Voice) | Agentforce Voice |
+| **Email** | Einstein Classification Apps, Einstein Article Recommendations | Einstein Service Replies (Email), Email Summaries, Einstein Knowledge Creation, Einstein Email Templates | Agentforce Service Agent (Email channel) |
+| **Field Service** | Einstein Next Best Action, Einstein Recommendation Builder | Pre-Work Brief (GenAI), Einstein Work Summaries (FSL) | Agentforce Field Service Agent, Agentforce Scheduling Agent |
+| **Knowledge** | Einstein Article Recommendations | Einstein Knowledge Creation, Einstein Knowledge Edits, Einstein Search Answers | Agentforce Service Agent (Answer Questions with Knowledge Action) |
 
 ### Step 3 — Stitch UI mockup prompt
 
