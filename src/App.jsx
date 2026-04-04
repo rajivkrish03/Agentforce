@@ -1,9 +1,222 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+
+const CAPABILITIES = [
+  // Agentic Era
+  {
+    id: 'as',
+    symbol: 'As',
+    name: 'Service Agent',
+    fullName: 'Agentforce Service Agent — autonomous AI agent handling end-to-end service interactions',
+    era: 'agentic',
+    description: 'Agentforce Service Agent manages the transition from simple chatbots to sophisticated agents. Using advanced reasoning and planning, it breaks down complex customer requests into actionable tasks, coordinating between CRM data and external systems without human intervention.',
+    specs: { reasoning: 'Atlas Reasoning Engine', knowledge: 'Data Cloud Real-time Sync' },
+    colorClass: 'tertiary-container',
+    glowClass: 'neon-glow-tertiary',
+    featured: true,
+    icon: 'memory'
+  },
+  {
+    id: 'aa',
+    symbol: 'Aa',
+    name: 'Svc Assistant',
+    fullName: 'Agentforce Service Assistant — agent-assisted experience for service reps',
+    era: 'agentic',
+    description: 'Empowers service representatives with proactive AI assistance directly in their workspace, helping them navigate complex cases and provide faster resolutions.',
+    specs: { integration: 'Service Console SDK', assistance: 'Proactive Sidebar' },
+    colorClass: 'tertiary-container',
+    glowClass: 'neon-glow-tertiary',
+    featured: false,
+    icon: 'memory'
+  },
+  {
+    id: 'ps',
+    symbol: 'Ps',
+    name: 'Proactive Svc',
+    fullName: 'Proactive Service for Self-Service — agent-driven proactive engagement',
+    era: 'agentic',
+    description: 'Anticipates customer needs before they reach out, initiating self-service resolutions or proactive outreach based on business signals.',
+    specs: { triggers: 'Flow Builder Rules', outreach: 'Multi-channel' },
+    colorClass: 'tertiary-container',
+    glowClass: 'neon-glow-tertiary',
+    featured: false,
+    icon: 'memory'
+  },
+  // Generative Era
+  {
+    id: 'kc',
+    symbol: 'Kc',
+    name: 'Knowledge Creation',
+    fullName: 'Einstein Knowledge Creation — generates knowledge articles from cases/conversations',
+    era: 'generative',
+    description: 'Automatically drafts knowledge articles from resolved cases and customer conversations, accelerating institutional knowledge sharing.',
+    specs: { language: 'Multi-lingual LLM', source: 'Case & Chat History' },
+    colorClass: 'secondary-container',
+    glowClass: 'neon-glow-secondary',
+    featured: false,
+    icon: 'auto_awesome'
+  },
+  {
+    id: 'es',
+    symbol: 'Es',
+    name: 'Enhanced Summaries',
+    fullName: 'Enhanced Summaries — generates conversation/case summaries',
+    era: 'generative',
+    description: 'Provides concise, high-quality summaries of long customer interactions, ensuring agents have instant context when picking up a case.',
+    specs: { model: 'summarization_optimized', latency: '< 500ms' },
+    colorClass: 'secondary-container',
+    glowClass: 'neon-glow-secondary',
+    featured: false,
+    icon: 'auto_awesome'
+  },
+  {
+    id: 'ws',
+    symbol: 'Ws',
+    name: 'Work Summaries',
+    fullName: 'Einstein Work Summaries — generates post-interaction work summaries',
+    era: 'generative',
+    description: 'Generates wrap-up summaries for agents at the end of an interaction, saving time on administrative tasks.',
+    specs: { speed: 'Near-instant', format: 'Structured Fields' },
+    colorClass: 'secondary-container',
+    glowClass: 'neon-glow-secondary',
+    featured: false,
+    icon: 'auto_awesome'
+  },
+  {
+    id: 'sg',
+    symbol: 'Sg',
+    name: 'AI Grounding',
+    fullName: 'Service AI Grounding — grounds generative responses with relevant knowledge/data',
+    era: 'generative',
+    description: 'Ensures AI-generated responses are accurate and trustworthy by anchoring them in your company\'s verified knowledge and real-time CRM data.',
+    specs: { safety: 'Einstein Trust Layer', data: 'Knowledge & Data Cloud' },
+    colorClass: 'secondary-container',
+    glowClass: 'neon-glow-secondary',
+    featured: false,
+    icon: 'auto_awesome'
+  },
+  {
+    id: 'sr',
+    symbol: 'Sr',
+    name: 'Service Replies',
+    fullName: 'Einstein Service Replies — LLM-generated reply drafts grounded in knowledge and case context',
+    era: 'generative',
+    description: 'Drafts real-time, context-aware responses for agents across chat, messaging, and email channels.',
+    specs: { channels: 'Omni-Channel', tone: 'Brand Aligned' },
+    colorClass: 'secondary-container',
+    glowClass: 'neon-glow-secondary',
+    featured: false,
+    icon: 'auto_awesome'
+  },
+  // Predictive Era
+  {
+    id: 'ar',
+    symbol: 'Ar',
+    name: 'Article Rec',
+    fullName: 'Einstein Article Recommendations — predicts relevant articles based on case context',
+    era: 'predictive',
+    description: 'Uses machine learning to suggest the most relevant knowledge articles to agents as they work on cases.',
+    specs: { model: 'BERT-based ranking', accuracy: '95%+' },
+    colorClass: 'primary-container',
+    glowClass: 'neon-glow-primary',
+    featured: false,
+    icon: 'analytics'
+  },
+  {
+    id: 'af',
+    symbol: 'Af',
+    name: 'Article Flows',
+    fullName: 'Einstein Article Recommendations for Flows — predictive article surfacing within Flow automations',
+    era: 'predictive',
+    description: 'Easily integrate article recommendations into your custom automated workflows using Flow Builder.',
+    specs: { tools: 'Flow Builder', integration: 'No-code' },
+    colorClass: 'primary-container',
+    glowClass: 'neon-glow-primary',
+    featured: false,
+    icon: 'analytics'
+  },
+  {
+    id: 'eb',
+    symbol: 'Eb',
+    name: 'Einstein Bots',
+    fullName: 'Einstein Bots — rule/ML-based bots with predictive intent classification',
+    era: 'predictive',
+    description: 'Deliver instant resolution to common questions with intelligent chatbots powered by natural language understanding.',
+    specs: { engine: 'Einstein NLU', capabilities: 'Multi-lingual' },
+    colorClass: 'primary-container',
+    glowClass: 'neon-glow-primary',
+    featured: false,
+    icon: 'analytics'
+  },
+  {
+    id: 'ec',
+    symbol: 'Ec',
+    name: 'Classification',
+    fullName: 'Einstein Classification Apps — predicts field values (case category, priority, etc.)',
+    era: 'predictive',
+    description: 'Automatically populates case fields based on historical data, reducing manual entry and improving data consistency.',
+    specs: { model: 'AutoML', field_types: 'Picklists & Checkboxes' },
+    colorClass: 'primary-container',
+    glowClass: 'neon-glow-primary',
+    featured: false,
+    icon: 'analytics'
+  },
+  {
+    id: 'rr',
+    symbol: 'Rr',
+    name: 'Reply Rec',
+    fullName: 'Einstein Reply Recommendations — ML-based ranking of pre-existing reply templates/macros',
+    era: 'predictive',
+    description: 'Recommends the best chat responses and macros for agents to use when chatting with customers.',
+    specs: { language: 'English supported', mode: 'Pilot' },
+    colorClass: 'primary-container',
+    glowClass: 'neon-glow-primary',
+    featured: false,
+    icon: 'analytics'
+  },
+  {
+    id: 'cm',
+    symbol: 'Cm',
+    name: 'Conv Mining',
+    fullName: 'Einstein Conversation Mining — surfaces insights from conversations',
+    era: 'predictive',
+    description: 'Analyzes chat and case logs to identify common customer issues and opportunities for automation.',
+    specs: { analysis: 'Unsupervised Learning', visualization: 'Heatmaps' },
+    colorClass: 'primary-container',
+    glowClass: 'neon-glow-primary',
+    featured: false,
+    icon: 'analytics'
+  },
+];
 
 function App() {
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [selectedCapability, setSelectedCapability] = useState(null);
+
+  useEffect(() => {
+    if (selectedCapability) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+  }, [selectedCapability]);
+
+  const filteredCapabilities = activeFilter === 'all' 
+    ? CAPABILITIES 
+    : CAPABILITIES.filter(c => c.era === activeFilter);
+
+  const eras = [
+    { id: 'predictive', label: 'Predictive Era', subtitle: 'The Foundation', icon: 'analytics', color: 'primary-container' },
+    { id: 'generative', label: 'Generative Era', subtitle: 'The Assistant', icon: 'auto_awesome', color: 'secondary-container' },
+    { id: 'agentic', label: 'Agentic Era', subtitle: 'Autonomous Force', icon: 'memory', color: 'tertiary-container' },
+  ];
+
+  const handleFilterClick = (filterId) => {
+    setActiveFilter(filterId);
+  };
+
   return (
-    <>
-      <nav className="fixed top-0 w-full z-50 bg-[#0B0B0F]/80 backdrop-blur-xl border-b border-white/10 flex justify-between items-center px-8 h-20 shadow-[0_8px_32px_0_rgba(1,118,211,0.1)]">
+    <div className="bg-background min-h-screen text-on-surface">
+      <nav className="fixed top-0 w-full z-50 bg-[#0B0B0F]/80 backdrop-blur-xl border-b border-white/10 flex justify-between items-center px-8 h-20 shadow-[0_8px_32_0_rgba(1,118,211,0.1)]">
         <div className="flex items-center gap-6">
           <h1 className="font-headline font-black tracking-tighter text-white uppercase text-2xl">
             SALESFORCE AGENTFORCE <span className="text-primary-container">AI OBSERVATORY</span>
@@ -40,18 +253,33 @@ function App() {
           </div>
         </div>
         <nav className="flex flex-col gap-1">
-          <a className="group px-6 py-3 flex items-center gap-4 text-slate-500 hover:bg-white/5 transition-all" href="#">
-            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">analytics</span>
-            <span className="font-headline text-sm font-semibold uppercase tracking-widest">Predictive</span>
-          </a>
-          <a className="group px-6 py-3 flex items-center gap-4 text-slate-500 hover:bg-white/5 transition-all" href="#">
-            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">auto_awesome</span>
-            <span className="font-headline text-sm font-semibold uppercase tracking-widest">Generative</span>
-          </a>
-          <a className="group px-6 py-3 flex items-center gap-4 bg-[#0176D3]/10 text-[#0176D3] border-r-4 border-[#0176D3]" href="#">
-            <span className="material-symbols-outlined">memory</span>
-            <span className="font-headline text-sm font-semibold uppercase tracking-widest">Agentic</span>
-          </a>
+          {eras.map((era) => (
+            <button
+              key={era.id}
+              onClick={() => handleFilterClick(era.id)}
+              className={`group px-6 py-3 flex items-center gap-4 transition-all text-left ${
+                activeFilter === era.id 
+                  ? 'bg-primary-container/10 text-primary-container border-r-4 border-primary-container' 
+                  : 'text-slate-500 hover:bg-white/5'
+              }`}
+            >
+              <span className={`material-symbols-outlined ${activeFilter !== era.id ? 'group-hover:translate-x-1 transition-transform' : ''}`}>
+                {era.icon}
+              </span>
+              <span className="font-headline text-sm font-semibold uppercase tracking-widest">{era.id}</span>
+            </button>
+          ))}
+          <button
+            onClick={() => handleFilterClick('all')}
+            className={`group px-6 py-3 flex items-center gap-4 transition-all text-left ${
+              activeFilter === 'all' 
+                ? 'bg-primary-container/10 text-primary-container border-r-4 border-primary-container' 
+                : 'text-slate-500 hover:bg-white/5'
+            }`}
+          >
+            <span className="material-symbols-outlined">apps</span>
+            <span className="font-headline text-sm font-semibold uppercase tracking-widest">All Eras</span>
+          </button>
         </nav>
         <div className="mt-auto px-6">
           <button className="w-full py-4 bg-primary-container text-white font-bold rounded-xl shadow-lg shadow-primary-container/20 active:scale-95 transition-transform uppercase text-xs tracking-widest">
@@ -65,147 +293,84 @@ function App() {
           <div>
             <h2 className="text-5xl font-extrabold tracking-tighter text-white mb-4">Service Cloud <span className="text-primary-container">Capabilities</span></h2>
             <div className="flex gap-3">
-              <span className="px-4 py-1.5 rounded-full text-xs font-bold bg-primary-container text-white cursor-pointer uppercase tracking-widest">All</span>
-              <span className="px-4 py-1.5 rounded-full text-xs font-bold bg-surface-container-highest text-on-surface-variant hover:text-white cursor-pointer uppercase tracking-widest transition-colors">Predictive AI</span>
-              <span className="px-4 py-1.5 rounded-full text-xs font-bold bg-surface-container-highest text-on-surface-variant hover:text-white cursor-pointer uppercase tracking-widest transition-colors">Generative AI</span>
-              <span className="px-4 py-1.5 rounded-full text-xs font-bold bg-surface-container-highest text-on-surface-variant hover:text-white cursor-pointer uppercase tracking-widest transition-colors border border-primary/20">Agentic AI</span>
+              <button 
+                onClick={() => setActiveFilter('all')}
+                className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-colors ${
+                  activeFilter === 'all' ? 'bg-primary-container text-white' : 'bg-surface-container-highest text-on-surface-variant hover:text-white'
+                }`}
+              >
+                All
+              </button>
+              <button 
+                onClick={() => setActiveFilter('predictive')}
+                className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-colors ${
+                  activeFilter === 'predictive' ? 'bg-primary-container text-white' : 'bg-surface-container-highest text-on-surface-variant hover:text-white'
+                }`}
+              >
+                Predictive AI
+              </button>
+              <button 
+                onClick={() => setActiveFilter('generative')}
+                className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-colors ${
+                  activeFilter === 'generative' ? 'bg-primary-container text-white' : 'bg-surface-container-highest text-on-surface-variant hover:text-white'
+                }`}
+              >
+                Generative AI
+              </button>
+              <button 
+                onClick={() => setActiveFilter('agentic')}
+                className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-colors border border-primary/20 ${
+                  activeFilter === 'agentic' ? 'bg-primary-container text-white' : 'bg-surface-container-highest text-on-surface-variant hover:text-white'
+                }`}
+              >
+                Agentic AI
+              </button>
             </div>
           </div>
           <div className="text-right">
             <p className="text-on-surface-variant font-label text-sm uppercase tracking-widest mb-1">Status: Operational</p>
             <div className="flex items-center gap-2 justify-end">
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-              <span className="text-primary font-bold">142 Active Nodes</span>
+              <span className="text-primary font-bold">{filteredCapabilities.length} Active Nodes</span>
             </div>
           </div>
         </header>
 
         <div className="periodic-grid">
-          <div className="col-span-12 mb-4 border-l-2 border-primary/30 pl-4 py-1">
-            <h3 className="text-on-surface-variant text-xs font-black uppercase tracking-[0.3em]">Predictive Era / The Foundation</h3>
-          </div>
-          <div className="col-span-2 group">
-            <div className="bg-surface-container-low p-6 rounded-xl border border-white/5 transition-all duration-300 neon-glow-primary cursor-pointer relative overflow-hidden h-40 flex flex-col justify-between">
-              <div className="absolute -right-2 -top-2 opacity-10">
-                <span className="material-symbols-outlined text-8xl">analytics</span>
-              </div>
-              <span className="text-4xl font-black text-primary leading-none">Pr</span>
-              <div>
-                <p className="text-xs font-black text-white uppercase tracking-tighter">Propensity</p>
-                <p className="text-[10px] text-on-surface-variant uppercase font-semibold">Modeling</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-span-2">
-            <div className="bg-surface-container-low p-6 rounded-xl border border-white/5 transition-all duration-300 neon-glow-primary cursor-pointer relative overflow-hidden h-40 flex flex-col justify-between">
-              <span className="text-4xl font-black text-primary leading-none">Cs</span>
-              <div>
-                <p className="text-xs font-black text-white uppercase tracking-tighter">Case</p>
-                <p className="text-[10px] text-on-surface-variant uppercase font-semibold">Classification</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-span-2">
-            <div className="bg-surface-container-low p-6 rounded-xl border border-white/5 transition-all duration-300 neon-glow-primary cursor-pointer relative overflow-hidden h-40 flex flex-col justify-between">
-              <span className="text-4xl font-black text-primary leading-none">Rt</span>
-              <div>
-                <p className="text-xs font-black text-white uppercase tracking-tighter">Routing</p>
-                <p className="text-[10px] text-on-surface-variant uppercase font-semibold">Intelligence</p>
-              </div>
-            </div>
-          </div>
+          {eras.map(era => {
+            const eraCapabilities = filteredCapabilities.filter(c => c.era === era.id);
+            if (eraCapabilities.length === 0) return null;
 
-          <div className="col-span-12 mt-12 mb-4 border-l-2 border-secondary-container/30 pl-4 py-1">
-            <h3 className="text-on-surface-variant text-xs font-black uppercase tracking-[0.3em]">Generative Era / The Assistant</h3>
-          </div>
-          <div className="col-span-2">
-            <div className="bg-surface-container-low p-6 rounded-xl border border-white/5 transition-all duration-300 neon-glow-secondary cursor-pointer relative overflow-hidden h-40 flex flex-col justify-between">
-              <div className="absolute -right-2 -top-2 opacity-10">
-                <span className="material-symbols-outlined text-8xl">auto_awesome</span>
-              </div>
-              <span className="text-4xl font-black text-secondary-container leading-none">Sm</span>
-              <div>
-                <p className="text-xs font-black text-white uppercase tracking-tighter">Service</p>
-                <p className="text-[10px] text-on-surface-variant uppercase font-semibold">Summaries</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-span-2">
-            <div className="bg-surface-container-low p-6 rounded-xl border border-white/5 transition-all duration-300 neon-glow-secondary cursor-pointer relative overflow-hidden h-40 flex flex-col justify-between">
-              <span className="text-4xl font-black text-secondary-container leading-none">Kb</span>
-              <div>
-                <p className="text-xs font-black text-white uppercase tracking-tighter">Knowledge</p>
-                <p className="text-[10px] text-on-surface-variant uppercase font-semibold">Creation</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-span-2">
-            <div className="bg-surface-container-low p-6 rounded-xl border border-white/5 transition-all duration-300 neon-glow-secondary cursor-pointer relative overflow-hidden h-40 flex flex-col justify-between">
-              <span className="text-4xl font-black text-secondary-container leading-none">Ra</span>
-              <div>
-                <p className="text-xs font-black text-white uppercase tracking-tighter">Reply</p>
-                <p className="text-[10px] text-on-surface-variant uppercase font-semibold">Assist</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-span-2">
-            <div className="bg-surface-container-low p-6 rounded-xl border border-white/5 transition-all duration-300 neon-glow-secondary cursor-pointer relative overflow-hidden h-40 flex flex-col justify-between">
-              <span className="text-4xl font-black text-secondary-container leading-none">Ep</span>
-              <div>
-                <p className="text-xs font-black text-white uppercase tracking-tighter">Email</p>
-                <p className="text-[10px] text-on-surface-variant uppercase font-semibold">Personalization</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="col-span-12 mt-12 mb-4 border-l-2 border-tertiary-container/30 pl-4 py-1">
-            <h3 className="text-on-surface-variant text-xs font-black uppercase tracking-[0.3em]">Agentic Era / Autonomous Force</h3>
-          </div>
-          <div className="col-span-3">
-            <div className="bg-surface-container-low p-8 rounded-xl border border-white/5 transition-all duration-300 neon-glow-tertiary cursor-pointer relative overflow-hidden h-48 flex flex-col justify-between ring-1 ring-tertiary-container/20">
-              <div className="absolute -right-4 -top-4 opacity-10">
-                <span className="material-symbols-outlined text-9xl">memory</span>
-              </div>
-              <span className="text-5xl font-black text-tertiary-container leading-none">Af</span>
-              <div>
-                <p className="text-sm font-black text-white uppercase tracking-widest">Agentforce</p>
-                <p className="text-xs text-on-surface-variant uppercase font-semibold">Autonomous Core</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-span-2">
-            <div className="bg-surface-container-low p-6 rounded-xl border border-white/5 transition-all duration-300 neon-glow-tertiary cursor-pointer relative overflow-hidden h-48 flex flex-col justify-between">
-              <span className="text-4xl font-black text-tertiary-container leading-none">Ar</span>
-              <div>
-                <p className="text-xs font-black text-white uppercase tracking-tighter">Auto</p>
-                <p className="text-[10px] text-on-surface-variant uppercase font-semibold">Resolution</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-span-2">
-            <div className="bg-surface-container-low p-6 rounded-xl border border-white/5 transition-all duration-300 neon-glow-tertiary cursor-pointer relative overflow-hidden h-48 flex flex-col justify-between">
-              <span className="text-4xl font-black text-tertiary-container leading-none">Pa</span>
-              <div>
-                <p className="text-xs font-black text-white uppercase tracking-tighter">Proactive</p>
-                <p className="text-[10px] text-on-surface-variant uppercase font-semibold">Action</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-span-2">
-            <div className="bg-surface-container-low p-6 rounded-xl border border-white/5 transition-all duration-300 neon-glow-tertiary cursor-pointer relative overflow-hidden h-48 flex flex-col justify-between">
-              <span className="text-4xl font-black text-tertiary-container leading-none">Me</span>
-              <div>
-                <p className="text-xs font-black text-white uppercase tracking-tighter">Multi-modal</p>
-                <p className="text-[10px] text-on-surface-variant uppercase font-semibold">Engagement</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-span-3">
-            <div className="bg-surface-container-low/50 p-6 rounded-xl border border-dashed border-white/10 flex flex-col justify-center items-center text-center h-48 opacity-40">
-              <span className="material-symbols-outlined text-4xl mb-2">add_circle</span>
-              <p className="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest">Extended Nodes Coming Soon</p>
-            </div>
-          </div>
+            return (
+              <React.Fragment key={era.id}>
+                <div className="col-span-12 mt-8 mb-4 border-l-2 pl-4 py-1 transition-all" style={{ borderColor: `var(--md-sys-color-${era.color === 'primary-container' ? 'primary' : era.color.replace('-container', '')})` }}>
+                  <h3 className="text-on-surface-variant text-xs font-black uppercase tracking-[0.3em]">{era.label} / {era.subtitle}</h3>
+                </div>
+                {eraCapabilities.map(capability => (
+                  <div 
+                    key={capability.id} 
+                    className={`${capability.featured ? 'col-span-3' : 'col-span-2'} group transition-all duration-500`}
+                    onClick={() => setSelectedCapability(capability)}
+                  >
+                    <div className={`bg-surface-container-low ${capability.featured ? 'p-8 h-48' : 'p-6 h-40'} rounded-xl border border-white/5 transition-all duration-500 ${capability.glowClass} cursor-pointer relative overflow-hidden flex flex-col justify-between ${capability.featured ? 'ring-1 ring-tertiary-container/20' : ''}`}>
+                      <div className="absolute -right-2 -top-2 opacity-10">
+                        <span className={`material-symbols-outlined ${capability.featured ? 'text-9xl' : 'text-8xl'}`}>{capability.icon}</span>
+                      </div>
+                      <span className={`${capability.featured ? 'text-5xl' : 'text-4xl'} font-black leading-none transition-colors duration-300`} style={{ color: `var(--md-sys-color-${capability.colorClass.replace('-container', '')})` }}>
+                        {capability.symbol}
+                      </span>
+                      <div>
+                        <p className={`${capability.featured ? 'text-sm' : 'text-xs'} font-black text-white uppercase tracking-tighter`}>{capability.name}</p>
+                        <p className={`${capability.featured ? 'text-xs' : 'text-[10px]'} text-on-surface-variant uppercase font-semibold`}>
+                          {capability.fullName.split(' — ')[0].replace('Agentforce ', '').replace('Einstein ', '')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </React.Fragment>
+            );
+          })}
         </div>
 
         <footer className="mt-16 glass-panel border border-white/5 rounded-2xl p-8 flex items-center justify-between">
@@ -235,48 +400,57 @@ function App() {
         </footer>
       </main>
 
-      <div className="hidden fixed inset-0 z-[100] flex items-center justify-center p-8 bg-black/80 backdrop-blur-sm">
-        <div className="bg-surface-container-low max-w-4xl w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10">
-          <div className="flex h-[500px]">
-            <div className="w-1/3 bg-tertiary-container p-12 flex flex-col justify-between">
-              <span className="text-8xl font-black text-white">Af</span>
-              <div>
-                <h4 className="text-2xl font-black text-white uppercase tracking-tighter leading-tight">Agentforce Autonomous Core</h4>
-                <div className="mt-4 flex gap-2">
-                  <span className="px-2 py-1 rounded bg-black/20 text-[10px] font-bold text-white uppercase">Agentic Era</span>
-                </div>
-              </div>
-            </div>
-            <div className="w-2/3 p-12 flex flex-col justify-between relative">
-              <button className="absolute top-8 right-8 text-on-surface-variant hover:text-white transition-colors">
-                <span className="material-symbols-outlined">close</span>
-              </button>
-              <div>
-                <p className="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-4">Functional Description</p>
-                <h5 className="text-3xl font-bold text-white mb-6">The heartbeat of autonomous service orchestration.</h5>
-                <p className="text-on-surface-variant leading-relaxed mb-8">
-                  Agentforce Core manages the transition from simple chatbots to sophisticated agents. Using advanced reasoning and planning, it breaks down complex customer requests into actionable tasks, coordinating between CRM data and external systems without human intervention.
-                </p>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 bg-surface-container rounded-xl">
-                    <p className="text-[10px] text-primary font-bold uppercase mb-1">Reasoning Model</p>
-                    <p className="text-white text-sm">Atlas Reasoning Engine</p>
-                  </div>
-                  <div className="p-4 bg-surface-container rounded-xl">
-                    <p className="text-[10px] text-secondary-container font-bold uppercase mb-1">Knowledge Base</p>
-                    <p className="text-white text-sm">Data Cloud Real-time Sync</p>
+      {selectedCapability && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center p-8 bg-black/80 backdrop-blur-sm transition-all animate-in fade-in duration-300"
+          onClick={() => setSelectedCapability(null)}
+        >
+          <div 
+            className="bg-surface-container-low max-w-4xl w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 animate-in zoom-in-95 duration-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex h-[500px]">
+              <div className="w-1/3 p-12 flex flex-col justify-between transition-colors duration-500" style={{ backgroundColor: `var(--md-sys-color-${selectedCapability.colorClass.replace('-container', '')})` }}>
+                <span className="text-8xl font-black text-white">{selectedCapability.symbol}</span>
+                <div>
+                  <h4 className="text-2xl font-black text-white uppercase tracking-tighter leading-tight">{selectedCapability.fullName.split(' — ')[0]}</h4>
+                  <div className="mt-4 flex gap-2">
+                    <span className="px-2 py-1 rounded bg-black/20 text-[10px] font-bold text-white uppercase">{selectedCapability.era} Era</span>
                   </div>
                 </div>
               </div>
-              <div className="flex gap-4">
-                <button className="px-8 py-3 bg-primary-container text-white font-bold rounded-xl active:scale-95 transition-transform uppercase text-xs tracking-widest">Config Interface</button>
-                <button className="px-8 py-3 bg-white/5 text-white font-bold rounded-xl hover:bg-white/10 active:scale-95 transition-transform uppercase text-xs tracking-widest">View Logs</button>
+              <div className="w-2/3 p-12 flex flex-col justify-between relative">
+                <button 
+                  className="absolute top-8 right-8 text-on-surface-variant hover:text-white transition-colors p-2 rounded-full hover:bg-white/5"
+                  onClick={() => setSelectedCapability(null)}
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+                <div>
+                  <p className="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-4">Functional Description</p>
+                  <h5 className="text-3xl font-bold text-white mb-6 leading-tight">{selectedCapability.fullName.split(' — ')[1] || 'Transforming service with AI intelligence.'}</h5>
+                  <p className="text-on-surface-variant leading-relaxed mb-8">
+                    {selectedCapability.description}
+                  </p>
+                  <div className="grid grid-cols-2 gap-4">
+                    {Object.entries(selectedCapability.specs).map(([key, value]) => (
+                      <div key={key} className="p-4 bg-surface-container rounded-xl">
+                        <p className="text-[10px] text-primary font-bold uppercase mb-1">{key.replace('_', ' ')}</p>
+                        <p className="text-white text-sm">{value}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <button className="px-8 py-3 bg-primary-container text-white font-bold rounded-xl active:scale-95 transition-transform uppercase text-xs tracking-widest">Config Interface</button>
+                  <button className="px-8 py-3 bg-white/5 text-white font-bold rounded-xl hover:bg-white/10 active:scale-95 transition-transform uppercase text-xs tracking-widest">View Logs</button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </>
+      )}
+    </div>
   );
 }
 

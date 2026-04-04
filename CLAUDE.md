@@ -1,0 +1,184 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Commands
+
+```bash
+npm run dev       # Start Vite dev server with HMR
+npm run build     # Production build to dist/
+npm run preview   # Preview production build locally
+npm run lint      # Run ESLint
+```
+
+## Architecture
+
+Single-page React 19 app built with Vite 8 and Tailwind CSS 3. The entire UI lives in [src/App.jsx](src/App.jsx) as a monolithic component — no routing, no state management beyond React built-ins, no API integration.
+
+**Entry flow**: `index.html` → `src/main.jsx` → `src/App.jsx`
+
+### Design System
+
+The app uses a Material Design 3 color token system defined in [tailwind.config.js](tailwind.config.js) (`primary`, `secondary`, `tertiary`, `surface-*`, `error`, etc.) with dark mode only (`darkMode: "class"`; the `dark` class is set on `<html>` in `index.html`).
+
+Custom CSS utilities live in [src/index.css](src/index.css):
+- `.periodic-grid` — 12-column CSS grid layout for capability cards
+- `.neon-glow-primary/secondary/tertiary` — hover glow + lift animations
+- `.glass-panel` — frosted glass via `backdrop-blur`
+
+Typography uses "Plus Jakarta Sans" (Google Fonts, weights 200–800). Icons use Material Symbols Outlined (Google Fonts).
+
+### What the App Does
+
+"Salesforce Agentforce AI Observatory" — a periodic table-style interface showcasing Salesforce AI capabilities across three eras (Predictive, Generative, Agentic). It's a static prototype with hardcoded data; the modal component exists in JSX but is hidden (no toggle state wired up yet).
+
+---
+
+## Cloud Product Colors
+
+Salesforce does not publish per-cloud colors officially — all products share the unified Salesforce blue system. Convention used in product switchers and third-party tooling:
+
+| Cloud | Color | Hex |
+|---|---|---|
+| Sales Cloud | Salesforce Blue | `#0176D3` |
+| Service Cloud | Teal/Cyan | `#06A59A` |
+| Marketing Cloud | Orange | `#FE9339` |
+| Agentforce | Violet/Purple | `#7B5EA7` |
+
+### Official SLDS Tokens (use these, not arbitrary hex)
+
+| Token | Hex | Role |
+|---|---|---|
+| Brand Blue | `#0176D3` | Primary actions, active states |
+| Brand Vibrant | `#1B96FF` | Highlights, links |
+| Brand Dark | `#032D60` | Deep navy backgrounds |
+| Success | `#45C65A` | Positive states |
+| Warning | `#FE9339` | Caution / Marketing Cloud accent |
+| Error | `#EA001E` | Error states |
+
+The app currently maps: `primary` → Sales/Service blue, `secondary` → yellow (`#FFDB3C`), `tertiary` → pink (`#E31754`). As multi-cloud support is added, introduce per-cloud accent tokens alongside these.
+
+---
+
+## Next Steps
+
+### Step 1 — Wire up interactivity in src/App.jsx
+
+Add the following React state to the existing monolithic component (no new packages):
+
+- `activeFilter` (`"all" | "predictive" | "generative" | "agentic"`) — controlled by both the filter pills and the sidebar era nav items; both must stay in sync
+- `selectedCapability` (object | null) — set on card click; drives modal open/close
+- Move all hardcoded card data into a `capabilities` array at the top of the component with fields: `id`, `symbol`, `name`, `era`, `description`, `specs`, `colorClass`, `featured`
+- Filter cards based on `activeFilter`; hide era section headers when all cards in that section are hidden
+- Active pill: `bg-primary text-on-primary`; inactive: `bg-surface-container text-on-surface-variant`
+- Modal: remove hardcoded `hidden` class, render conditionally on `selectedCapability !== null`; populate left panel color from `colorClass`; close on backdrop click or X button; use `useEffect` to toggle `overflow-hidden` on body
+- Add `transition-all duration-300` to cards for smooth filter animations
+
+### Step 2 — Restructure for multi-cloud + channel navigation
+
+Evolve the app toward a "Salesforce AI Capabilities Explorer" with this architecture:
+
+- **Top-level clouds**: Service | Sales | Marketing | Agentforce (nav tabs)
+- **Service Cloud channels** (left sidebar second section below AI Era filters):
+  - Cases, Messaging, Voice, Email, Field Service, Knowledge
+- **Default view** (no channel selected): 3-column channel overview grid — each card shows channel icon, name, tagline, and three era badges (Predictive count / Generative count / Agentic count)
+- **Channel detail view** (after clicking a channel): two-column layout
+  - Left 60%: periodic-table feature grid filtered to that channel's capabilities
+  - Right 40%: Storyline / Use Case panel — empty state prompts user to click a card; after click shows feature description, numbered storyline steps, use case bullets, related feature chips, and See Demo / Read Docs buttons
+- Each cloud gets its own accent color (see Cloud Product Colors table above)
+
+## Service Cloud — Confirmed Feature List
+
+These are the real capabilities to use as card data. Replace all placeholder cards with these.
+
+### Agentic Era (`era: "agentic"`, color: tertiary/pink)
+
+| Symbol | Name | Full Name |
+|---|---|---|
+| `As` | Service Agent | Agentforce Service Agent — autonomous AI agent handling end-to-end service interactions |
+| `Aa` | Svc Assistant | Agentforce Service Assistant — agent-assisted experience for service reps |
+| `Ps` | Proactive Svc | Proactive Service for Self-Service — agent-driven proactive engagement |
+
+### Generative Era (`era: "generative"`, color: secondary/yellow)
+
+| Symbol | Name | Full Name |
+|---|---|---|
+| `Kc` | Knowledge Creation | Einstein Knowledge Creation — generates knowledge articles from cases/conversations |
+| `Es` | Enhanced Summaries | Enhanced Summaries — generates conversation/case summaries |
+| `Ws` | Work Summaries | Einstein Work Summaries — generates post-interaction work summaries |
+| `Sg` | AI Grounding | Service AI Grounding — grounds generative responses with relevant knowledge/data |
+| `Sr` | Service Replies | Einstein Service Replies — LLM-generated reply drafts grounded in knowledge and case context |
+
+### Predictive Era (`era: "predictive"`, color: primary/blue)
+
+| Symbol | Name | Full Name |
+|---|---|---|
+| `Ar` | Article Rec | Einstein Article Recommendations — predicts relevant articles based on case context |
+| `Af` | Article Flows | Einstein Article Recommendations for Flows — predictive article surfacing within Flow automations |
+| `Eb` | Einstein Bots | Einstein Bots — rule/ML-based bots with predictive intent classification |
+| `Ec` | Classification | Einstein Classification Apps — predicts field values (case category, priority, etc.) |
+| `Rr` | Reply Rec | Einstein Reply Recommendations — ML-based ranking of pre-existing reply templates/macros |
+| `Cm` | Conv Mining | Einstein Conversation Mining — surfaces insights from conversations |
+
+### Step 3 — Stitch UI mockup prompt
+
+Use this prompt in Stitch to generate a visual mockup before coding Step 2:
+
+```
+Design a dark-themed web app called "Salesforce AI Capabilities Explorer" — a reference tool for Salesforce customers and partners to explore AI capabilities by cloud, channel, and AI era.
+
+## Overall Vision
+Four top-level clouds in the nav: Service, Sales, Marketing, Agentforce. Service Cloud is the active/default view. Each cloud has its own channels and capabilities.
+
+## Layout
+
+**Top Nav (fixed, full width)**
+- Left: Logo — "Salesforce AI Explorer" in bold white, "AI" in Salesforce blue (#0176D3)
+- Center: Tab navigation — Service | Sales | Marketing | Agentforce (Service active, underlined in blue)
+- Right: User avatar circle, settings icon
+
+**Left Sidebar (fixed, 256px)**
+- Section label: "AI Era" in small caps, muted
+- Three filter items: Predictive (analytics icon) | Generative (auto_awesome icon) | Agentic (memory icon, active by default with blue left border)
+- Second section label: "Channel" in small caps, muted
+- Channel items for Service Cloud: Cases (description icon) | Messaging (chat icon) | Voice (phone icon) | Email (mail icon) | Field Service (build icon) | Knowledge (book icon)
+- Bottom: blue "Explore Use Cases" CTA button
+
+**Main Content — Default (no channel selected): Channel Overview Grid**
+Six large channel cards in a 3-column grid (~280px tall each, dark glass panel):
+- Large 48px channel icon in Salesforce blue
+- Channel name in bold white + tagline subtitle
+- Bottom row: three colored era badges — Blue "3 Predictive", Yellow "4 Generative", Pink "2 Agentic"
+- Hover: blue neon glow + card lift
+
+**Main Content — Channel Detail View (after clicking e.g. Cases)**
+- Breadcrumb: back arrow + "Service Cloud > Cases"
+- Channel H2 + short description
+- AI era filter pills: All | Predictive AI | Generative AI | Agentic AI
+
+Two-column layout:
+LEFT (60%) — Feature Periodic Grid (4 columns):
+  Each card ~140px tall: 2-letter symbol (era color, large bold), feature name (white bold), sub-label (muted small caps), faint icon watermark
+  Example cards for Cases (real Service Cloud features):
+  Predictive (blue): Ar (Article Rec) | Af (Article Flows) | Eb (Einstein Bots) | Ec (Classification) | Rr (Reply Rec) | Cm (Conv Mining)
+  Generative (yellow): Kc (Knowledge Creation) | Es (Enhanced Summaries) | Ws (Work Summaries) | Sg (AI Grounding) | Sr (Service Replies)
+  Agentic (pink): As (Service Agent, col-span-2 featured) | Aa (Svc Assistant) | Ps (Proactive Svc)
+
+RIGHT (40%) — Storyline Panel:
+  Default: dashed border placeholder "Click a feature card to explore use cases"
+  After click: large symbol in era color, feature name + era badge, "What it does" description,
+  "Storyline" numbered steps, "Use Cases" bullets, related feature chips, See Demo / Read Docs buttons
+
+**Feature Detail Modal (full overlay on card click)**
+- Left 1/3: era-colored background, large symbol, feature name, era badge
+- Right 2/3: full description, 2-col specs grid, Configure + View Logs + See Docs buttons
+- Close button top-right, backdrop click to dismiss
+
+## Color System (dark theme only)
+Background: #0B0B0F | Surface cards: #1B1B1F | Primary/Predictive: #0176D3 | Secondary/Generative: #FFDB3C | Tertiary/Agentic: #E31754
+Service Cloud accent: #06A59A | Sales Cloud: #0176D3 | Marketing Cloud: #FE9339 | Agentforce: #7B5EA7
+Text primary: #FFFFFF | Text secondary: #C0C7D4 | Borders: rgba(255,255,255,0.07)
+
+## Typography
+Font: Plus Jakarta Sans (Google Fonts) | Headings: Bold/Black, tight tracking | Labels: all-caps, wide spacing | Icons: Material Symbols Outlined
+```
