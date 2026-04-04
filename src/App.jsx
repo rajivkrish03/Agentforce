@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 const CLOUDS = [
-  { id: 'service', label: 'Service', accent: '#06A59A', icon: 'customer_support' },
+  { id: 'service', label: 'Service', accent: '#06A59A', icon: 'headset_mic' },
   { id: 'sales', label: 'Sales', accent: '#0176D3', icon: 'trending_up' },
   { id: 'marketing', label: 'Marketing', accent: '#FE9339', icon: 'campaign' },
   { id: 'agentforce', label: 'Agentforce', accent: '#7B5EA7', icon: 'smart_toy' },
@@ -429,6 +429,7 @@ function App() {
   const [selectedCapability, setSelectedCapability] = useState(null);
   const [hoveredCapability, setHoveredCapability] = useState(null);
   const [theme, setTheme] = useState('dark');
+  const [isOverview, setIsOverview] = useState(true);
 
   useEffect(() => {
     document.documentElement.className = theme;
@@ -459,12 +460,12 @@ function App() {
   const currentEra = ERAS.find(e => e.id === activeFilter);
 
   return (
-    <div className="bg-background min-h-screen text-on-surface">
+    <div className={`min-h-screen ${theme} bg-[var(--background)] text-[var(--on-surface)] transition-colors duration-500`}>
       {/* Top Nav */}
       <nav className="fixed top-0 w-full z-50 bg-[var(--nav-bg)] backdrop-blur-2xl border-b border-[var(--border)] flex justify-between items-center px-10 h-24 shadow-2xl transition-all duration-500">
         <div className="flex items-center gap-8">
-          <h1 className="font-headline font-black tracking-tighter text-on-surface uppercase text-xl flex items-center gap-1 shrink-0">
-            SALESFORCE <span className="text-[#0176D3]">AI EXPLORER</span>
+          <h1 className="font-headline font-black tracking-tighter text-[var(--on-surface)] uppercase text-xl flex items-center gap-1 shrink-0">
+            <span className="text-[#0176D3]">AI EXPLORER</span>
           </h1>
           
           <div className="h-8 w-px bg-[var(--border)]"></div>
@@ -477,11 +478,12 @@ function App() {
                   setActiveCloud(cloud.id);
                   setActiveChannel(null);
                   setActiveFilter('all');
+                  setIsOverview(true);
                 }}
                 className={`font-headline font-bold tracking-tight px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 group relative whitespace-nowrap ${
                   activeCloud === cloud.id 
-                    ? 'text-on-surface bg-on-surface/5' 
-                    : 'text-on-surface-variant hover:text-on-surface'
+                    ? 'text-[var(--on-surface)] bg-on-surface/5' 
+                    : 'text-[var(--on-surface-variant)] hover:text-[var(--on-surface)]'
                 }`}
               >
                 <div 
@@ -490,7 +492,7 @@ function App() {
                 >
                   <span className="material-symbols-outlined text-xl" style={{ color: cloud.accent }}>{cloud.icon}</span>
                 </div>
-                <span className="text-xs uppercase tracking-widest">{cloud.label}</span>
+                <span className={`text-xs uppercase tracking-widest ${activeCloud === cloud.id ? 'font-bold' : 'opacity-80'}`}>{cloud.label}</span>
                 {activeCloud === cloud.id && (
                   <div className="absolute -bottom-[26px] left-0 w-full h-[3px] rounded-full scale-x-75" style={{ backgroundColor: cloud.accent }}></div>
                 )}
@@ -502,76 +504,69 @@ function App() {
         <div className="flex items-center gap-6">
           <button 
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="p-2.5 rounded-xl border border-[var(--border)] hover:bg-on-surface/5 transition-all text-on-surface-variant hover:text-on-surface flex items-center justify-center bg-surface-container"
+            className="p-2.5 rounded-xl border border-[var(--border)] hover:bg-on-surface/5 transition-all text-[var(--on-surface-variant)] hover:text-[var(--on-surface)] flex items-center justify-center bg-[var(--surface-container)]"
           >
             <span className="material-symbols-outlined text-xl">
               {theme === 'dark' ? 'light_mode' : 'dark_mode'}
             </span>
           </button>
           
-          <div className="flex flex-col items-right text-right shrink-0">
-             <div className="flex items-center gap-2 justify-end mb-0.5">
-               <span className="font-mono text-[#06A59A] text-[10px] tracking-widest font-bold opacity-80 uppercase">CUSTOMER_</span>
-               <span className="material-symbols-outlined text-[12px] text-[#06A59A]">public</span>
-             </div>
-             <span className="text-[10px] font-bold text-[#06A59A] uppercase tracking-widest animate-pulse flex items-center gap-2 justify-end">
-               <span className="w-1 h-1 rounded-full bg-[#06A59A]"></span> Live Updates
-             </span>
-          </div>
-          <div className="w-12 h-12 rounded-2xl bg-surface-container overflow-hidden border border-[var(--border)] p-0.5 shadow-lg shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-[var(--surface-container)] overflow-hidden border border-[var(--border)] p-0.5 shadow-lg shrink-0">
             <img className="w-full h-full rounded-xl object-cover" alt="User" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAl7HNdRh4m28X12qumcIYi_5JhrRAv62KzeWHVQtiszYtiWSmgayu7ti-_4Gk_O4k6BOPX7wKXJYQz_Vzr7a3jaGV-PI7EVocqgs__PIZdoQVk4nCQ5qANCqGCeMWcOLbv8PS7-lRIWSNl7IwSVunMPPTdRp-rCeq-cpFLkiU9aPCobDwTTNafwpki27dsRCd2UXOPAIf2cZzUwU1VLpcfXP8APhHeOchTBWuAFvCJI7jcZ15xtTwAweVcZfClHvms9hTr1lno78VF"/>
           </div>
         </div>
       </nav>
 
       {/* Sidebar */}
-      <aside className="h-screen w-64 fixed left-0 top-24 bg-surface-container border-r border-[var(--border)] py-8 flex flex-col gap-8 transition-colors duration-500 shadow-xl overflow-hidden z-40">
-        <div>
-          <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-on-surface-variant/40 mb-4">AI Frameworks</p>
-          <nav className="flex flex-col gap-1 px-3">
-            {ERAS.map(era => (
-              <button
-                key={era.id}
-                onClick={() => setActiveFilter(era.id)}
-                className={`group px-3 py-3 rounded-xl flex items-center justify-between transition-all text-left ${
-                  activeFilter === era.id 
-                    ? 'bg-on-surface/5 text-on-surface ring-1 ring-[var(--border)]' 
-                    : 'text-on-surface-variant hover:bg-on-surface/5'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <span className={`material-symbols-outlined text-lg transition-colors ${activeFilter === era.id ? 'opacity-100' : 'opacity-40'}`} style={{ color: activeFilter === era.id ? era.color : 'inherit' }}>{era.icon}</span>
-                  <span className="font-headline text-[11px] font-black uppercase tracking-widest">{era.label}</span>
-                </div>
-                {activeFilter === era.id && (
-                  <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: era.color }}></span>
-                )}
-              </button>
-            ))}
-          </nav>
+      <aside className="h-screen w-64 fixed left-0 top-24 bg-[var(--surface-container)] border-r border-[var(--border)] pt-8 flex flex-col transition-colors duration-500 shadow-xl z-40">
+        <div className="flex-1 overflow-y-auto no-scrollbar pb-8 flex flex-col gap-8">
+          <div>
+            <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/40 mb-4">AI Frameworks</p>
+            <nav className="flex flex-col gap-1 px-3">
+              {ERAS.map(era => (
+                <button
+                  key={era.id}
+                  onClick={() => { setActiveFilter(era.id); setIsOverview(false); }}
+                  className={`group px-3 py-3 rounded-xl flex items-center justify-between transition-all text-left ${
+                    activeFilter === era.id 
+                      ? 'bg-on-surface/5 text-[var(--on-surface)] ring-1 ring-[var(--border)]' 
+                      : 'text-[var(--on-surface-variant)] hover:bg-on-surface/5'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className={`material-symbols-outlined text-lg transition-colors ${activeFilter === era.id ? 'opacity-100' : 'opacity-40'}`} style={{ color: activeFilter === era.id ? era.color : 'inherit' }}>{era.icon}</span>
+                    <span className="font-headline text-[11px] font-black uppercase tracking-widest">{era.label}</span>
+                  </div>
+                  {activeFilter === era.id && (
+                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: era.color }}></span>
+                  )}
+                </button>
+              ))}
+            </nav>
+          </div>
+
+          <div>
+            <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/40 mb-4">Channel ({activeCloud === 'service' ? 'Service' : 'All'})</p>
+            <nav className="flex flex-col gap-1">
+              {CHANNELS.map(channel => (
+                <button
+                  key={channel.id}
+                  onClick={() => { setActiveChannel(channel.id); setIsOverview(false); }}
+                  className={`group px-6 py-2.5 flex items-center gap-4 transition-all text-left ${
+                    activeChannel === channel.id 
+                      ? 'bg-primary-container/10 text-primary-container border-l-4 border-primary-container' 
+                      : 'text-[var(--on-surface-variant)] hover:bg-on-surface/5 border-l-4 border-transparent'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-xl">{channel.icon}</span>
+                  <span className="font-headline text-xs font-bold uppercase tracking-widest">{channel.label}</span>
+                </button>
+              ))}
+            </nav>
+          </div>
         </div>
 
-        <div>
-          <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-on-surface-variant/40 mb-4">Channel ({activeCloud === 'service' ? 'Service' : 'All'})</p>
-          <nav className="flex flex-col gap-1">
-            {CHANNELS.map(channel => (
-              <button
-                key={channel.id}
-                onClick={() => setActiveChannel(channel.id)}
-                className={`group px-6 py-2.5 flex items-center gap-4 transition-all text-left ${
-                  activeChannel === channel.id 
-                    ? 'bg-primary-container/10 text-primary-container border-l-4 border-primary-container' 
-                    : 'text-slate-500 hover:bg-white/5 border-l-4 border-transparent'
-                }`}
-              >
-                <span className="material-symbols-outlined text-xl">{channel.icon}</span>
-                <span className="font-headline text-xs font-bold uppercase tracking-widest">{channel.label}</span>
-              </button>
-            ))}
-          </nav>
-        </div>
-
-        <div className="mt-auto px-6 pb-24">
+        <div className="mt-auto px-6 pb-6">
           <button className="w-full py-4 bg-[#0176D3] text-white font-black rounded-xl shadow-lg shadow-[#0176D3]/20 hover:scale-[1.02] active:scale-95 transition-all uppercase text-[10px] tracking-[0.2em]">
             Deploy Agent
           </button>
@@ -580,24 +575,24 @@ function App() {
 
       {/* Main Content */}
       <main className="ml-64 pt-32 p-12 min-h-screen transition-colors duration-500">
-        {activeCloud !== 'service' ? (
-          /* Placeholder for other clouds */
+        {activeCloud !== 'service' || activeChannel === 'field_service' ? (
+          /* Placeholder for other clouds / unmapped channels */
           <div className="flex flex-col items-center justify-center h-[70vh] text-center animate-in fade-in zoom-in-95 duration-700">
-            <div className="w-32 h-32 rounded-3xl bg-surface-container-low border border-[var(--border)] flex items-center justify-center mb-10 shadow-2xl relative group">
+            <div className="w-32 h-32 rounded-3xl bg-[var(--surface-container-low)] border border-[var(--border)] flex items-center justify-center mb-10 shadow-2xl relative group">
                <div className="absolute inset-0 bg-primary/10 rounded-3xl blur-2xl group-hover:bg-primary/20 transition-all"></div>
-               <span className="material-symbols-outlined text-7xl relative z-10" style={{ color: CLOUDS.find(c => c.id === activeCloud).accent }}>
-                 {CLOUDS.find(c => c.id === activeCloud).icon}
+               <span className="material-symbols-outlined text-7xl relative z-10" style={{ color: activeChannel === 'field_service' ? '#06A59A' : CLOUDS.find(c => c.id === activeCloud).accent }}>
+                 {activeChannel === 'field_service' ? 'build' : CLOUDS.find(c => c.id === activeCloud).icon}
                </span>
             </div>
-            <h2 className="text-6xl font-black text-on-surface tracking-tighter uppercase mb-4 italic">
-              {activeCloud} <span className="text-on-surface-variant/40">Observatory</span>
+            <h2 className="text-6xl font-black text-[var(--on-surface)] tracking-tighter uppercase mb-4 italic">
+              {activeChannel === 'field_service' ? 'Field Service' : activeCloud} <span className="text-[var(--on-surface-variant)]/40">Observatory</span>
             </h2>
             <div className="flex items-center gap-3 justify-center mb-8">
                <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
                <p className="text-sm font-bold uppercase tracking-[0.4em] text-primary">Intelligence Nodes incoming</p>
             </div>
-            <p className="text-on-surface-variant max-w-md mx-auto text-lg leading-relaxed mb-12">
-              We are currently mapping the AI capabilities for the {activeCloud} ecosystem. Check back soon for the full node discovery experience.
+            <p className="text-[var(--on-surface-variant)] max-w-md mx-auto text-lg leading-relaxed mb-12">
+              We are currently mapping the AI capabilities for the {activeChannel === 'field_service' ? 'Field Service' : activeCloud} ecosystem. Check back soon for the full node discovery experience.
             </p>
             <button 
               onClick={() => setActiveCloud('service')}
@@ -606,27 +601,27 @@ function App() {
               Return to Service Cloud
             </button>
           </div>
-        ) : (!activeChannel && activeFilter === 'all') ? (
+        ) : isOverview ? (
           /* Channel Overview Grid (Default Landing) */
           <div className="animate-in fade-in duration-700">
             <header className="mb-12">
-              <h2 className="text-5xl font-black tracking-tighter text-on-surface mb-2 uppercase italic">Service Cloud <span className="text-[#0176D3]">Observatory</span></h2>
-              <p className="text-on-surface-variant text-lg font-medium">AI-powered service delivery across every touchpoint.</p>
+              <h2 className="text-5xl font-black tracking-tighter text-[var(--on-surface)] mb-2 uppercase italic">Service <span className="text-[#0176D3]">Observatory</span></h2>
+              <p className="text-[var(--on-surface-variant)] text-lg font-medium">AI-powered service delivery across every touchpoint.</p>
             </header>
             
             <div className="grid grid-cols-3 gap-8">
               {CHANNELS.map(channel => (
                 <div 
                   key={channel.id}
-                  onClick={() => setActiveChannel(channel.id)}
-                  className="group bg-surface-container-low p-8 rounded-2xl border border-[var(--border)] hover:border-[#0176D3]/30 transition-all duration-500 neon-glow-primary cursor-pointer relative overflow-hidden glass-panel shadow-sm hover:shadow-xl"
+                  onClick={() => { setActiveChannel(channel.id); setIsOverview(false); }}
+                  className="group bg-[var(--surface-container-low)] p-8 rounded-2xl border border-[var(--border)] hover:border-[#0176D3]/30 transition-all duration-500 neon-glow-primary cursor-pointer relative overflow-hidden glass-panel shadow-sm hover:shadow-xl"
                 >
                   <div className="absolute right-0 top-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
                     <span className="material-symbols-outlined text-8xl text-primary-container">{channel.icon}</span>
                   </div>
                   <span className="material-symbols-outlined text-5xl text-primary-container mb-6 block">{channel.icon}</span>
-                  <h3 className="text-2xl font-black text-on-surface mb-2">{channel.label}</h3>
-                  <p className="text-on-surface-variant text-sm mb-8 font-medium">{channel.tagline}</p>
+                  <h3 className="text-2xl font-black text-[var(--on-surface)] mb-2">{channel.label}</h3>
+                  <p className="text-[var(--on-surface-variant)] text-sm mb-8 font-medium">{channel.tagline}</p>
                   
                   <div className="flex gap-3">
                     <div className="px-3 py-1 rounded-full bg-primary-container/20 text-[#a4c9ff] text-[10px] font-bold uppercase">{channel.counts.predictive} Predictive</div>
@@ -643,7 +638,7 @@ function App() {
             <header className="mb-10 flex items-start justify-between">
               <div>
                 <button 
-                  onClick={() => { setActiveChannel(null); setActiveFilter('all'); setHoveredCapability(null); }}
+                  onClick={() => { setActiveChannel(null); setActiveFilter('all'); setHoveredCapability(null); setIsOverview(true); }}
                   className="flex items-center gap-2 text-primary-container hover:text-white transition-colors mb-4 group"
                 >
                   <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">arrow_back</span>
@@ -656,10 +651,10 @@ function App() {
                     </span>
                   </div>
                   <div>
-                     <h2 className="text-4xl font-black tracking-tighter text-white capitalize leading-none">
+                     <h2 className="text-4xl font-black tracking-tighter text-[var(--on-surface)] capitalize leading-none">
                        {activeChannel ? activeChannel.replace('_', ' ') : `${activeFilter} AI Nodes`}
                      </h2>
-                     <p className="text-on-surface-variant text-xs mt-2 font-bold uppercase tracking-widest">{activeChannel ? 'Service Channel' : 'Global Discovery'}</p>
+                     <p className="text-[var(--on-surface-variant)] text-xs mt-2 font-bold uppercase tracking-widest">{activeChannel ? 'Service Channel' : 'Global Discovery'}</p>
                   </div>
                 </div>
                 <div className="flex gap-4 mt-8">
@@ -670,7 +665,7 @@ function App() {
                       className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all flex items-center gap-2 ${
                         activeFilter === e.id 
                           ? 'bg-white text-black shadow-lg scale-105' 
-                          : 'bg-white/5 text-on-surface-variant hover:text-white border border-white/5'
+                          : 'bg-on-surface/5 text-[var(--on-surface-variant)] hover:text-[var(--on-surface)] border border-[var(--border)]'
                       }`}
                     >
                       <span className="material-symbols-outlined text-sm" style={{ color: activeFilter === e.id ? e.color : 'inherit' }}>{e.icon}</span>
@@ -692,18 +687,18 @@ function App() {
                     className={`${cap.featured ? 'col-span-4' : 'col-span-3'} group cursor-pointer transition-all duration-300 transform hover:-translate-y-2`}
                   >
                     <div 
-                      className={`bg-surface-container-low p-6 rounded-2xl border transition-all duration-500 overflow-hidden flex flex-col justify-between h-40 relative group/card`}
+                      className={`bg-[var(--surface-container-low)] p-6 rounded-2xl border transition-all duration-500 overflow-hidden flex flex-col justify-between h-40 relative group/card`}
                       style={{ 
-                        borderColor: hoveredCapability?.id === cap.id ? (ERAS.find(e => e.id === cap.era).color) : 'rgba(255,255,255,0.05)',
+                        borderColor: hoveredCapability?.id === cap.id ? (ERAS.find(e => e.id === cap.era).color) : 'var(--border)',
                         boxShadow: hoveredCapability?.id === cap.id ? `0 0 40px ${ERAS.find(e => e.id === cap.era).color}20` : 'none'
                       }}
                     >
                       <span className="text-4xl font-black leading-none mb-1 transition-transform group-hover/card:scale-110" style={{ color: ERAS.find(e => e.id === cap.era).color }}>{cap.symbol}</span>
                       <div>
-                        <p className="text-xs font-black text-on-surface uppercase tracking-tighter truncate mb-0.5">{cap.name}</p>
+                        <p className="text-xs font-black text-[var(--on-surface)] uppercase tracking-tighter truncate mb-0.5">{cap.name}</p>
                         <div className="flex items-center gap-1.5">
                           <span className="material-symbols-outlined text-[10px]" style={{ color: ERAS.find(e => e.id === cap.era).color }}>{ERAS.find(e => e.id === cap.era).icon}</span>
-                          <p className="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest opacity-60">
+                          <p className="text-[10px] text-[var(--on-surface-variant)] uppercase font-bold tracking-widest opacity-60">
                             {cap.era}
                           </p>
                         </div>
@@ -729,14 +724,14 @@ function App() {
                              <div className="p-2 rounded-lg bg-on-surface/5 border border-[var(--border)]">
                                <span className="material-symbols-outlined text-2xl" style={{ color: ERAS.find(e => e.id === hoveredCapability.era).color }}>{hoveredCapability.icon}</span>
                              </div>
-                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-on-surface/5 border border-[var(--border)] text-on-surface-variant">
+                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-on-surface/5 border border-[var(--border)] text-[var(--on-surface-variant)]">
                                {hoveredCapability.era} AI Node
                              </span>
                           </div>
-                          <h3 className="text-4xl font-black tracking-tighter text-on-surface mb-2 leading-tight">
+                          <h3 className="text-4xl font-black tracking-tighter text-[var(--on-surface)] mb-2 leading-tight">
                             {hoveredCapability.fullName.split(' — ')[0]}
                           </h3>
-                          <p className="text-on-surface-variant text-sm font-medium leading-relaxed max-w-sm">
+                          <p className="text-[var(--on-surface-variant)] text-sm font-medium leading-relaxed max-w-sm">
                             {hoveredCapability.description}
                           </p>
                         </div>
@@ -749,10 +744,10 @@ function App() {
                             <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-on-surface/5"></div>
                             {hoveredCapability.storyline.map((step, idx) => (
                               <div key={idx} className="flex gap-6 items-start relative">
-                                <div className="w-6 h-6 rounded-full bg-background border-2 border-[var(--border)] flex items-center justify-center relative z-10 shrink-0 mt-1 transition-all group-hover/panel:border-primary">
-                                  <span className="text-[10px] font-black text-on-surface">{idx + 1}</span>
+                                <div className="w-6 h-6 rounded-full bg-surface border-2 border-[var(--border)] flex items-center justify-center relative z-10 shrink-0 mt-1 transition-all group-hover/panel:border-primary">
+                                  <span className="text-[10px] font-black text-[var(--on-surface)]">{idx + 1}</span>
                                 </div>
-                                <p className="text-sm text-on-surface-variant/80 font-medium pt-1 hover:text-on-surface transition-colors">{step}</p>
+                                <p className="text-sm text-[var(--on-surface)] font-medium pt-1 hover:text-primary transition-colors">{step}</p>
                               </div>
                             ))}
                           </div>
@@ -763,7 +758,7 @@ function App() {
                              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0176D3]/60 mb-3 italic">Business Value</h4>
                              <ul className="space-y-2">
                                {hoveredCapability.useCases.map((useCase, idx) => (
-                                 <li key={idx} className="text-xs text-on-surface-variant flex items-start gap-2">
+                                 <li key={idx} className="text-xs text-[var(--on-surface-variant)] flex items-start gap-2">
                                    <span className="text-[#0176D3] mt-0.5">•</span> {useCase}
                                  </li>
                                ))}
@@ -774,8 +769,8 @@ function App() {
                              <div className="space-y-2">
                                {Object.entries(hoveredCapability.specs).map(([key, val], idx) => (
                                  <div key={idx} className="flex flex-col">
-                                   <span className="text-[8px] uppercase tracking-widest text-on-surface-variant/40 font-bold">{key}</span>
-                                   <span className="text-xs text-on-surface/80 font-medium">{val}</span>
+                                   <span className="text-[8px] uppercase tracking-widest text-[var(--on-surface-variant)]/40 font-bold">{key}</span>
+                                   <span className="text-xs text-[var(--on-surface)]/80 font-medium">{val}</span>
                                  </div>
                                ))}
                              </div>
@@ -787,7 +782,7 @@ function App() {
                         <button className="flex-1 py-3 bg-[#0176D3]/10 border border-[#0176D3]/30 text-[#0176D3] font-bold rounded-xl text-[10px] uppercase tracking-widest hover:bg-[#0176D3] hover:text-white transition-all shadow-lg hover:shadow-[#0176D3]/20">
                           View Documentation
                         </button>
-                        <button className="flex-1 py-3 bg-on-surface/5 border border-[var(--border)] text-on-surface font-bold rounded-xl text-[10px] uppercase tracking-widest hover:bg-on-surface/10 transition-all">
+                        <button className="flex-1 py-3 bg-on-surface/5 border border-[var(--border)] text-[var(--on-surface)] font-bold rounded-xl text-[10px] uppercase tracking-widest hover:bg-on-surface/10 transition-all">
                           Demo Studio
                         </button>
                       </div>
@@ -815,7 +810,7 @@ function App() {
           onClick={() => setSelectedCapability(null)}
         >
           <div 
-            className="bg-surface-container-low max-w-4xl w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 animate-in zoom-in-95 duration-300"
+            className="bg-[var(--surface-container-low)] max-w-4xl w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 animate-in zoom-in-95 duration-300"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex h-[500px]">
@@ -828,31 +823,31 @@ function App() {
                   </div>
                 </div>
               </div>
-              <div className="w-2/3 p-12 flex flex-col justify-between relative">
+              <div className="w-2/3 p-12 flex flex-col justify-between relative bg-[var(--surface)] rounded-r-2xl border-l border-[var(--border)]">
                 <button 
-                  className="absolute top-8 right-8 text-on-surface-variant hover:text-white transition-colors p-2 rounded-full hover:bg-white/5"
+                  className="absolute top-8 right-8 text-[var(--on-surface-variant)] hover:text-[var(--on-surface)] transition-colors p-2 rounded-full hover:bg-[var(--on-surface)]/5"
                   onClick={() => setSelectedCapability(null)}
                 >
                   <span className="material-symbols-outlined">close</span>
                 </button>
                 <div>
-                  <p className="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-4">Functional Description</p>
-                  <h5 className="text-3xl font-bold text-white mb-6 leading-tight">{selectedCapability.fullName.split(' — ')[1] || 'Transforming service with AI intelligence.'}</h5>
-                  <p className="text-on-surface-variant leading-relaxed mb-8">
+                  <p className="text-[var(--on-surface-variant)] text-xs font-bold uppercase tracking-widest mb-4">Functional Description</p>
+                  <h5 className="text-3xl font-bold text-[var(--on-surface)] mb-6 leading-tight">{selectedCapability.fullName.split(' — ')[1] || 'Transforming service with AI intelligence.'}</h5>
+                  <p className="text-[var(--on-surface-variant)] leading-relaxed mb-8">
                     {selectedCapability.description}
                   </p>
                   <div className="grid grid-cols-2 gap-4">
                     {Object.entries(selectedCapability.specs).map(([key, value]) => (
-                      <div key={key} className="p-4 bg-surface-container rounded-xl">
-                        <p className="text-[10px] text-primary-container font-bold uppercase mb-1">{key.replace('_', ' ')}</p>
-                        <p className="text-white text-sm">{value}</p>
+                      <div key={key} className="p-4 bg-[var(--surface-container)] rounded-xl border border-[var(--border)]">
+                        <p className="text-[10px] text-primary-container font-black uppercase tracking-widest mb-1 opacity-80">{key.replace('_', ' ')}</p>
+                        <p className="text-[var(--on-surface)] font-bold text-sm">{value}</p>
                       </div>
                     ))}
                   </div>
                 </div>
                 <div className="flex gap-4">
-                  <button className="px-8 py-3 bg-primary-container text-white font-bold rounded-xl active:scale-95 transition-transform uppercase text-xs tracking-widest">Config Interface</button>
-                  <button className="px-8 py-3 bg-white/5 text-white font-bold rounded-xl hover:bg-white/10 active:scale-95 transition-transform uppercase text-xs tracking-widest">View Logs</button>
+                  <button className="flex-1 py-4 bg-primary-container text-white font-black rounded-xl active:scale-95 transition-transform uppercase text-[10px] tracking-widest shadow-lg shadow-primary-container/20">Config Interface</button>
+                  <button className="flex-1 py-4 bg-[var(--on-surface)]/5 text-[var(--on-surface)] font-black rounded-xl hover:bg-[var(--on-surface)]/10 border border-[var(--border)] active:scale-95 transition-transform uppercase text-[10px] tracking-widest">View Logs</button>
                 </div>
               </div>
             </div>
