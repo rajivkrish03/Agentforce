@@ -9,9 +9,9 @@ const CLOUDS = [
 
 const CHANNELS = [
   { id: 'cases', label: 'Cases', icon: 'description', tagline: 'Unified case lifecycle', counts: { predictive: 5, generative: 5, agentic: 2 } },
-  { id: 'messaging', label: 'Messaging', icon: 'chat', tagline: 'Real-time conversational AI', counts: { predictive: 2, generative: 4, agentic: 2 } },
+  { id: 'messaging', label: 'Messaging', icon: 'chat', tagline: 'Real-time conversational AI', counts: { predictive: 3, generative: 5, agentic: 3 } },
   { id: 'voice', label: 'Voice', icon: 'phone', tagline: 'AI-infused voice interactions', counts: { predictive: 3, generative: 3, agentic: 1 } },
-  { id: 'email', label: 'Email', icon: 'mail', tagline: 'Intelligent automated email', counts: { predictive: 2, generative: 4, agentic: 1 } },
+  { id: 'email', label: 'Email', icon: 'mail', tagline: 'Intelligent automated email', counts: { predictive: 1, generative: 3, agentic: 1 } },
   { id: 'field_service', label: 'Field Service', icon: 'build', tagline: 'Mobile workforce intelligence', counts: { predictive: 2, generative: 2, agentic: 2 } },
   { id: 'knowledge', label: 'Knowledge', icon: 'book', tagline: 'Self-service grounding', counts: { predictive: 1, generative: 3, agentic: 1 } },
 ];
@@ -328,7 +328,7 @@ const CAPABILITIES = [
     name: 'Next Best Action',
     fullName: 'Einstein Next Best Action — predictive recommendations for field reps',
     era: 'predictive',
-    channels: ['field_service'],
+    channels: ['field_service', 'cases', 'messaging', 'voice'],
     description: 'Recommends optimal up-sell and cross-sell opportunities at the moment of job completion.',
     storyline: ['Technician finishes repair', 'Einstein suggests "Battery Upgrade"', 'Technician adds to work order'],
     useCases: ['Increasing field revenue', 'Proactive maintenance'],
@@ -343,7 +343,7 @@ const CAPABILITIES = [
     name: 'Recommend Builder',
     fullName: 'Einstein Recommendation Builder — custom predictions for Field Service',
     era: 'predictive',
-    channels: ['field_service'],
+    channels: ['field_service', 'cases', 'messaging', 'voice'],
     description: 'Allows builds of custom recommendation models to predict parts, skills, or objects for field jobs.',
     storyline: ['Historical work orders analyzed', 'Einstein predicts "Skill: HVAC Senior"', 'Dispatcher assigns correctly'],
     useCases: ['Optimizing first-time fix rates', 'Resource allocation'],
@@ -409,6 +409,53 @@ const CAPABILITIES = [
     storyline: ['Clunky article text highlighted', 'Einstein rewrites for clarity', 'Manager publishes professional version'],
     useCases: ['Faster article lifecycle', 'Better readability'],
     specs: { feature: 'Tone & Style control', tool: 'Knowledge Console' },
+    colorClass: 'secondary-container',
+    glowClass: 'neon-glow-secondary',
+    icon: 'auto_awesome'
+  },
+  // MESSAGING EXTRAS
+  {
+    id: 'rr',
+    symbol: 'Rr',
+    name: 'Reply Recs',
+    fullName: 'Reply Recommendations — AI-suggested chat replies for agents',
+    era: 'predictive',
+    channels: ['messaging'],
+    description: 'Suggests pre-trained reply recommendations to agents during live chat sessions to speed up response times.',
+    storyline: ['Customer sends message', 'Einstein analyzes past transcripts', 'Agent selects best recommended reply'],
+    useCases: ['Faster agent responses', 'Consistent messaging quality'],
+    specs: { engine: 'NLU', minimum: '1,000 closed chat transcripts' },
+    colorClass: 'primary-container',
+    glowClass: 'neon-glow-primary',
+    icon: 'analytics'
+  },
+  {
+    id: 'rtt',
+    symbol: 'Rt',
+    name: 'Real-Time Trans',
+    fullName: 'Real-Time Translations — live multilingual messaging',
+    era: 'generative',
+    channels: ['messaging'],
+    description: 'Translates customer and agent messages in real-time during messaging conversations, enabling cross-language support.',
+    storyline: ['Customer messages in Spanish', 'GenAI translates to agent\'s language', 'Agent replies; customer sees translation'],
+    useCases: ['Global customer support', 'Eliminating language barriers'],
+    specs: { type: 'Real-time translation', channel: 'Messaging' },
+    colorClass: 'secondary-container',
+    glowClass: 'neon-glow-secondary',
+    icon: 'auto_awesome'
+  },
+  // KNOWLEDGE / CASE EXTRAS
+  {
+    id: 'sag',
+    symbol: 'Sg',
+    name: 'AI Grounding',
+    fullName: 'Service AI Grounding — context grounding for generative AI',
+    era: 'generative',
+    channels: ['knowledge', 'cases'],
+    description: 'Grounds generative AI responses in verified Salesforce Knowledge articles and CRM data to ensure accurate, trusted outputs.',
+    storyline: ['Agent or bot asks a question', 'Einstein Trust Layer retrieves grounding data', 'GenAI generates a grounded, accurate response'],
+    useCases: ['Trusted AI outputs', 'Reducing hallucinations'],
+    specs: { tech: 'RAG + Einstein Trust Layer', source: 'Knowledge + CRM' },
     colorClass: 'secondary-container',
     glowClass: 'neon-glow-secondary',
     icon: 'auto_awesome'
@@ -663,8 +710,8 @@ function App() {
                       key={e.id}
                       onClick={() => setActiveFilter(e.id)}
                       className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all flex items-center gap-2 ${
-                        activeFilter === e.id 
-                          ? 'bg-white text-black shadow-lg scale-105' 
+                        activeFilter === e.id
+                          ? 'bg-white text-black shadow-lg scale-105'
                           : 'bg-on-surface/5 text-[var(--on-surface-variant)] hover:text-[var(--on-surface)] border border-[var(--border)]'
                       }`}
                     >
