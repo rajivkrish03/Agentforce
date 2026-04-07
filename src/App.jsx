@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { AGENTFORCE_TILES } from './AgentforcecapabilitiesData';
+import { CAPABILITIES as LATEST_CAPABILITIES } from './ServicecapabilitiesData';
 
 const CLOUDS = [
   { id: 'service', label: 'Service', accent: '#06A59A', icon: 'headset_mic' },
@@ -16,452 +18,6 @@ const CHANNELS = [
   { id: 'knowledge', label: 'Knowledge', icon: 'book', tagline: 'Self-service grounding', counts: { predictive: 1, generative: 3, agentic: 1 } },
 ];
 
-const CAPABILITIES = [
-  // CASES
-  {
-    id: 'ecc',
-    symbol: 'Ec',
-    name: 'Case Classification',
-    fullName: 'Einstein Case Classification — predicts field values based on historical data',
-    era: 'predictive',
-    channels: ['cases'],
-    description: 'Predicts picklist and checkbox field values on new cases based on past cases to reduce manual entry.',
-    storyline: ['Case arrives', 'Einstein analyzes subject/description', 'Fields are predicted automatically'],
-    useCases: ['Faster case triaging', 'Improved data quality'],
-    specs: { model: 'AutoML', target: 'Case Fields' },
-    colorClass: 'primary-container',
-    glowClass: 'neon-glow-primary',
-    icon: 'analytics'
-  },
-  {
-    id: 'ecr',
-    symbol: 'Er',
-    name: 'Case Routing',
-    fullName: 'Einstein Case Routing — routes cases based on predicted values',
-    era: 'predictive',
-    channels: ['cases'],
-    description: 'Uses predicted field values to ensure cases reach the right agent or queue immediately.',
-    storyline: ['Einstein predicts case category', 'Omni-Channel uses prediction to find expert', 'Case is pushed to agent'],
-    useCases: ['Reducing transfers', 'Faster first response'],
-    specs: { logic: 'Omni-Channel', trigger: 'Classification' },
-    colorClass: 'primary-container',
-    glowClass: 'neon-glow-primary',
-    icon: 'analytics'
-  },
-  {
-    id: 'ecw',
-    symbol: 'Ew',
-    name: 'Case Wrap-Up',
-    fullName: 'Einstein Case Wrap-Up — predicts closing values for cases',
-    era: 'predictive',
-    channels: ['cases'],
-    description: 'Suggests values for fields like "Resolution" or "Root Cause" when an agent is closing a case.',
-    storyline: ['Agent begins closing case', 'Einstein suggests wrap-up values', 'Agent confirms and saves'],
-    useCases: ['Streamlined closing', 'Better trend reporting'],
-    specs: { trigger: 'Status: Closed', feedback: 'Real-time' },
-    colorClass: 'primary-container',
-    glowClass: 'neon-glow-primary',
-    icon: 'analytics'
-  },
-  {
-    id: 'ear',
-    symbol: 'Ar',
-    name: 'Article Recs',
-    fullName: 'Einstein Article Recommendations — surfaces relevant knowledge articles',
-    era: 'predictive',
-    channels: ['cases', 'messaging', 'voice', 'email', 'knowledge'],
-    description: 'Automatically finds and recommends the best knowledge articles to resolve cases faster.',
-    storyline: ['Agent views case', 'Einstein searches knowledge base', 'Top articles are surfaced in sidebar'],
-    useCases: ['Agent enablement', 'Consistency in support'],
-    specs: { tech: 'Vectorized Search', accuracy: 'High' },
-    colorClass: 'primary-container',
-    glowClass: 'neon-glow-primary',
-    icon: 'analytics'
-  },
-  {
-    id: 'ecm',
-    symbol: 'Em',
-    name: 'Conv Mining',
-    fullName: 'Einstein Conversation Mining — extracts intents from logs',
-    era: 'predictive',
-    channels: ['cases', 'messaging', 'voice'],
-    description: 'Analyzes case and chat transcripts to uncover common customer problems and automation opportunities.',
-    storyline: ['Manager selects transcripts', 'Einstein extracts recurring patterns', 'New bot intents are identified'],
-    useCases: ['Data-driven bot strategy', 'Process optimization'],
-    specs: { insight: 'Unsupervised ML', output: 'Intent Map' },
-    colorClass: 'primary-container',
-    glowClass: 'neon-glow-primary',
-    icon: 'analytics'
-  },
-  {
-    id: 'ews',
-    symbol: 'Ws',
-    name: 'Work Summaries',
-    fullName: 'Einstein Work Summaries — generates post-interaction summaries',
-    era: 'generative',
-    channels: ['cases', 'messaging', 'voice', 'field_service'],
-    description: 'Automatically drafts case summaries, issues, and resolutions based on interaction history.',
-    storyline: ['Interaction ends', 'Einstein drafts the wrap-up summary', 'Agent saves to record'],
-    useCases: ['Reduced after-call work', 'Standardized logging'],
-    specs: { model: 'LLM Generative', speed: 'Near-instant' },
-    colorClass: 'secondary-container',
-    glowClass: 'neon-glow-secondary',
-    icon: 'auto_awesome'
-  },
-  {
-    id: 'esc',
-    symbol: 'Gs',
-    name: 'Enhanced Summaries',
-    fullName: 'Enhanced Summaries (Case) — summarized context for long records',
-    era: 'generative',
-    channels: ['cases'],
-    description: 'Provides agents with a concise overview of complex, long-running cases they are inheriting.',
-    storyline: ['Agent opens old case', 'GenAI summarizes 20+ emails/notes', 'Agent is briefed in seconds'],
-    useCases: ['Faster case transfers', 'Manager escalation reviews'],
-    specs: { volume: 'Multi-document', length: 'Concise' },
-    colorClass: 'secondary-container',
-    glowClass: 'neon-glow-secondary',
-    icon: 'auto_awesome'
-  },
-  {
-    id: 'ekc',
-    symbol: 'Kc',
-    name: 'Knowledge Creation',
-    fullName: 'Einstein Knowledge Creation — drafts articles from cases',
-    era: 'generative',
-    channels: ['cases', 'messaging', 'email', 'knowledge'],
-    description: 'Drafts articles directly from resolved cases to grow the company knowledge base organically.',
-    storyline: ['Success! Case resolved', 'Einstein drafts a "How-to"', 'Article is reviewed for publishing'],
-    useCases: ['Closing knowledge gaps', 'Crowdsourced expertise'],
-    specs: { workflow: 'Integrated Review', source: 'Case + Conversations' },
-    colorClass: 'secondary-container',
-    glowClass: 'neon-glow-secondary',
-    icon: 'auto_awesome'
-  },
-  {
-    id: 'esre',
-    symbol: 'Sr',
-    name: 'Service Replies',
-    fullName: 'Einstein Service Replies — LLM-generated email/message drafts',
-    era: 'generative',
-    channels: ['cases', 'messaging', 'email'],
-    description: 'Generates personalized, grounded drafts for agents to use when replying to customers.',
-    storyline: ['Customer sends query', 'Einstein drafts perfect response', 'Agent clicks send'],
-    useCases: ['Speeding up replies', 'Consistent brand voice'],
-    specs: { base: 'Knowledge Articles', grounding: 'CRM Data' },
-    colorClass: 'secondary-container',
-    glowClass: 'neon-glow-secondary',
-    icon: 'auto_awesome'
-  },
-  {
-    id: 'esa',
-    symbol: 'Sa',
-    name: 'Search Answers',
-    fullName: 'Einstein Search Answers — direct answers from knowledge search',
-    era: 'generative',
-    channels: ['cases', 'knowledge'],
-    description: 'Provides a direct, generated answer at the top of search results instead of just listing links.',
-    storyline: ['Agent searches "Policy"', 'Einstein reads top article', 'Einstein generates summary answer'],
-    useCases: ['Faster information retrieval', 'Reduced reading time'],
-    specs: { tech: 'RAG', trust: 'Einstein Trust Layer' },
-    colorClass: 'secondary-container',
-    glowClass: 'neon-glow-secondary',
-    icon: 'auto_awesome'
-  },
-  {
-    id: 'asa',
-    symbol: 'Aa',
-    name: 'Svc Assistant',
-    fullName: 'Agentforce Service Assistant — co-pilot experience for service reps',
-    era: 'agentic',
-    channels: ['cases', 'messaging'],
-    description: 'An intelligent companion in the Service Console that plans actions and assists agents in real-time.',
-    storyline: ['Agent asks "Can you help?"', 'Assistant plans investigation', 'Assistant suggests deep actions'],
-    useCases: ['Expert guidance for all agents', 'Workflow automation'],
-    specs: { engine: 'Atlas Reasoning', interface: 'Sidepanel' },
-    colorClass: 'tertiary-container',
-    glowClass: 'neon-glow-tertiary',
-    icon: 'memory'
-  },
-  {
-    id: 'asp',
-    symbol: 'Ap',
-    name: 'Service Planner',
-    fullName: 'Agentforce Service Planner — autonomous planning for complex service tasks',
-    era: 'agentic',
-    channels: ['cases'],
-    description: 'The reasoning engine that breaks down high-level service goals into granular steps.',
-    storyline: ['Complex goal identified', 'Planner maps dependencies', 'Planner coordinates execution'],
-    useCases: ['Managing multi-step resolutions', 'Coordination of CRM tasks'],
-    specs: { tech: 'Dynamic Reasoning', outcome: 'Goal-oriented' },
-    colorClass: 'tertiary-container',
-    glowClass: 'neon-glow-tertiary',
-    icon: 'memory'
-  },
-  // MESSAGING
-  {
-    id: 'ebots',
-    symbol: 'Eb',
-    name: 'Einstein Bots',
-    fullName: 'Einstein Bots — rule/ML based conversational bots',
-    era: 'predictive',
-    channels: ['messaging'],
-    description: 'Intelligent chatbots that automate common tasks and deflect basic queries via messaging.',
-    storyline: ['Customer types "Hello"', 'Bot identifies intent', 'Bot executes automated flow'],
-    useCases: ['24/7 basic support', 'Handling high volumes'],
-    specs: { engine: 'NLU', tools: 'Flow Builder' },
-    colorClass: 'primary-container',
-    glowClass: 'neon-glow-primary',
-    icon: 'analytics'
-  },
-  {
-    id: 'cs',
-    symbol: 'Cs',
-    name: 'Conv Summaries',
-    fullName: 'Conversation Summaries — real-time interaction summaries',
-    era: 'generative',
-    channels: ['messaging', 'voice'],
-    description: 'Generates concise summaries of ongoing or completed conversations for faster context.',
-    storyline: ['Chat reaches 50+ lines', 'Einstein creates contextual snippet', 'New agent reads it in 2 seconds'],
-    useCases: ['Improved hand-offs', 'Supervisor monitoring'],
-    specs: { latency: 'Real-time', precision: 'Detailed' },
-    colorClass: 'secondary-container',
-    glowClass: 'neon-glow-secondary',
-    icon: 'auto_awesome'
-  },
-  {
-    id: 'cc',
-    symbol: 'Cc',
-    name: 'Conv Catch-Up',
-    fullName: 'Conversation Catch-Up — brief for agents joining a chat',
-    era: 'generative',
-    channels: ['messaging', 'voice'],
-    description: 'Provides a "catch-up" summary specifically for agents being transferred into a live chat.',
-    storyline: ['Agent 1 transfers chat', 'Agent 2 gets "Catch-up" alert', 'Agent 2 responds with full context'],
-    useCases: ['Eliminating repetitive questions', 'Seamless transfers'],
-    specs: { trigger: 'Transfer event', speed: 'Instant' },
-    colorClass: 'secondary-container',
-    glowClass: 'neon-glow-secondary',
-    icon: 'auto_awesome'
-  },
-  {
-    id: 'asa_m',
-    symbol: 'As',
-    name: 'Service Agent',
-    fullName: 'Agentforce Service Agent — autonomous conversational agent',
-    era: 'agentic',
-    channels: ['messaging', 'email', 'knowledge'],
-    description: 'Fully autonomous AI agent that manages entire customer interactions across messaging channels.',
-    storyline: ['Customer asks for refund', 'Agent reasons over policy', 'Agent initiates refund securely'],
-    useCases: ['End-to-end automation', 'Scaling without hiring'],
-    specs: { logic: 'Atlas Engine', safety: 'Einstein Trust Layer' },
-    colorClass: 'tertiary-container',
-    glowClass: 'neon-glow-tertiary',
-    icon: 'memory'
-  },
-  {
-    id: 'psss',
-    symbol: 'Ps',
-    name: 'Proactive Svc',
-    fullName: 'Proactive Service for Self-Service — anticipatory customer assistance',
-    era: 'agentic',
-    channels: ['messaging'],
-    description: 'Initiates self-service help proactively based on business signals (e.g., shipment delay).',
-    storyline: ['Event: Item out of stock', 'Agent triggers messaging outreach', 'Customer resolves via Bot'],
-    useCases: ['Reducing inbound inquiries', 'Improving CSAT'],
-    specs: { trigger: 'Data Cloud Signals', outreach: 'Digital' },
-    colorClass: 'tertiary-container',
-    glowClass: 'neon-glow-tertiary',
-    icon: 'memory'
-  },
-  // VOICE
-  {
-    id: 'cis',
-    symbol: 'Ci',
-    name: 'Conv Intelligence',
-    fullName: 'Conversation Intelligence Service (Pilot) — predictive voice insights',
-    era: 'predictive',
-    channels: ['voice'],
-    description: 'Finds key moments, action items, and trends in voice call transcripts.',
-    storyline: ['Call recorded & transcribed', 'Einstein finds "Cancellation" trend', 'Manager adjusts policy'],
-    useCases: ['Quality assurance automation', 'Coaching reps'],
-    specs: { status: 'Pilot', tech: 'Audio processing' },
-    colorClass: 'primary-container',
-    glowClass: 'neon-glow-primary',
-    icon: 'analytics'
-  },
-  {
-    id: 'av',
-    symbol: 'Av',
-    name: 'Agentforce Voice',
-    fullName: 'Agentforce Voice — AI-driven voice conversation handling',
-    era: 'agentic',
-    channels: ['voice'],
-    description: 'Enables autonomous AI to conduct voice-based customer support with natural language understanding.',
-    storyline: ['Phone rings', 'Vocal agent answers fluently', 'Task resolved via voice command'],
-    useCases: ['High-scale phone support', 'Personalized IVR'],
-    specs: { tech: 'VoiceBot', NLP: 'Deep Learning' },
-    colorClass: 'tertiary-container',
-    glowClass: 'neon-glow-tertiary',
-    icon: 'memory'
-  },
-  // EMAIL
-  {
-    id: 'eet',
-    symbol: 'Et',
-    name: 'Email Templates',
-    fullName: 'Einstein Email Templates — gen-AI template generation',
-    era: 'generative',
-    channels: ['email'],
-    description: 'Helps admins generate beautiful, context-relevant email templates in seconds.',
-    storyline: ['Admin needs "Renewal" template', 'Einstein drafts HTML & text', 'Template deployed across org'],
-    useCases: ['Faster setup', 'Better formatting'],
-    specs: { type: 'Content creation', grounding: 'Org Metadata' },
-    colorClass: 'secondary-container',
-    glowClass: 'neon-glow-secondary',
-    icon: 'auto_awesome'
-  },
-  // FIELD SERVICE
-  {
-    id: 'nba',
-    symbol: 'Nb',
-    name: 'Next Best Action',
-    fullName: 'Einstein Next Best Action — predictive recommendations for field reps',
-    era: 'predictive',
-    channels: ['field_service', 'cases', 'messaging', 'voice'],
-    description: 'Recommends optimal up-sell and cross-sell opportunities at the moment of job completion.',
-    storyline: ['Technician finishes repair', 'Einstein suggests "Battery Upgrade"', 'Technician adds to work order'],
-    useCases: ['Increasing field revenue', 'Proactive maintenance'],
-    specs: { tech: 'Recommendation Engine', UI: 'App & Console' },
-    colorClass: 'primary-container',
-    glowClass: 'neon-glow-primary',
-    icon: 'analytics'
-  },
-  {
-    id: 'erb',
-    symbol: 'Rb',
-    name: 'Recommend Builder',
-    fullName: 'Einstein Recommendation Builder — custom predictions for Field Service',
-    era: 'predictive',
-    channels: ['field_service', 'cases', 'messaging', 'voice'],
-    description: 'Allows builds of custom recommendation models to predict parts, skills, or objects for field jobs.',
-    storyline: ['Historical work orders analyzed', 'Einstein predicts "Skill: HVAC Senior"', 'Dispatcher assigns correctly'],
-    useCases: ['Optimizing first-time fix rates', 'Resource allocation'],
-    specs: { tool: 'Declarative Builder', target: 'Any Standard Object' },
-    colorClass: 'primary-container',
-    glowClass: 'neon-glow-primary',
-    icon: 'analytics'
-  },
-  {
-    id: 'pwb',
-    symbol: 'Pb',
-    name: 'Pre-Work Brief',
-    fullName: 'Pre-Work Brief (GenAI) — summarized brief for field technicians',
-    era: 'generative',
-    channels: ['field_service'],
-    description: 'Gathers all customer history and asset info into a short, easy-to-read brief for a mobile technician.',
-    storyline: ['Technician arrives on site', 'Opens mobile phone', 'GenAI gives 3-point summary of the asset history'],
-    useCases: ['Better prepared technicians', 'Enhanced customer experience'],
-    specs: { output: 'Mobile Optimized', source: 'Asset & Case History' },
-    colorClass: 'secondary-container',
-    glowClass: 'neon-glow-secondary',
-    icon: 'auto_awesome'
-  },
-  {
-    id: 'afsa',
-    symbol: 'Af',
-    name: 'FS Agent',
-    fullName: 'Agentforce Field Service Agent — autonomous help for field crews',
-    era: 'agentic',
-    channels: ['field_service'],
-    description: 'An autonomous agent that manages technician questions and administrative field tasks.',
-    storyline: ['Technician asks "How many bolts?"', 'Agent checks PDF manual', 'Agent supplies specs instantly'],
-    useCases: ['Mobile self-sufficiency', 'Reduced back-office calls'],
-    specs: { tech: 'Retrieval Augmented Plan', UI: 'FSL Mobile App' },
-    colorClass: 'tertiary-container',
-    glowClass: 'neon-glow-tertiary',
-    icon: 'memory'
-  },
-  {
-    id: 'asa_sched',
-    symbol: 'As',
-    name: 'Scheduling Agent',
-    fullName: 'Agentforce Scheduling Agent — autonomous appointment management',
-    era: 'agentic',
-    channels: ['field_service'],
-    description: 'Manages complex rescheduling and scheduling tasks autonomously for customers.',
-    storyline: ['Customer texts "Can\'t make it"', 'Agent finds new slot', 'Agent updates job in FSL'],
-    useCases: ['Appointment flexibility', 'Dispatcher relief'],
-    specs: { logic: 'Optimization Engine', flow: 'Conversational' },
-    colorClass: 'tertiary-container',
-    glowClass: 'neon-glow-tertiary',
-    icon: 'memory'
-  },
-  // KNOWLEDGE
-  {
-    id: 'eke',
-    symbol: 'Ke',
-    name: 'Knowledge Edits',
-    fullName: 'Einstein Knowledge Edits — gen-AI assisted editing',
-    era: 'generative',
-    channels: ['knowledge'],
-    description: 'Helps knowledge managers rewrite, shorten, or change the tone of existing articles.',
-    storyline: ['Clunky article text highlighted', 'Einstein rewrites for clarity', 'Manager publishes professional version'],
-    useCases: ['Faster article lifecycle', 'Better readability'],
-    specs: { feature: 'Tone & Style control', tool: 'Knowledge Console' },
-    colorClass: 'secondary-container',
-    glowClass: 'neon-glow-secondary',
-    icon: 'auto_awesome'
-  },
-  // MESSAGING EXTRAS
-  {
-    id: 'rr',
-    symbol: 'Rr',
-    name: 'Reply Recs',
-    fullName: 'Reply Recommendations — AI-suggested chat replies for agents',
-    era: 'predictive',
-    channels: ['messaging'],
-    description: 'Suggests pre-trained reply recommendations to agents during live chat sessions to speed up response times.',
-    storyline: ['Customer sends message', 'Einstein analyzes past transcripts', 'Agent selects best recommended reply'],
-    useCases: ['Faster agent responses', 'Consistent messaging quality'],
-    specs: { engine: 'NLU', minimum: '1,000 closed chat transcripts' },
-    colorClass: 'primary-container',
-    glowClass: 'neon-glow-primary',
-    icon: 'analytics'
-  },
-  {
-    id: 'rtt',
-    symbol: 'Rt',
-    name: 'Real-Time Trans',
-    fullName: 'Real-Time Translations — live multilingual messaging',
-    era: 'generative',
-    channels: ['messaging'],
-    description: 'Translates customer and agent messages in real-time during messaging conversations, enabling cross-language support.',
-    storyline: ['Customer messages in Spanish', 'GenAI translates to agent\'s language', 'Agent replies; customer sees translation'],
-    useCases: ['Global customer support', 'Eliminating language barriers'],
-    specs: { type: 'Real-time translation', channel: 'Messaging' },
-    colorClass: 'secondary-container',
-    glowClass: 'neon-glow-secondary',
-    icon: 'auto_awesome'
-  },
-  // KNOWLEDGE / CASE EXTRAS
-  {
-    id: 'sag',
-    symbol: 'Sg',
-    name: 'AI Grounding',
-    fullName: 'Service AI Grounding — context grounding for generative AI',
-    era: 'generative',
-    channels: ['knowledge', 'cases'],
-    description: 'Grounds generative AI responses in verified Salesforce Knowledge articles and CRM data to ensure accurate, trusted outputs.',
-    storyline: ['Agent or bot asks a question', 'Einstein Trust Layer retrieves grounding data', 'GenAI generates a grounded, accurate response'],
-    useCases: ['Trusted AI outputs', 'Reducing hallucinations'],
-    specs: { tech: 'RAG + Einstein Trust Layer', source: 'Knowledge + CRM' },
-    colorClass: 'secondary-container',
-    glowClass: 'neon-glow-secondary',
-    icon: 'auto_awesome'
-  },
-];
-
 const ERAS = [
   { id: 'all', label: 'All', icon: 'grid_view', color: '#FFFFFF' },
   { id: 'predictive', label: 'Predictive', icon: 'analytics', color: '#0176D3' },
@@ -473,6 +29,7 @@ function App() {
   const [activeCloud, setActiveCloud] = useState('service');
   const [activeChannel, setActiveChannel] = useState(null);
   const [activeFilter, setActiveFilter] = useState('all');
+  const [activeAgentforceTile, setActiveAgentforceTile] = useState(null);
   const [selectedCapability, setSelectedCapability] = useState(null);
   const [hoveredCapability, setHoveredCapability] = useState(null);
   const [theme, setTheme] = useState('dark');
@@ -490,7 +47,43 @@ function App() {
     }
   }, [selectedCapability]);
 
-  const filteredCapabilities = CAPABILITIES.filter(c => {
+  const channelCounts = LATEST_CAPABILITIES.reduce((acc, capability) => {
+    for (const channel of capability.channels) {
+      if (!acc[channel]) {
+        acc[channel] = { predictive: 0, generative: 0, agentic: 0 };
+      }
+
+      acc[channel][capability.era] += 1;
+    }
+
+    return acc;
+  }, {});
+
+  const latestChannels = CHANNELS.map(channel => ({
+    ...channel,
+    counts: channelCounts[channel.id] || { predictive: 0, generative: 0, agentic: 0 },
+  }));
+
+  const selectedAgentforceTile = AGENTFORCE_TILES.find((tile) => tile.id === activeAgentforceTile) || null;
+  const timelineReleases = selectedAgentforceTile?.releases
+    ? [...selectedAgentforceTile.releases].sort((a, b) => new Date(a.date) - new Date(b.date))
+    : [];
+  const tileStoryline = selectedAgentforceTile?.storyline ?? [];
+  const tileUseCases = selectedAgentforceTile?.useCases ?? [];
+  const tileSpecs = selectedAgentforceTile?.specs ?? {};
+
+  const getPrimaryLink = (capability) =>
+    capability.links?.docs || capability.links?.trailhead || capability.links?.video || null;
+
+  const openCapabilityLink = (capability) => {
+    const url = getPrimaryLink(capability);
+
+    if (url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const filteredCapabilities = LATEST_CAPABILITIES.filter(c => {
     const matchesFilter = activeFilter === 'all' || c.era === activeFilter;
     const matchesChannel = !activeChannel || c.channels.includes(activeChannel);
     return matchesFilter && matchesChannel;
@@ -525,6 +118,7 @@ function App() {
                   setActiveCloud(cloud.id);
                   setActiveChannel(null);
                   setActiveFilter('all');
+                  setHoveredCapability(null);
                   setIsOverview(true);
                 }}
                 className={`font-headline font-bold tracking-tight px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 group relative whitespace-nowrap ${
@@ -567,50 +161,77 @@ function App() {
       {/* Sidebar */}
       <aside className="h-screen w-64 fixed left-0 top-24 bg-[var(--surface-container)] border-r border-[var(--border)] pt-8 flex flex-col transition-colors duration-500 shadow-xl z-40">
         <div className="flex-1 overflow-y-auto no-scrollbar pb-8 flex flex-col gap-8">
-          <div>
-            <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/40 mb-4">AI Frameworks</p>
-            <nav className="flex flex-col gap-1 px-3">
-              {ERAS.map(era => (
-                <button
-                  key={era.id}
-                  onClick={() => { setActiveFilter(era.id); setIsOverview(false); }}
-                  className={`group px-3 py-3 rounded-xl flex items-center justify-between transition-all text-left ${
-                    activeFilter === era.id 
-                      ? 'bg-on-surface/5 text-[var(--on-surface)] ring-1 ring-[var(--border)]' 
-                      : 'text-[var(--on-surface-variant)] hover:bg-on-surface/5'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className={`material-symbols-outlined text-lg transition-colors ${activeFilter === era.id ? 'opacity-100' : 'opacity-40'}`} style={{ color: activeFilter === era.id ? era.color : 'inherit' }}>{era.icon}</span>
-                    <span className="font-headline text-[11px] font-black uppercase tracking-widest">{era.label}</span>
-                  </div>
-                  {activeFilter === era.id && (
-                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: era.color }}></span>
-                  )}
-                </button>
-              ))}
-            </nav>
-          </div>
+          {activeCloud === 'agentforce' ? (
+            <div>
+              <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/40 mb-4">Agentforce Tiles</p>
+              <nav className="flex flex-col gap-1 px-3">
+                {AGENTFORCE_TILES.map((tile) => (
+                  <button
+                    key={tile.id}
+                    onClick={() => setActiveAgentforceTile(tile.id)}
+                    className={`group px-3 py-3 rounded-xl flex items-center justify-between transition-all text-left ${
+                      activeAgentforceTile === tile.id
+                        ? 'bg-on-surface/5 text-[var(--on-surface)] ring-1 ring-[var(--border)]'
+                        : 'text-[var(--on-surface-variant)] hover:bg-on-surface/5'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="material-symbols-outlined text-lg" style={{ color: tile.accent }}>{tile.icon}</span>
+                      <span className="font-headline text-[11px] font-black uppercase tracking-widest">{tile.label}</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-[var(--on-surface-variant)]/60">{tile.releases.length}</span>
+                  </button>
+                ))}
+              </nav>
+            </div>
+          ) : (
+            <>
+              <div>
+                <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/40 mb-4">AI Frameworks</p>
+                <nav className="flex flex-col gap-1 px-3">
+                  {ERAS.map(era => (
+                    <button
+                      key={era.id}
+                      onClick={() => { setActiveFilter(era.id); setIsOverview(false); }}
+                      className={`group px-3 py-3 rounded-xl flex items-center justify-between transition-all text-left ${
+                        activeFilter === era.id 
+                          ? 'bg-on-surface/5 text-[var(--on-surface)] ring-1 ring-[var(--border)]' 
+                          : 'text-[var(--on-surface-variant)] hover:bg-on-surface/5'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className={`material-symbols-outlined text-lg transition-colors ${activeFilter === era.id ? 'opacity-100' : 'opacity-40'}`} style={{ color: activeFilter === era.id ? era.color : 'inherit' }}>{era.icon}</span>
+                        <span className="font-headline text-[11px] font-black uppercase tracking-widest">{era.label}</span>
+                      </div>
+                      {activeFilter === era.id && (
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: era.color }}></span>
+                      )}
+                    </button>
+                  ))}
+                </nav>
+              </div>
 
-          <div>
-            <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/40 mb-4">Channel ({activeCloud === 'service' ? 'Service' : 'All'})</p>
-            <nav className="flex flex-col gap-1">
-              {CHANNELS.map(channel => (
-                <button
-                  key={channel.id}
-                  onClick={() => { setActiveChannel(channel.id); setIsOverview(false); }}
-                  className={`group px-6 py-2.5 flex items-center gap-4 transition-all text-left ${
-                    activeChannel === channel.id 
-                      ? 'bg-primary-container/10 text-primary-container border-l-4 border-primary-container' 
-                      : 'text-[var(--on-surface-variant)] hover:bg-on-surface/5 border-l-4 border-transparent'
-                  }`}
-                >
-                  <span className="material-symbols-outlined text-xl">{channel.icon}</span>
-                  <span className="font-headline text-xs font-bold uppercase tracking-widest">{channel.label}</span>
-                </button>
-              ))}
-            </nav>
-          </div>
+              <div>
+                <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/40 mb-4">Channel ({activeCloud === 'service' ? 'Service' : 'All'})</p>
+                <nav className="flex flex-col gap-1">
+                  {latestChannels.map(channel => (
+                    <button
+                      key={channel.id}
+                      onClick={() => { setActiveChannel(channel.id); setIsOverview(false); }}
+                      className={`group px-6 py-2.5 flex items-center gap-4 transition-all text-left ${
+                        activeChannel === channel.id 
+                          ? 'bg-primary-container/10 text-primary-container border-l-4 border-primary-container' 
+                          : 'text-[var(--on-surface-variant)] hover:bg-on-surface/5 border-l-4 border-transparent'
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-xl">{channel.icon}</span>
+                      <span className="font-headline text-xs font-bold uppercase tracking-widest">{channel.label}</span>
+                    </button>
+                  ))}
+                </nav>
+              </div>
+            </>
+          )}
         </div>
 
         <div className="mt-auto px-6 pb-6">
@@ -622,24 +243,219 @@ function App() {
 
       {/* Main Content */}
       <main className="ml-64 pt-32 p-12 min-h-screen transition-colors duration-500">
-        {activeCloud !== 'service' || activeChannel === 'field_service' ? (
+        {activeCloud === 'agentforce' ? (
+          !selectedAgentforceTile ? (
+            <div className="animate-in fade-in duration-700">
+              <header className="mb-12">
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#7B5EA7] mb-4">Agentforce Tiles</p>
+                <h2 className="text-5xl font-black tracking-tighter text-[var(--on-surface)] mb-3 uppercase italic">Agentforce Tiles</h2>
+                <p className="text-[var(--on-surface-variant)] text-lg font-medium max-w-3xl">
+                  Pick the Agentforce lens you want to inspect. Each tile opens the timeline view for that area.
+                </p>
+              </header>
+
+              <div className="grid grid-cols-3 gap-8">
+                {AGENTFORCE_TILES.map((tile) => (
+                  <button
+                    key={tile.id}
+                    onClick={() => setActiveAgentforceTile(tile.id)}
+                    className="text-left group bg-[var(--surface-container-low)] p-8 rounded-2xl border border-[var(--border)] hover:-translate-y-1 transition-all duration-500 shadow-sm hover:shadow-2xl relative overflow-hidden"
+                  >
+                    <div
+                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      style={{ background: `radial-gradient(circle at top right, ${tile.accent}22, transparent 50%)` }}
+                    />
+                    <div className="relative z-10">
+                      <div className="flex items-start justify-between mb-8">
+                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center border border-white/10" style={{ backgroundColor: `${tile.accent}20` }}>
+                          <span className="material-symbols-outlined text-3xl" style={{ color: tile.accent }}>{tile.icon}</span>
+                        </div>
+                        <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-[var(--border)] text-[var(--on-surface-variant)]">
+                          {tile.releases.length} updates
+                        </span>
+                      </div>
+                      <h3 className="text-3xl font-black text-[var(--on-surface)] mb-3">{tile.label}</h3>
+                      <p className="text-sm text-[var(--on-surface-variant)] leading-relaxed mb-6">{tile.tagline}</p>
+                      <p className="text-sm text-[var(--on-surface)]/80 leading-relaxed mb-8">{tile.description}</p>
+                      <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/60">
+                        <span>View timeline</span>
+                        <span className="material-symbols-outlined" style={{ color: tile.accent }}>arrow_forward</span>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <header className="mb-12">
+                <button
+                  onClick={() => {
+                    setActiveAgentforceTile(null);
+                    setIsOverview(true);
+                  }}
+                  className="flex items-center gap-2 text-[#7B5EA7] hover:text-[var(--on-surface)] transition-colors mb-6 group"
+                >
+                  <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest">Back to Tiles</span>
+                </button>
+                <div className="flex items-start justify-between gap-8">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.35em] mb-4" style={{ color: selectedAgentforceTile.accent }}>{selectedAgentforceTile.label}</p>
+                    <h2 className="text-5xl font-black tracking-tighter text-[var(--on-surface)] mb-3">{selectedAgentforceTile.name}</h2>
+                    <p className="text-lg text-[var(--on-surface-variant)] max-w-3xl leading-relaxed">{selectedAgentforceTile.description}</p>
+                  </div>
+                  <div className="glass-panel rounded-3xl px-6 py-5 border border-[var(--border)] min-w-[260px]">
+                    <p className="text-[10px] uppercase tracking-[0.3em] font-black text-[var(--on-surface-variant)]/50 mb-2">Timeline Count</p>
+                    <p className="text-3xl font-black text-[var(--on-surface)]">{timelineReleases.length}</p>
+                    <p className="text-sm text-[var(--on-surface-variant)]">feature updates</p>
+                  </div>
+                </div>
+              </header>
+
+              <div className="relative pl-10">
+                <div className="absolute left-4 top-0 bottom-0 w-px bg-[var(--border)]"></div>
+                <div className="space-y-8">
+                  {timelineReleases.map((release) => (
+                    <div key={release.id} className="relative">
+                      <div className="absolute -left-[2.35rem] top-8 w-4 h-4 rounded-full border-4 border-[var(--background)]" style={{ backgroundColor: release.accent }}></div>
+                      <div className="glass-panel rounded-[28px] border border-[var(--border)] p-8 shadow-xl">
+                        <div className="flex items-start justify-between gap-6 mb-5">
+                          <div>
+                            <div className="flex flex-wrap gap-3 mb-3">
+                              <span
+                                className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border"
+                                style={{ color: release.accent, borderColor: `${release.accent}55`, backgroundColor: `${release.accent}12` }}
+                              >
+                                {release.dateLabel}
+                              </span>
+                              <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-[var(--border)] text-[var(--on-surface-variant)]">
+                                {release.category}
+                              </span>
+                            </div>
+                            <h3 className="text-2xl font-black text-[var(--on-surface)] leading-tight mb-3">{release.title}</h3>
+                            <p className="text-[var(--on-surface-variant)] leading-relaxed">{release.summary}</p>
+                          </div>
+                          <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${release.accent}20` }}>
+                            <span className="material-symbols-outlined text-2xl" style={{ color: release.accent }}>{release.icon}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-4">
+                          <a
+                            href={release.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-black uppercase tracking-[0.16em] text-white"
+                            style={{ backgroundColor: release.accent }}
+                          >
+                            Open Release Note
+                            <span className="material-symbols-outlined text-base">north_east</span>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex-1 sticky top-32">
+                <div className="glass-panel border-[var(--border)] rounded-3xl p-8 min-h-[500px] flex flex-col relative overflow-hidden shadow-2xl">
+                  <div className="animate-in fade-in slide-in-from-right-8 duration-500 flex flex-col h-full">
+                    <div className="flex items-start justify-between mb-8">
+                      <div>
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="p-2 rounded-lg bg-on-surface/5 border border-[var(--border)]">
+                            <span className="material-symbols-outlined text-2xl" style={{ color: selectedAgentforceTile.accent }}>{selectedAgentforceTile.icon}</span>
+                          </div>
+                          <span className="text-[10px] font-bold uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-on-surface/5 border border-[var(--border)] text-[var(--on-surface-variant)]">
+                            Featured Tile
+                          </span>
+                        </div>
+                        <h3 className="text-4xl font-black tracking-tighter text-[var(--on-surface)] mb-2 leading-tight">
+                          {selectedAgentforceTile.name}
+                        </h3>
+                        <p className="text-[var(--on-surface-variant)] text-sm font-medium leading-relaxed max-w-sm">
+                          {selectedAgentforceTile.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-8 mt-4 pt-8 border-t border-[var(--border)] overflow-y-auto max-h-[40vh] pr-4 custom-scrollbar">
+                      <div>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-container mb-4">Functional Storyline</h4>
+                        <div className="space-y-6 relative">
+                          <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-on-surface/5"></div>
+                          {tileStoryline.map((step, idx) => (
+                            <div key={idx} className="flex gap-6 items-start relative">
+                              <div className="w-6 h-6 rounded-full bg-surface border-2 border-[var(--border)] flex items-center justify-center relative z-10 shrink-0 mt-1">
+                                <span className="text-[10px] font-black text-[var(--on-surface)]">{idx + 1}</span>
+                              </div>
+                              <p className="text-sm text-[var(--on-surface)] font-medium pt-1">{step}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-6">
+                        <div>
+                          <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0176D3]/60 mb-3 italic">Business Value</h4>
+                          <ul className="space-y-2">
+                            {tileUseCases.map((useCase, idx) => (
+                              <li key={idx} className="text-xs text-[var(--on-surface-variant)] flex items-start gap-2">
+                                <span className="text-[#0176D3] mt-0.5">•</span> {useCase}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#9c40ff]/60 mb-3 italic">Tech Specs</h4>
+                          <div className="space-y-2">
+                            {Object.entries(tileSpecs).map(([key, val], idx) => (
+                              <div key={idx} className="flex flex-col">
+                                <span className="text-[8px] uppercase tracking-widest text-[var(--on-surface-variant)]/40 font-bold">{key}</span>
+                                <span className="text-xs text-[var(--on-surface)]/80 font-medium">{val}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-8 pt-8 border-t border-[var(--border)] flex gap-4">
+                      <button
+                        onClick={() => window.open(selectedAgentforceTile.releases[0]?.url, '_blank', 'noopener,noreferrer')}
+                        disabled={!selectedAgentforceTile.releases[0]?.url}
+                        className="flex-1 py-3 bg-[#7B5EA7]/15 border border-[#7B5EA7]/30 text-[#c6b0e3] font-bold rounded-xl text-[10px] uppercase tracking-widest hover:bg-[#7B5EA7] hover:text-white transition-all shadow-lg disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        View Documentation
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="absolute -top-10 -right-10 w-40 h-40" style={{ backgroundColor: `${selectedAgentforceTile.accent}0D` }}></div>
+                </div>
+              </div>
+            </div>
+          )
+        ) : activeCloud !== 'service' ? (
           /* Placeholder for other clouds / unmapped channels */
           <div className="flex flex-col items-center justify-center h-[70vh] text-center animate-in fade-in zoom-in-95 duration-700">
             <div className="w-32 h-32 rounded-3xl bg-[var(--surface-container-low)] border border-[var(--border)] flex items-center justify-center mb-10 shadow-2xl relative group">
                <div className="absolute inset-0 bg-primary/10 rounded-3xl blur-2xl group-hover:bg-primary/20 transition-all"></div>
-               <span className="material-symbols-outlined text-7xl relative z-10" style={{ color: activeChannel === 'field_service' ? '#06A59A' : CLOUDS.find(c => c.id === activeCloud).accent }}>
-                 {activeChannel === 'field_service' ? 'build' : CLOUDS.find(c => c.id === activeCloud).icon}
+               <span className="material-symbols-outlined text-7xl relative z-10" style={{ color: CLOUDS.find(c => c.id === activeCloud).accent }}>
+                 {CLOUDS.find(c => c.id === activeCloud).icon}
                </span>
             </div>
             <h2 className="text-6xl font-black text-[var(--on-surface)] tracking-tighter uppercase mb-4 italic">
-              {activeChannel === 'field_service' ? 'Field Service' : activeCloud} <span className="text-[var(--on-surface-variant)]/40">Observatory</span>
+              {activeCloud} <span className="text-[var(--on-surface-variant)]/40">Observatory</span>
             </h2>
             <div className="flex items-center gap-3 justify-center mb-8">
                <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
                <p className="text-sm font-bold uppercase tracking-[0.4em] text-primary">Intelligence Nodes incoming</p>
             </div>
             <p className="text-[var(--on-surface-variant)] max-w-md mx-auto text-lg leading-relaxed mb-12">
-              We are currently mapping the AI capabilities for the {activeChannel === 'field_service' ? 'Field Service' : activeCloud} ecosystem. Check back soon for the full node discovery experience.
+              We are currently mapping the AI capabilities for the {activeCloud} ecosystem. Check back soon for the full node discovery experience.
             </p>
             <button 
               onClick={() => setActiveCloud('service')}
@@ -657,7 +473,7 @@ function App() {
             </header>
             
             <div className="grid grid-cols-3 gap-8">
-              {CHANNELS.map(channel => (
+              {latestChannels.map(channel => (
                 <div 
                   key={channel.id}
                   onClick={() => { setActiveChannel(channel.id); setIsOverview(false); }}
@@ -694,7 +510,7 @@ function App() {
                 <div className="flex items-center gap-4 mb-2">
                   <div className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center">
                     <span className="material-symbols-outlined text-primary-container text-3xl">
-                      {activeChannel ? CHANNELS.find(c => c.id === activeChannel).icon : currentEra.icon}
+                      {activeChannel ? latestChannels.find(c => c.id === activeChannel).icon : currentEra.icon}
                     </span>
                   </div>
                   <div>
@@ -826,7 +642,11 @@ function App() {
                       </div>
 
                       <div className="mt-8 pt-8 border-t border-[var(--border)] flex gap-4">
-                        <button className="flex-1 py-3 bg-[#0176D3]/10 border border-[#0176D3]/30 text-[#0176D3] font-bold rounded-xl text-[10px] uppercase tracking-widest hover:bg-[#0176D3] hover:text-white transition-all shadow-lg hover:shadow-[#0176D3]/20">
+                        <button
+                          onClick={() => openCapabilityLink(hoveredCapability)}
+                          disabled={!getPrimaryLink(hoveredCapability)}
+                          className="flex-1 py-3 bg-[#0176D3]/10 border border-[#0176D3]/30 text-[#0176D3] font-bold rounded-xl text-[10px] uppercase tracking-widest hover:bg-[#0176D3] hover:text-white transition-all shadow-lg hover:shadow-[#0176D3]/20 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#0176D3]/10 disabled:hover:text-[#0176D3]"
+                        >
                           View Documentation
                         </button>
                         <button className="flex-1 py-3 bg-on-surface/5 border border-[var(--border)] text-[var(--on-surface)] font-bold rounded-xl text-[10px] uppercase tracking-widest hover:bg-on-surface/10 transition-all">
@@ -879,10 +699,16 @@ function App() {
                 </button>
                 <div>
                   <p className="text-[var(--on-surface-variant)] text-xs font-bold uppercase tracking-widest mb-4">Functional Description</p>
-                  <h5 className="text-3xl font-bold text-[var(--on-surface)] mb-6 leading-tight">{selectedCapability.fullName.split(' — ')[1] || 'Transforming service with AI intelligence.'}</h5>
+                  <h5 className="text-3xl font-bold text-[var(--on-surface)] mb-6 leading-tight">{selectedCapability.name}</h5>
                   <p className="text-[var(--on-surface-variant)] leading-relaxed mb-8">
                     {selectedCapability.description}
                   </p>
+                  {selectedCapability.setupRequirements && (
+                    <div className="mb-8 p-4 bg-[var(--surface-container)] rounded-xl border border-[var(--border)]">
+                      <p className="text-[10px] text-primary-container font-black uppercase tracking-widest mb-2 opacity-80">Setup Requirements</p>
+                      <p className="text-sm text-[var(--on-surface-variant)] leading-relaxed">{selectedCapability.setupRequirements}</p>
+                    </div>
+                  )}
                   <div className="grid grid-cols-2 gap-4">
                     {Object.entries(selectedCapability.specs).map(([key, value]) => (
                       <div key={key} className="p-4 bg-[var(--surface-container)] rounded-xl border border-[var(--border)]">
@@ -893,8 +719,20 @@ function App() {
                   </div>
                 </div>
                 <div className="flex gap-4">
-                  <button className="flex-1 py-4 bg-primary-container text-white font-black rounded-xl active:scale-95 transition-transform uppercase text-[10px] tracking-widest shadow-lg shadow-primary-container/20">Config Interface</button>
-                  <button className="flex-1 py-4 bg-[var(--on-surface)]/5 text-[var(--on-surface)] font-black rounded-xl hover:bg-[var(--on-surface)]/10 border border-[var(--border)] active:scale-95 transition-transform uppercase text-[10px] tracking-widest">View Logs</button>
+                  <button
+                    onClick={() => openCapabilityLink(selectedCapability)}
+                    disabled={!getPrimaryLink(selectedCapability)}
+                    className="flex-1 py-4 bg-primary-container text-white font-black rounded-xl active:scale-95 transition-transform uppercase text-[10px] tracking-widest shadow-lg shadow-primary-container/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    View Documentation
+                  </button>
+                  <button
+                    onClick={() => selectedCapability?.links?.video && window.open(selectedCapability.links.video, '_blank', 'noopener,noreferrer')}
+                    disabled={!selectedCapability?.links?.video}
+                    className="flex-1 py-4 bg-[var(--on-surface)]/5 text-[var(--on-surface)] font-black rounded-xl hover:bg-[var(--on-surface)]/10 border border-[var(--border)] active:scale-95 transition-transform uppercase text-[10px] tracking-widest disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    Watch Demo
+                  </button>
                 </div>
               </div>
             </div>
