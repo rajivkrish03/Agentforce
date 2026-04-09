@@ -741,9 +741,9 @@ function App() {
           <div className="flex flex-col h-full animate-in fade-in slide-in-from-bottom-4 duration-700">
             <header className="mb-10 flex items-start justify-between">
               <div>
-                <button 
+                <button
                   onClick={() => { setActiveChannel(null); setActiveFilter('all'); setHoveredCapability(null); setIsOverview(true); }}
-                  className="flex items-center gap-2 text-primary-container hover:text-white transition-colors mb-4 group"
+                  className="flex items-center gap-2 text-primary-container hover:text-[var(--on-surface)] transition-colors mb-4 group"
                 >
                   <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">arrow_back</span>
                   <span className="text-[10px] font-bold uppercase tracking-widest">Back to Overview</span>
@@ -770,7 +770,7 @@ function App() {
                       onClick={() => setActiveFilter(e.id)}
                       className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all flex items-center gap-2 ${
                         activeFilter === e.id
-                          ? 'bg-white text-black shadow-lg scale-105'
+                          ? 'bg-[var(--on-surface)] text-[var(--surface)] shadow-lg scale-105'
                           : 'bg-on-surface/5 text-[var(--on-surface-variant)] hover:text-[var(--on-surface)] border border-[var(--border)]'
                       }`}
                     >

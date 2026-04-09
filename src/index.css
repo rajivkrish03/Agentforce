@@ -22,25 +22,32 @@
   --border: rgba(255, 255, 255, 0.08);
   --glass: rgba(0, 22, 66, 0.6);
   --nav-bg: rgba(0, 11, 26, 0.85);
+  --shadow-sm: rgba(0, 0, 0, 0.5);
+  --shadow-md: rgba(0, 0, 0, 0.6);
+  --shadow-lg: rgba(0, 0, 0, 0.7);
 }
 
 .light {
-  /* Light Theme Tokens (SLDS 2.0 Standard) */
-  --background: #F8FAFC;
-  --surface: #FFFFFF;
-  --surface-container: #FFFFFF;
-  --on-surface: #001642; /* SLDS 2 Deep Navy */
-  --on-surface-variant: #475569;
-  --surface-container-low: #FFFFFF;
-  --border: rgba(0, 30, 80, 0.08);
-  --glass: rgba(255, 255, 255, 0.85);
-  --nav-bg: rgba(255, 255, 255, 0.95);
+  /* Light Theme Tokens (SLDS 2.0 Inspired + Material Design 3) */
+  --background: #F3F4F6; /* Soft neutral gray background */
+  --surface: #FFFFFF; /* Pure white for elevated surfaces */
+  --surface-container: #F9FAFB; /* Subtle gray for containers */
+  --on-surface: #181818; /* Near-black for primary text (WCAG AAA) */
+  --on-surface-variant: #6B7280; /* Medium gray for secondary text (WCAG AA) */
+  --surface-container-low: #F3F4F6; /* Same as background for flush surfaces */
+  --border: rgba(0, 0, 0, 0.12); /* Visible borders in light mode */
+  --glass: rgba(255, 255, 255, 0.9); /* Glass morphism for modals */
+  --nav-bg: rgba(255, 255, 255, 0.95); /* Nav with subtle transparency */
+  --shadow-sm: rgba(0, 0, 0, 0.08);
+  --shadow-md: rgba(0, 0, 0, 0.12);
+  --shadow-lg: rgba(0, 0, 0, 0.16);
 }
 
 .light body {
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(1, 118, 211, 0.05) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(227, 23, 84, 0.03) 0px, transparent 50%);
+  background-image:
+    radial-gradient(at 0% 0%, rgba(1, 118, 211, 0.03) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(227, 23, 84, 0.02) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(117, 38, 227, 0.02) 0px, transparent 50%);
 }
 
 @layer base {
