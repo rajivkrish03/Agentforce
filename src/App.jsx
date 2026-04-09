@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { AGENTFORCE_TILES } from './AgentforcecapabilitiesData';
 import { CAPABILITIES as SERVICE_CAPABILITIES } from './ServicecapabilitiesData';
 import { CAPABILITIES as SALES_CAPABILITIES } from './SalescapabilitiesData';
+import { JOBS } from './JobsData';
+import { JOURNEYS } from './JourneysData';
+import { MATURITY_MODEL } from './MaturityModelData';
 
 const CLOUDS = [
   { id: 'service', label: 'Service', accent: '#06A59A', icon: 'headset_mic' },
@@ -211,6 +214,9 @@ function App() {
   });
   const [selectedTelephony, setSelectedTelephony] = useState(null);
   const [selectedPhase, setSelectedPhase] = useState(null);
+  const [viewMode, setViewMode] = useState('capabilities'); // 'capabilities' | 'journey'
+  const [selectedJobs, setSelectedJobs] = useState([]);
+  const [showRoadmap, setShowRoadmap] = useState(null); // null or { cloud, channel }
 
   useEffect(() => {
     document.documentElement.className = theme;
@@ -267,7 +273,8 @@ function App() {
   const filteredCapabilities = CURRENT_CAPABILITIES.filter(c => {
     const matchesFilter = activeFilter === 'all' || c.era === activeFilter;
     const matchesChannel = !activeChannel || c.channels.includes(activeChannel);
-    return matchesFilter && matchesChannel;
+    const matchesJobs = selectedJobs.length === 0 || selectedJobs.some(job => c.jobsToBeDone?.includes(job));
+    return matchesFilter && matchesChannel && matchesJobs;
   });
 
   const handleCapabilityClick = (capability) => {
@@ -347,7 +354,49 @@ function App() {
         </div>
 
         <div className="flex items-center gap-6">
-          <button 
+          {/* View Mode Toggle */}
+          {activeCloud !== 'agentforce' && activeCloud !== 'marketing' && !isOverview && activeChannel && (
+            <div className="flex items-center gap-2 p-1 rounded-xl bg-[var(--surface-container)] border border-[var(--border)]">
+              <button
+                onClick={() => setViewMode('capabilities')}
+                className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-2 ${
+                  viewMode === 'capabilities'
+                    ? 'bg-primary-container text-white shadow-lg'
+                    : 'text-[var(--on-surface-variant)] hover:text-[var(--on-surface)]'
+                }`}
+              >
+                <span className="material-symbols-outlined text-sm">grid_view</span>
+                Capabilities
+              </button>
+              <button
+                onClick={() => setViewMode('journey')}
+                className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-2 ${
+                  viewMode === 'journey'
+                    ? 'bg-primary-container text-white shadow-lg'
+                    : 'text-[var(--on-surface-variant)] hover:text-[var(--on-surface)]'
+                }`}
+              >
+                <span className="material-symbols-outlined text-sm">route</span>
+                Journey
+              </button>
+            </div>
+          )}
+
+          {/* Implementation Roadmap Button */}
+          {activeCloud !== 'agentforce' && activeCloud !== 'marketing' && activeChannel && MATURITY_MODEL[activeCloud]?.[activeChannel] && (
+            <button
+              onClick={() => {
+                console.log('Roadmap clicked:', { cloud: activeCloud, channel: activeChannel });
+                setShowRoadmap({ cloud: activeCloud, channel: activeChannel });
+              }}
+              className="px-4 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface-container)] hover:bg-on-surface/5 transition-all text-[var(--on-surface-variant)] hover:text-[var(--on-surface)] flex items-center gap-2 text-xs font-bold uppercase tracking-widest"
+            >
+              <span className="material-symbols-outlined text-sm">account_tree</span>
+              Roadmap
+            </button>
+          )}
+
+          <button
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             className="p-2.5 rounded-xl border border-[var(--border)] hover:bg-on-surface/5 transition-all text-[var(--on-surface-variant)] hover:text-[var(--on-surface)] flex items-center justify-center bg-[var(--surface-container)]"
           >
@@ -355,7 +404,7 @@ function App() {
               {theme === 'dark' ? 'light_mode' : 'dark_mode'}
             </span>
           </button>
-          
+
           <div className="w-12 h-12 rounded-2xl bg-[var(--surface-container)] overflow-hidden border border-[var(--border)] p-0.5 shadow-lg shrink-0">
             <img className="w-full h-full rounded-xl object-cover" alt="User" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAl7HNdRh4m28X12qumcIYi_5JhrRAv62KzeWHVQtiszYtiWSmgayu7ti-_4Gk_O4k6BOPX7wKXJYQz_Vzr7a3jaGV-PI7EVocqgs__PIZdoQVk4nCQ5qANCqGCeMWcOLbv8PS7-lRIWSNl7IwSVunMPPTdRp-rCeq-cpFLkiU9aPCobDwTTNafwpki27dsRCd2UXOPAIf2cZzUwU1VLpcfXP8APhHeOchTBWuAFvCJI7jcZ15xtTwAweVcZfClHvms9hTr1lno78VF"/>
           </div>
@@ -459,6 +508,52 @@ function App() {
                       )}
                     </button>
                   ))}
+                </nav>
+              </div>
+
+              {/* Jobs to Be Done Section */}
+              <div>
+                <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/40 mb-4">Jobs to Be Done</p>
+                <nav className="flex flex-col gap-1 px-3 max-h-64 overflow-y-auto">
+                  {JOBS.map(job => {
+                    const isSelected = selectedJobs.includes(job.id);
+                    const matchCount = CURRENT_CAPABILITIES.filter(c =>
+                      c.jobsToBeDone?.includes(job.id) &&
+                      (activeFilter === 'all' || c.era === activeFilter) &&
+                      (!activeChannel || c.channels.includes(activeChannel))
+                    ).length;
+
+                    return (
+                      <button
+                        key={job.id}
+                        onClick={() => {
+                          if (isSelected) {
+                            setSelectedJobs(selectedJobs.filter(j => j !== job.id));
+                          } else {
+                            setSelectedJobs([...selectedJobs, job.id]);
+                          }
+                        }}
+                        className={`group px-3 py-2.5 rounded-xl flex items-center justify-between transition-all text-left ${
+                          isSelected
+                            ? 'bg-on-surface/5 text-[var(--on-surface)] ring-1 ring-[var(--border)]'
+                            : 'text-[var(--on-surface-variant)] hover:bg-on-surface/5'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
+                            isSelected ? 'bg-primary-container border-primary-container' : 'border-[var(--border)]'
+                          }`}>
+                            {isSelected && <span className="material-symbols-outlined text-white text-xs">check</span>}
+                          </div>
+                          <span className="material-symbols-outlined text-base" style={{ color: job.color }}>{job.icon}</span>
+                          <span className="font-headline text-[10px] font-black uppercase tracking-widest">{job.label}</span>
+                        </div>
+                        <span className="text-[9px] font-bold text-[var(--on-surface-variant)]/60 bg-on-surface/5 px-1.5 py-0.5 rounded">
+                          {matchCount}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </nav>
               </div>
 
@@ -947,6 +1042,33 @@ function App() {
                      </p>
                   </div>
                 </div>
+
+                {/* Active Jobs Pills */}
+                {selectedJobs.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-4 p-3 rounded-xl bg-on-surface/5 border border-[var(--border)]">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-[var(--on-surface-variant)] mr-2">Filtering by:</span>
+                    {selectedJobs.map(jobId => {
+                      const job = JOBS.find(j => j.id === jobId);
+                      return (
+                        <div
+                          key={jobId}
+                          className="flex items-center gap-2 px-3 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-wide transition-all"
+                          style={{ borderColor: `${job.color}40`, backgroundColor: `${job.color}15`, color: job.color }}
+                        >
+                          <span className="material-symbols-outlined text-xs">{job.icon}</span>
+                          {job.label}
+                          <button
+                            onClick={() => setSelectedJobs(selectedJobs.filter(j => j !== jobId))}
+                            className="ml-1 hover:opacity-70 transition-opacity"
+                          >
+                            <span className="material-symbols-outlined text-xs">close</span>
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
                 <div className="flex gap-4 mt-8">
                   {ERAS.map(e => (
                     <button
@@ -967,8 +1089,72 @@ function App() {
             </header>
 
             <div className="flex gap-10 items-start">
-              {/* Feature Grid */}
-              <div className="w-3/5 grid grid-cols-12 gap-x-4 gap-y-4 pb-24 auto-rows-max">
+              {/* Journey Swimlanes View */}
+              {viewMode === 'journey' && JOURNEYS[activeCloud]?.[activeChannel] ? (
+                <div className="w-3/5 pb-24">
+                  <div className="mb-8">
+                    <h3 className="text-2xl font-black text-[var(--on-surface)] mb-2 uppercase tracking-tight">
+                      {JOURNEYS[activeCloud][activeChannel].name}
+                    </h3>
+                    <p className="text-sm text-[var(--on-surface-variant)]">
+                      {JOURNEYS[activeCloud][activeChannel].description}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-5 gap-4">
+                    {JOURNEYS[activeCloud][activeChannel].phases.map((phase) => {
+                      const phaseCapabilities = JOURNEYS[activeCloud][activeChannel].mapping[phase.id] || [];
+                      const capabilities = phaseCapabilities
+                        .map(id => CURRENT_CAPABILITIES.find(c => c.id === id))
+                        .filter(c => c && (activeFilter === 'all' || c.era === activeFilter) && (selectedJobs.length === 0 || selectedJobs.some(job => c.jobsToBeDone?.includes(job))));
+
+                      return (
+                        <div key={phase.id} className="flex flex-col">
+                          {/* Phase Header */}
+                          <div className="mb-4 p-4 rounded-xl border border-[var(--border)] bg-[var(--surface-container-low)] text-center">
+                            <div className="w-10 h-10 rounded-lg mx-auto mb-2 flex items-center justify-center" style={{ backgroundColor: `${phase.color}20` }}>
+                              <span className="material-symbols-outlined text-lg" style={{ color: phase.color }}>{phase.icon}</span>
+                            </div>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-[var(--on-surface)]">{phase.label}</p>
+                            <span className="text-[9px] text-[var(--on-surface-variant)]">{capabilities.length}</span>
+                          </div>
+
+                          {/* Phase Capabilities */}
+                          <div className="space-y-3 flex-1">
+                            {capabilities.length === 0 ? (
+                              <div className="p-3 rounded-lg border border-dashed border-[var(--border)] text-center text-[9px] text-[var(--on-surface-variant)]">
+                                No capabilities
+                              </div>
+                            ) : (
+                              capabilities.map((cap) => (
+                                <div
+                                  key={cap.id}
+                                  onClick={() => handleCapabilityClick(cap)}
+                                  onMouseEnter={() => setHoveredCapability(cap)}
+                                  className="group cursor-pointer p-3 rounded-lg border transition-all duration-300 bg-[var(--surface-container-low)] hover:-translate-y-1"
+                                  style={{
+                                    borderColor: hoveredCapability?.id === cap.id ? ERAS.find(e => e.id === cap.era).color : 'var(--border)',
+                                    boxShadow: hoveredCapability?.id === cap.id ? `0 0 20px ${ERAS.find(e => e.id === cap.era).color}20` : 'none'
+                                  }}
+                                >
+                                  <span className="text-2xl font-black leading-none block mb-1" style={{ color: ERAS.find(e => e.id === cap.era).color }}>{cap.symbol}</span>
+                                  <p className="text-[9px] font-bold text-[var(--on-surface)] uppercase tracking-tight leading-tight">{cap.name}</p>
+                                  <div className="flex items-center gap-1 mt-1">
+                                    <span className="material-symbols-outlined text-[8px]" style={{ color: ERAS.find(e => e.id === cap.era).color }}>{ERAS.find(e => e.id === cap.era).icon}</span>
+                                    <p className="text-[8px] text-[var(--on-surface-variant)] uppercase font-bold opacity-60">{cap.era}</p>
+                                  </div>
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
+                /* Feature Grid */
+                <div className="w-3/5 grid grid-cols-12 gap-x-4 gap-y-4 pb-24 auto-rows-max">
                 {filteredCapabilities.map(cap => (
                   <div 
                     key={cap.id} 
@@ -1164,7 +1350,8 @@ function App() {
                     </div>
                   </div>
                 )}
-              </div>
+                </div>
+              )}
 
               {/* Storyline Panel (Right Side) */}
               <div className="flex-1 sticky top-32">
@@ -1439,6 +1626,181 @@ function App() {
               </div>
               <button
                 onClick={() => setSelectedPhase(null)}
+                className="px-6 py-3 rounded-xl bg-primary-container/10 border border-primary-container/30 text-primary-container font-bold text-sm uppercase tracking-wider hover:bg-primary-container hover:text-white transition-all"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Implementation Roadmap Modal */}
+      {showRoadmap && (() => {
+        console.log('Modal check:', { showRoadmap, hasData: !!MATURITY_MODEL[showRoadmap.cloud]?.[showRoadmap.channel] });
+        return MATURITY_MODEL[showRoadmap.cloud]?.[showRoadmap.channel];
+      })() && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-8 bg-black/80 backdrop-blur-sm transition-all animate-in fade-in duration-300"
+          onClick={() => setShowRoadmap(null)}
+        >
+          <div
+            className="bg-[var(--surface-container-low)] max-w-5xl w-full max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl border border-[var(--border)] animate-in zoom-in-95 duration-300 flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-8 border-b border-[var(--border)] bg-gradient-to-r from-primary-container/10 to-secondary-container/10">
+              <button
+                className="absolute top-6 right-6 w-10 h-10 rounded-xl bg-on-surface/5 hover:bg-on-surface/10 border border-[var(--border)] text-[var(--on-surface-variant)] hover:text-[var(--on-surface)] transition-all flex items-center justify-center group"
+                onClick={() => setShowRoadmap(null)}
+              >
+                <span className="material-symbols-outlined group-hover:rotate-90 transition-transform">close</span>
+              </button>
+
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center" style={{ backgroundColor: CLOUDS.find(c => c.id === showRoadmap.cloud).accent + '20' }}>
+                  <span className="material-symbols-outlined text-2xl" style={{ color: CLOUDS.find(c => c.id === showRoadmap.cloud).accent }}>
+                    {latestChannels.find(ch => ch.id === showRoadmap.channel)?.icon || 'route'}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/60">
+                    Implementation Roadmap
+                  </p>
+                  <h2 className="text-3xl font-black tracking-tighter text-[var(--on-surface)]">
+                    {MATURITY_MODEL[showRoadmap.cloud][showRoadmap.channel].name}
+                  </h2>
+                </div>
+              </div>
+
+              <p className="text-sm text-[var(--on-surface-variant)]">
+                Follow this roadmap to progressively implement AI capabilities from foundation to autonomous
+              </p>
+            </div>
+
+            {/* Modal Body - Maturity Levels */}
+            <div className="flex-1 overflow-y-auto p-8">
+              <div className="space-y-6">
+                {MATURITY_MODEL[showRoadmap.cloud][showRoadmap.channel].levels.map((level, idx) => {
+                  const isCompleted = false; // TODO: Track completion state
+                  const isLocked = idx > 0 && false; // TODO: Check if previous level is complete
+
+                  return (
+                    <div
+                      key={level.id}
+                      className="glass-panel rounded-2xl border border-[var(--border)] p-6 transition-all duration-300"
+                      style={{
+                        opacity: isLocked ? 0.5 : 1,
+                        borderColor: isCompleted ? level.color : 'var(--border)',
+                      }}
+                    >
+                      {/* Level Header */}
+                      <div className="flex items-start justify-between mb-6">
+                        <div className="flex items-center gap-4">
+                          <div
+                            className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0 border-2"
+                            style={{
+                              backgroundColor: `${level.color}20`,
+                              borderColor: `${level.color}40`,
+                            }}
+                          >
+                            <span className="material-symbols-outlined text-2xl" style={{ color: level.color }}>
+                              {level.icon}
+                            </span>
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-3 mb-1">
+                              <h3 className="text-xl font-black text-[var(--on-surface)] uppercase tracking-tight">
+                                Level {level.order}: {level.name}
+                              </h3>
+                              {isLocked && (
+                                <span className="px-2 py-1 rounded-full text-[9px] font-bold uppercase bg-on-surface/10 text-[var(--on-surface-variant)] flex items-center gap-1">
+                                  <span className="material-symbols-outlined text-xs">lock</span>
+                                  Locked
+                                </span>
+                              )}
+                              {isCompleted && (
+                                <span className="px-2 py-1 rounded-full text-[9px] font-bold uppercase bg-green-500/20 text-green-400 flex items-center gap-1">
+                                  <span className="material-symbols-outlined text-xs">check_circle</span>
+                                  Complete
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-[var(--on-surface-variant)]">{level.description}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-[var(--on-surface-variant)] mb-1">Time to Value</p>
+                          <p className="text-sm font-bold text-[var(--on-surface)]">{level.timeToValue}</p>
+                        </div>
+                      </div>
+
+                      {/* Prerequisites */}
+                      {level.prerequisites && level.prerequisites.length > 0 && (
+                        <div className="mb-4 p-3 rounded-lg bg-on-surface/5 border border-[var(--border)]">
+                          <p className="text-[10px] font-black uppercase tracking-wider text-[var(--on-surface-variant)] mb-2">Prerequisites</p>
+                          <ul className="space-y-1">
+                            {level.prerequisites.map((prereq, i) => (
+                              <li key={i} className="text-xs text-[var(--on-surface)] flex items-start gap-2">
+                                <span className="text-[var(--on-surface-variant)] mt-0.5">•</span>
+                                {prereq}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Capabilities */}
+                      <div className="mb-4">
+                        <p className="text-[10px] font-black uppercase tracking-wider text-[var(--on-surface-variant)] mb-3">Capabilities to Implement</p>
+                        <div className="grid grid-cols-2 gap-3">
+                          {level.capabilities.map((capId) => {
+                            const cap = CURRENT_CAPABILITIES.find(c => c.id === capId);
+                            if (!cap) return null;
+
+                            return (
+                              <div
+                                key={capId}
+                                className="p-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] hover:bg-on-surface/5 transition-all cursor-pointer"
+                                onClick={() => {
+                                  setSelectedCapability(cap);
+                                  setShowRoadmap(null);
+                                }}
+                              >
+                                <div className="flex items-center gap-3">
+                                  <span className="text-2xl font-black" style={{ color: ERAS.find(e => e.id === cap.era).color }}>{cap.symbol}</span>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-bold text-[var(--on-surface)] truncate">{cap.name}</p>
+                                    <p className="text-[9px] text-[var(--on-surface-variant)] uppercase">{cap.era} AI</p>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Outcomes */}
+                      <div className="grid grid-cols-3 gap-3 mb-4">
+                        {level.outcomes.map((outcome, i) => (
+                          <div key={i} className="p-3 rounded-lg bg-on-surface/5 border border-[var(--border)] text-center">
+                            <p className="text-[10px] text-[var(--on-surface)] leading-tight">{outcome}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-6 border-t border-[var(--border)] bg-[var(--surface-container)] flex items-center justify-between">
+              <div className="text-xs text-[var(--on-surface-variant)]">
+                <span className="font-bold">{MATURITY_MODEL[showRoadmap.cloud][showRoadmap.channel].levels.length} maturity levels</span> from foundation to autonomous
+              </div>
+              <button
+                onClick={() => setShowRoadmap(null)}
                 className="px-6 py-3 rounded-xl bg-primary-container/10 border border-primary-container/30 text-primary-container font-bold text-sm uppercase tracking-wider hover:bg-primary-container hover:text-white transition-all"
               >
                 Close

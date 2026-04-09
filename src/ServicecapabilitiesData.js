@@ -17,6 +17,8 @@ export const CAPABILITIES = [
       video: 'https://salesforce.vidyard.com/watch/SVYoP4cGZbsbeAhcLjGRiF',
     },
     setupRequirements: 'At least 400 closed cases from the past 6 months are needed to build the model, with 1,000+ ideal for better accuracy;',
+    jobsToBeDone: ['improve-data', 'reduce-time', 'automate'],
+    maturityLevel: 'foundation',
   },
   {
     id: 'case-routing',
@@ -36,6 +38,8 @@ export const CAPABILITIES = [
       video: 'https://salesforce.vidyard.com/watch/SVYoP4cGZbsbeAhcLjGRiF',
     },
     setupRequirements: null,
+    jobsToBeDone: ['reduce-time', 'empower-agents'],
+    maturityLevel: 'foundation',
   },
   {
     id: 'case-wrap-up',
@@ -51,6 +55,8 @@ export const CAPABILITIES = [
     icon: 'analytics',
     links: { trailhead: null, docs: null, video: null },
     setupRequirements: 'Minimum 400 closed cases from past 6 months with subject/description; accuracy improves with 1,000+ and chat transcripts included',
+    jobsToBeDone: ['improve-data', 'reduce-time'],
+    maturityLevel: 'insights',
   },
   {
     id: 'article-recommendations',
@@ -70,6 +76,8 @@ export const CAPABILITIES = [
       video: null,
     },
     setupRequirements: 'Three or more published knowledge articles',
+    jobsToBeDone: ['empower-agents', 'reduce-time', 'increase-csat'],
+    maturityLevel: 'augmentation',
   },
   {
     id: 'reply-recommendations',
@@ -89,6 +97,8 @@ export const CAPABILITIES = [
       video: null,
     },
     setupRequirements: 'Einstein needs at least 1,000 closed chat transcripts in a given language, that contain four or more chat turns. A "turn" is a line in the chat conversation with terms or phrases that can help Einstein learn.',
+    jobsToBeDone: ['reduce-time', 'empower-agents'],
+    maturityLevel: 'foundation',
   },
   {
     id: 'conversation-mining',
@@ -108,6 +118,8 @@ export const CAPABILITIES = [
       video: null,
     },
     setupRequirements: null,
+    jobsToBeDone: ['automate', 'reduce-cost'],
+    maturityLevel: 'insights',
   },
   {
     id: 'work-summaries',
@@ -127,6 +139,8 @@ export const CAPABILITIES = [
       video: null,
     },
     setupRequirements: null,
+    jobsToBeDone: ['reduce-time', 'automate'],
+    maturityLevel: 'augmentation',
   },
   {
     id: 'enhanced-summaries',
@@ -142,6 +156,8 @@ export const CAPABILITIES = [
     icon: 'auto_awesome',
     links: { trailhead: null, docs: null, video: null },
     setupRequirements: null,
+    jobsToBeDone: ['empower-agents', 'reduce-time'],
+    maturityLevel: 'augmentation',
   },
   {
     id: 'knowledge-creation',
@@ -157,6 +173,8 @@ export const CAPABILITIES = [
     icon: 'auto_awesome',
     links: { trailhead: null, docs: null, video: null },
     setupRequirements: null,
+    jobsToBeDone: ['automate', 'scale-ops'],
+    maturityLevel: 'insights',
   },
   {
     id: 'service-replies',
@@ -176,6 +194,8 @@ export const CAPABILITIES = [
       video: null,
     },
     setupRequirements: null,
+    jobsToBeDone: ['reduce-time', 'empower-agents', 'increase-csat'],
+    maturityLevel: 'augmentation',
   },
   {
     id: 'search-answers',
@@ -191,6 +211,8 @@ export const CAPABILITIES = [
     icon: 'auto_awesome',
     links: { trailhead: null, docs: null, video: null },
     setupRequirements: null,
+    jobsToBeDone: ['reduce-time', 'empower-agents'],
+    maturityLevel: 'insights',
   },
   {
     id: 'service-assistant',
@@ -210,6 +232,8 @@ export const CAPABILITIES = [
       video: null,
     },
     setupRequirements: 'Workbook note: renamed from Agentforce Service Planner.',
+    jobsToBeDone: ['empower-agents', 'automate'],
+    maturityLevel: 'autonomous',
   },
   {
     id: 'einstein-bots',
@@ -225,6 +249,8 @@ export const CAPABILITIES = [
     icon: 'analytics',
     links: { trailhead: null, docs: null, video: null },
     setupRequirements: null,
+    jobsToBeDone: ['scale-ops', 'automate', 'reduce-cost'],
+    maturityLevel: 'foundation',
   },
   {
     id: 'conv-summaries',
@@ -244,6 +270,8 @@ export const CAPABILITIES = [
       video: null,
     },
     setupRequirements: null,
+    jobsToBeDone: ['empower-agents', 'reduce-time'],
+    maturityLevel: 'augmentation',
   },
   {
     id: 'conv-catch-up',
@@ -259,6 +287,8 @@ export const CAPABILITIES = [
     icon: 'auto_awesome',
     links: { trailhead: null, docs: null, video: null },
     setupRequirements: null,
+    jobsToBeDone: ['empower-agents', 'increase-csat'],
+    maturityLevel: 'insights',
   },
   {
     id: 'service-agent',
@@ -274,6 +304,8 @@ export const CAPABILITIES = [
     icon: 'memory',
     links: { trailhead: null, docs: null, video: null },
     setupRequirements: null,
+    jobsToBeDone: ['scale-ops', 'automate', 'reduce-cost'],
+    maturityLevel: 'autonomous',
   },
   {
     id: 'proactive-service',
@@ -289,6 +321,8 @@ export const CAPABILITIES = [
     icon: 'memory',
     links: { trailhead: null, docs: null, video: null },
     setupRequirements: 'Workbook note: renamed from Self Service portals to Proactive Service.',
+    jobsToBeDone: ['increase-csat', 'scale-ops'],
+    maturityLevel: 'autonomous',
   },
   {
     id: 'conv-intelligence',
@@ -304,6 +338,8 @@ export const CAPABILITIES = [
     icon: 'analytics',
     links: { trailhead: null, docs: null, video: null },
     setupRequirements: null,
+    jobsToBeDone: ['empower-agents', 'improve-data'],
+    maturityLevel: 'foundation',
   },
   {
     id: 'agentforce-voice',
@@ -319,6 +355,8 @@ export const CAPABILITIES = [
     icon: 'memory',
     links: { trailhead: null, docs: null, video: null },
     setupRequirements: null,
+    jobsToBeDone: ['scale-ops', 'automate', 'reduce-cost'],
+    maturityLevel: 'autonomous',
   },
   {
     id: 'email-templates',
@@ -334,6 +372,8 @@ export const CAPABILITIES = [
     icon: 'auto_awesome',
     links: { trailhead: null, docs: null, video: null },
     setupRequirements: null,
+    jobsToBeDone: ['automate', 'reduce-time'],
+    maturityLevel: 'augmentation',
   },
   {
     id: 'next-best-action',
@@ -353,6 +393,8 @@ export const CAPABILITIES = [
       video: null,
     },
     setupRequirements: null,
+    jobsToBeDone: ['increase-revenue', 'empower-agents'],
+    maturityLevel: 'foundation',
   },
   {
     id: 'recommend-builder',
@@ -368,6 +410,8 @@ export const CAPABILITIES = [
     icon: 'analytics',
     links: { trailhead: null, docs: null, video: null },
     setupRequirements: null,
+    jobsToBeDone: ['automate', 'empower-agents'],
+    maturityLevel: 'foundation',
   },
   {
     id: 'pre-work-brief',
@@ -383,6 +427,8 @@ export const CAPABILITIES = [
     icon: 'auto_awesome',
     links: { trailhead: null, docs: null, video: null },
     setupRequirements: null,
+    jobsToBeDone: ['empower-agents', 'increase-csat'],
+    maturityLevel: 'augmentation',
   },
   {
     id: 'fs-agent',
@@ -398,6 +444,8 @@ export const CAPABILITIES = [
     icon: 'memory',
     links: { trailhead: null, docs: null, video: null },
     setupRequirements: null,
+    jobsToBeDone: ['empower-agents', 'reduce-cost'],
+    maturityLevel: 'autonomous',
   },
   {
     id: 'scheduling-agent',
@@ -413,6 +461,8 @@ export const CAPABILITIES = [
     icon: 'memory',
     links: { trailhead: null, docs: null, video: null },
     setupRequirements: null,
+    jobsToBeDone: ['automate', 'increase-csat'],
+    maturityLevel: 'autonomous',
   },
   {
     id: 'knowledge-edits',
@@ -428,6 +478,8 @@ export const CAPABILITIES = [
     icon: 'auto_awesome',
     links: { trailhead: null, docs: null, video: null },
     setupRequirements: null,
+    jobsToBeDone: ['automate', 'reduce-time'],
+    maturityLevel: 'augmentation',
   },
   {
     id: 'service-ai-grounding',
@@ -447,6 +499,8 @@ export const CAPABILITIES = [
       video: null,
     },
     setupRequirements: null,
+    jobsToBeDone: ['improve-data', 'increase-csat'],
+    maturityLevel: 'augmentation',
   },
   {
     id: 'real-time-translations',
@@ -462,5 +516,7 @@ export const CAPABILITIES = [
     icon: 'auto_awesome',
     links: { trailhead: null, docs: null, video: null },
     setupRequirements: null,
+    jobsToBeDone: ['scale-ops', 'increase-csat'],
+    maturityLevel: 'augmentation',
   },
 ];

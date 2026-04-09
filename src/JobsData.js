@@ -1,0 +1,58 @@
+export const JOBS = [
+  {
+    id: 'reduce-time',
+    label: 'Reduce Response Time',
+    icon: 'schedule',
+    color: '#0176D3',
+    description: 'Speed up customer interactions and decrease resolution time',
+  },
+  {
+    id: 'scale-ops',
+    label: 'Scale Without Hiring',
+    icon: 'trending_up',
+    color: '#06A59A',
+    description: 'Handle more volume without increasing headcount',
+  },
+  {
+    id: 'improve-data',
+    label: 'Improve Data Quality',
+    icon: 'verified',
+    color: '#FFDB3C',
+    description: 'Enhance accuracy and completeness of CRM data',
+  },
+  {
+    id: 'automate',
+    label: 'Automate Tasks',
+    icon: 'smart_toy',
+    color: '#7B5EA7',
+    description: 'Eliminate manual, repetitive work',
+  },
+  {
+    id: 'increase-csat',
+    label: 'Increase CSAT',
+    icon: 'sentiment_satisfied',
+    color: '#45C65A',
+    description: 'Improve customer satisfaction scores',
+  },
+  {
+    id: 'reduce-cost',
+    label: 'Reduce Costs',
+    icon: 'savings',
+    color: '#E31754',
+    description: 'Lower operational expenses and improve efficiency',
+  },
+  {
+    id: 'empower-agents',
+    label: 'Empower Agents',
+    icon: 'support_agent',
+    color: '#9c40ff',
+    description: 'Give agents better tools and insights',
+  },
+  {
+    id: 'increase-revenue',
+    label: 'Increase Revenue',
+    icon: 'attach_money',
+    color: '#0176D3',
+    description: 'Drive more deals and expand customer accounts',
+  },
+];

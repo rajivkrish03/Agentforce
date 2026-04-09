@@ -25,6 +25,8 @@ export const CAPABILITIES = [
       docs: 'https://help.salesforce.com/s/articleView?id=sf.einstein_sales_lead_scoring.htm',
       trailhead: 'https://trailhead.salesforce.com/content/learn/modules/einstein-lead-scoring',
     },
+    jobsToBeDone: ['reduce-time', 'increase-revenue', 'empower-agents'],
+    maturityLevel: 'foundation',
   },
   {
     id: 'einstein-opportunity-scoring',
@@ -50,6 +52,8 @@ export const CAPABILITIES = [
     links: {
       docs: 'https://help.salesforce.com/s/articleView?id=sf.einstein_sales_opportunity_scoring.htm',
     },
+    jobsToBeDone: ['increase-revenue', 'empower-agents'],
+    maturityLevel: 'foundation',
   },
   {
     id: 'einstein-forecasting',
@@ -75,6 +79,8 @@ export const CAPABILITIES = [
     links: {
       docs: 'https://help.salesforce.com/s/articleView?id=sf.sales_core_forecasts.htm',
     },
+    jobsToBeDone: ['empower-agents', 'increase-revenue'],
+    maturityLevel: 'foundation',
   },
   {
     id: 'einstein-coach',
@@ -100,6 +106,8 @@ export const CAPABILITIES = [
     links: {
       docs: 'https://help.salesforce.com/s/articleView?id=sf.einstein_sales_coach.htm',
     },
+    jobsToBeDone: ['empower-agents', 'increase-revenue'],
+    maturityLevel: 'augmentation',
   },
   {
     id: 'einstein-conversation-insights',
@@ -125,6 +133,8 @@ export const CAPABILITIES = [
     links: {
       docs: 'https://help.salesforce.com/s/articleView?id=sf.sales_conversation_insights.htm',
     },
+    jobsToBeDone: ['empower-agents', 'improve-data'],
+    maturityLevel: 'augmentation',
   },
   {
     id: 'einstein-activity-capture',
@@ -150,6 +160,8 @@ export const CAPABILITIES = [
     links: {
       docs: 'https://help.salesforce.com/s/articleView?id=sf.einstein_sales_activity_capture.htm',
     },
+    jobsToBeDone: ['automate', 'improve-data'],
+    maturityLevel: 'foundation',
   },
   {
     id: 'einstein-email-insights',
@@ -175,6 +187,8 @@ export const CAPABILITIES = [
     links: {
       docs: 'https://help.salesforce.com/s/articleView?id=sf.einstein_sales_email_insights.htm',
     },
+    jobsToBeDone: ['empower-agents', 'reduce-time'],
+    maturityLevel: 'augmentation',
   },
   {
     id: 'einstein-recommended-connections',
@@ -200,6 +214,8 @@ export const CAPABILITIES = [
     links: {
       docs: 'https://help.salesforce.com/s/articleView?id=sf.einstein_sales_recommended_connections.htm',
     },
+    jobsToBeDone: ['increase-revenue', 'empower-agents'],
+    maturityLevel: 'foundation',
   },
   {
     id: 'einstein-campaign-insights',
@@ -225,6 +241,8 @@ export const CAPABILITIES = [
     links: {
       docs: 'https://help.salesforce.com/s/articleView?id=sf.campaigns_einstein_insights.htm',
     },
+    jobsToBeDone: ['increase-revenue', 'reduce-cost'],
+    maturityLevel: 'augmentation',
   },
   {
     id: 'einstein-behavior-scoring',
@@ -250,6 +268,8 @@ export const CAPABILITIES = [
     links: {
       docs: 'https://help.salesforce.com/s/articleView?id=sf.pardot_einstein_behavior_scoring.htm',
     },
+    jobsToBeDone: ['increase-revenue', 'empower-agents'],
+    maturityLevel: 'foundation',
   },
   {
     id: 'einstein-attribution',
@@ -275,6 +295,8 @@ export const CAPABILITIES = [
     links: {
       docs: 'https://help.salesforce.com/s/articleView?id=sf.einstein_sales_attribution.htm',
     },
+    jobsToBeDone: ['increase-revenue', 'reduce-cost'],
+    maturityLevel: 'insights',
   },
   {
     id: 'einstein-send-time-optimization',
@@ -300,6 +322,8 @@ export const CAPABILITIES = [
     links: {
       docs: 'https://help.salesforce.com/s/articleView?id=sf.pardot_einstein_send_time_optimization.htm',
     },
+    jobsToBeDone: ['increase-revenue', 'automate'],
+    maturityLevel: 'augmentation',
   },
 
   // AGENTIC ERA
@@ -327,6 +351,8 @@ export const CAPABILITIES = [
     links: {
       docs: 'https://help.salesforce.com/s/articleView?id=sf.agentforce_sales.htm',
     },
+    jobsToBeDone: ['scale-ops', 'increase-revenue', 'automate'],
+    maturityLevel: 'autonomous',
   },
   {
     id: 'agentforce-qualification',
@@ -352,6 +378,8 @@ export const CAPABILITIES = [
     links: {
       docs: 'https://help.salesforce.com/s/articleView?id=sf.agentforce_sales.htm',
     },
+    jobsToBeDone: ['scale-ops', 'automate', 'increase-revenue'],
+    maturityLevel: 'autonomous',
   },
   {
     id: 'agentforce-lead-nurturing',
@@ -377,6 +405,8 @@ export const CAPABILITIES = [
     links: {
       docs: 'https://help.salesforce.com/s/articleView?id=sf.agentforce_sales.htm',
     },
+    jobsToBeDone: ['scale-ops', 'increase-revenue'],
+    maturityLevel: 'insights',
   },
   {
     id: 'agentforce-sales-management',
@@ -402,6 +432,8 @@ export const CAPABILITIES = [
     links: {
       docs: 'https://help.salesforce.com/s/articleView?id=sf.agentforce_sales.htm',
     },
+    jobsToBeDone: ['empower-agents', 'increase-revenue'],
+    maturityLevel: 'insights',
   },
   {
     id: 'agentforce-pipeline-management',
@@ -427,6 +459,8 @@ export const CAPABILITIES = [
     links: {
       docs: 'https://help.salesforce.com/s/articleView?id=sf.agentforce_sales.htm',
     },
+    jobsToBeDone: ['automate', 'improve-data', 'increase-revenue'],
+    maturityLevel: 'insights',
   },
   {
     id: 'agentforce-account-management',
@@ -452,6 +486,8 @@ export const CAPABILITIES = [
     links: {
       docs: 'https://help.salesforce.com/s/articleView?id=sf.agentforce_sales.htm',
     },
+    jobsToBeDone: ['increase-revenue', 'empower-agents'],
+    maturityLevel: 'autonomous',
   },
   {
     id: 'agentforce-sales-coach',
@@ -477,6 +513,8 @@ export const CAPABILITIES = [
     links: {
       docs: 'https://help.salesforce.com/s/articleView?id=sf.agentforce_sales.htm',
     },
+    jobsToBeDone: ['empower-agents', 'increase-revenue'],
+    maturityLevel: 'insights',
   },
   {
     id: 'agentforce-prospecting',
@@ -502,5 +540,7 @@ export const CAPABILITIES = [
     links: {
       docs: 'https://help.salesforce.com/s/articleView?id=sf.agentforce_sales.htm',
     },
+    jobsToBeDone: ['scale-ops', 'increase-revenue', 'automate'],
+    maturityLevel: 'autonomous',
   },
 ];
