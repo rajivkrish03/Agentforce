@@ -36,6 +36,134 @@ const ERAS = [
   { id: 'agentic', label: 'Agentic', icon: 'memory', color: '#E31754' },
 ];
 
+const VOICE_IMPLEMENTATION_CHECKLIST = [
+  {
+    id: 'environment',
+    title: 'ENVIRONMENT SETUP',
+    icon: 'dns',
+    color: '#0176D3',
+    items: [
+      'Get access to all environments (Dev, Prod, Full, etc.)',
+      'Set up Service Cloud Voice & Amazon Connect for each environment (each needs a unique root email)',
+      'Run latency testing to determine AWS regions (under 200ms average is acceptable)',
+      'Resolve all network blocks ASAP — send whitepaper to client IT team with UAT & Prod parameters',
+      'Validate agent system requirements (check both Salesforce and Amazon Connect requirements)',
+    ]
+  },
+  {
+    id: 'prerequisites',
+    title: 'PREREQUISITES & ORG SETUP',
+    icon: 'settings',
+    color: '#06A59A',
+    items: [
+      'Enable a custom domain in Salesforce (required before Voice can work)',
+      'Enable Omni-Channel in the Salesforce org',
+      'Enable Identity Provider (SSO) between Salesforce and Amazon Connect',
+      'Confirm SCV deployment model — Bundle (Salesforce-managed AWS) vs BYOA (customer\'s own AWS)',
+      'Confirm SCV licenses are purchased and assigned to users',
+    ]
+  },
+  {
+    id: 'numbers',
+    title: 'NUMBERS & PORTING',
+    icon: 'phone_forwarded',
+    color: '#FFDB3C',
+    items: [
+      'Get a full list of all numbers in scope (IVR & direct), including country codes',
+      'Understand outbound Caller ID requirements (confirm if dynamic switching is needed — requires custom build)',
+      'Collect porting paperwork — US/CA: invoice + account number + address. Other countries vary.',
+      'Submit porting cases via AWS Support (from PROD only) — international numbers ASAP, US can wait until Sprint 1–2',
+      'Register all new numbers claimed (US numbers — ~1 month, must be done manually)',
+    ]
+  },
+  {
+    id: 'design',
+    title: 'DESIGN & PLANNING',
+    icon: 'architecture',
+    color: '#E31754',
+    items: [
+      'Complete IVR flow designs (caller experience)',
+      'Complete agent workflow & screen flow designs (agent experience)',
+      'Build a detailed go-live delivery plan (training dates, cutover dates, support bridge times, deployment times)',
+      'Align on the cutover date — deploy to Prod first, smoke test a few days, then cut over. Aim for off-hours.',
+      'Discuss porting mitigation plan with client (include a fallback number in legacy system)',
+    ]
+  },
+  {
+    id: 'aws',
+    title: 'AWS CONFIGURATION',
+    icon: 'cloud',
+    color: '#FF9900',
+    items: [
+      'Upgrade service limits via AWS Support (2–3 weeks) — default concurrent calls = 10, phone numbers = 5, both need increasing',
+      'Enable global outbound dialing via AWS Case (~1 week) — only enable countries the client does business in',
+      'If forwarding: claim DID numbers in Prod 1:1 with original numbers and test forwarding ASAP',
+      'If forwarding + Caller ID needed: submit AWS case for outbound masking (requires proof of ownership or in-progress porting case)',
+    ]
+  },
+  {
+    id: 'salesforce',
+    title: 'SALESFORCE CONFIGURATION',
+    icon: 'tune',
+    color: '#0176D3',
+    items: [
+      'Assign Permission Sets / Permission Set Groups to all agents',
+      'Create Contact Center Groups (Routing Profiles) in Salesforce — enable Contact Center Groups in Voice Setup, then import routing profiles',
+      'Import queues and complete queue mapping from Amazon Connect',
+      'Set outbound Caller ID, outbound number, and call flow per queue',
+      'Do NOT deploy queues via manifest — import through the Contact Center page only',
+      'Set up User Presence Mapping (per environment — UAT and Prod)',
+      'Create Contact Center Channels for each phone number',
+      'Configure call dispositions and wrap-up codes',
+      'Configure call transcription preferences (Einstein features, if licensed)',
+      'Configure the Softphone Layout for the agent console',
+    ]
+  },
+  {
+    id: 'users',
+    title: 'USERS & ACCESS',
+    icon: 'group',
+    color: '#06A59A',
+    items: [
+      'Add users to the Contact Center and assign Contact Center Groups',
+      'In Amazon Connect: assign routing profiles and adjust security profiles per user',
+      'Remove previous call center assignments from users if applicable',
+    ]
+  },
+  {
+    id: 'testing',
+    title: 'TESTING & UAT',
+    icon: 'bug_report',
+    color: '#7B5EA7',
+    items: [
+      'Define a formal UAT test plan — test inbound calls, transfers, voicemail, and outbound dialing',
+      'Set up call recording settings and confirm storage/retention rules with client',
+      'Test forwarding ASAP if forwarding numbers — ensure no issues before go-live',
+    ]
+  },
+  {
+    id: 'training',
+    title: 'TRAINING & REPORTING',
+    icon: 'school',
+    color: '#FFDB3C',
+    items: [
+      'Build and deliver agent training on the SCV softphone and Omni-Channel statuses',
+      'Set up the Voice Analytics Dashboard for supervisors',
+    ]
+  },
+  {
+    id: 'final',
+    title: 'FINAL STEPS',
+    icon: 'check_circle',
+    color: '#45C65A',
+    items: [
+      'Import Contact Center Groups again per environment (environment-specific step)',
+      'If porting: set up mitigation flow to redirect calls to fallback number in case of early porting issues',
+      'Update AWS porting case with the actual confirmed cutover date (requires 5–10 business days notice to change)',
+    ]
+  },
+];
+
 function App() {
   const [activeCloud, setActiveCloud] = useState('service');
   const [activeChannel, setActiveChannel] = useState(null);
@@ -47,6 +175,11 @@ function App() {
   const [hoveredCapability, setHoveredCapability] = useState(null);
   const [theme, setTheme] = useState('dark');
   const [isOverview, setIsOverview] = useState(true);
+  const [showChecklist, setShowChecklist] = useState(false);
+  const [checklistStates, setChecklistStates] = useState(() => {
+    const saved = localStorage.getItem('voiceChecklistStates');
+    return saved ? JSON.parse(saved) : {};
+  });
 
   useEffect(() => {
     document.documentElement.className = theme;
@@ -112,6 +245,19 @@ function App() {
     } else {
       setSelectedCapability(capability);
     }
+  };
+
+  const toggleChecklistItem = (sectionId, itemIndex) => {
+    const key = `${sectionId}-${itemIndex}`;
+    const newStates = { ...checklistStates, [key]: !checklistStates[key] };
+    setChecklistStates(newStates);
+    localStorage.setItem('voiceChecklistStates', JSON.stringify(newStates));
+  };
+
+  const getChecklistProgress = () => {
+    const totalItems = VOICE_IMPLEMENTATION_CHECKLIST.reduce((sum, section) => sum + section.items.length, 0);
+    const completedItems = Object.values(checklistStates).filter(Boolean).length;
+    return { total: totalItems, completed: completedItems, percentage: Math.round((completedItems / totalItems) * 100) };
   };
 
   const currentEra = ERAS.find(e => e.id === activeFilter);
@@ -817,6 +963,79 @@ function App() {
                     </div>
                   </div>
                 ))}
+
+                {/* Implementation Checklist (Voice Channel Only) */}
+                {activeChannel === 'voice' && (
+                  <div className="col-span-12 mt-8">
+                    <button
+                      onClick={() => setShowChecklist(!showChecklist)}
+                      className="w-full bg-[var(--surface-container-low)] border border-[var(--border)] rounded-2xl p-6 hover:border-primary-container transition-all duration-300 hover:shadow-lg group"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-xl bg-primary-container/20 border border-primary-container/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <span className="material-symbols-outlined text-2xl text-primary-container">checklist</span>
+                          </div>
+                          <div className="text-left">
+                            <h3 className="text-lg font-black text-[var(--on-surface)] uppercase tracking-tight">Implementation Checklist</h3>
+                            <p className="text-xs text-[var(--on-surface-variant)] font-medium">
+                              {getChecklistProgress().completed} of {getChecklistProgress().total} steps completed ({getChecklistProgress().percentage}%)
+                            </p>
+                          </div>
+                        </div>
+                        <span className={`material-symbols-outlined text-2xl text-[var(--on-surface-variant)] transition-transform ${showChecklist ? 'rotate-180' : ''}`}>
+                          expand_more
+                        </span>
+                      </div>
+
+                      {/* Progress Bar */}
+                      <div className="mt-4 h-2 bg-on-surface/5 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-primary-container to-[#45C65A] transition-all duration-500 rounded-full"
+                          style={{ width: `${getChecklistProgress().percentage}%` }}
+                        />
+                      </div>
+                    </button>
+
+                    {/* Checklist Sections */}
+                    {showChecklist && (
+                      <div className="mt-6 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        {VOICE_IMPLEMENTATION_CHECKLIST.map((section) => (
+                          <div key={section.id} className="bg-[var(--surface-container-low)] border border-[var(--border)] rounded-2xl p-6 hover:border-[var(--border)] transition-all">
+                            <div className="flex items-center gap-3 mb-4">
+                              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${section.color}20`, border: `1px solid ${section.color}40` }}>
+                                <span className="material-symbols-outlined text-lg" style={{ color: section.color }}>{section.icon}</span>
+                              </div>
+                              <h4 className="text-sm font-black text-[var(--on-surface)] uppercase tracking-wide">{section.title}</h4>
+                              <span className="ml-auto text-xs font-bold text-[var(--on-surface-variant)]">
+                                {section.items.filter((_, idx) => checklistStates[`${section.id}-${idx}`]).length}/{section.items.length}
+                              </span>
+                            </div>
+                            <div className="space-y-3">
+                              {section.items.map((item, idx) => (
+                                <label key={idx} className="flex items-start gap-3 cursor-pointer group/item">
+                                  <input
+                                    type="checkbox"
+                                    checked={checklistStates[`${section.id}-${idx}`] || false}
+                                    onChange={() => toggleChecklistItem(section.id, idx)}
+                                    className="mt-1 w-4 h-4 rounded border-2 border-[var(--border)] checked:bg-primary-container checked:border-primary-container cursor-pointer transition-all"
+                                  />
+                                  <span className={`text-sm leading-relaxed transition-all ${
+                                    checklistStates[`${section.id}-${idx}`]
+                                      ? 'text-[var(--on-surface-variant)] line-through opacity-60'
+                                      : 'text-[var(--on-surface)] group-hover/item:text-primary-container'
+                                  }`}>
+                                    {item}
+                                  </span>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Storyline Panel (Right Side) */}

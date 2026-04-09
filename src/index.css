@@ -128,3 +128,35 @@
   background: var(--primary);
   box-shadow: 0 0 10px var(--primary);
 }
+
+/* Custom checkbox styling */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  position: relative;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  transition: all 0.3s ease;
+}
+
+input[type="checkbox"]:checked {
+  background: #0176D3;
+  border-color: #0176D3;
+}
+
+input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+input[type="checkbox"]:hover {
+  border-color: #0176D3;
+  box-shadow: 0 0 0 3px rgba(1, 118, 211, 0.1);
+}
