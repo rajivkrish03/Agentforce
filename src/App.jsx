@@ -122,7 +122,7 @@ function App() {
       <nav className="fixed top-0 w-full z-50 bg-[var(--nav-bg)] backdrop-blur-2xl border-b border-[var(--border)] flex justify-between items-center px-10 h-24 shadow-2xl transition-all duration-500">
         <div className="flex items-center gap-8">
           <h1 className="font-headline font-black tracking-tighter text-[var(--on-surface)] uppercase text-xl flex items-center gap-1 shrink-0">
-            <span className="text-[#0176D3]">AI EXPLORER</span>
+            <span className="text-[#0176D3]">AGENTFORCE</span> <span className="text-[var(--on-surface-variant)]">CAPABILITIES NAVIGATOR</span>
           </h1>
           
           <div className="h-8 w-px bg-[var(--border)]"></div>
@@ -217,7 +217,7 @@ function App() {
                 </>
               ) : (
                 <>
-                  <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/40 mb-4">Agentforce Tiles</p>
+                  <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/40 mb-4">Agentforce Hub</p>
                   <nav className="flex flex-col gap-1 px-3">
                     {AGENTFORCE_TILES.map((tile) => (
                       <button
@@ -254,7 +254,7 @@ function App() {
           ) : (
             <>
               <div>
-                <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/40 mb-4">AI Frameworks</p>
+                <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/40 mb-4">AI Eras</p>
                 <nav className="flex flex-col gap-1 px-3">
                   {ERAS.map(era => (
                     <button
@@ -474,8 +474,8 @@ function App() {
             /* Level 1: Top-Level Tiles Grid */
             <div className="animate-in fade-in duration-700">
               <header className="mb-12">
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#7B5EA7] mb-4">Agentforce Tiles</p>
-                <h2 className="text-5xl font-black tracking-tighter text-[var(--on-surface)] mb-3 uppercase italic">Agentforce Tiles</h2>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#7B5EA7] mb-4">Agentforce Hub</p>
+                <h2 className="text-5xl font-black tracking-tighter text-[var(--on-surface)] mb-3 uppercase italic">Agentforce Hub</h2>
                 <p className="text-[var(--on-surface-variant)] text-lg font-medium max-w-3xl">
                   Pick the Agentforce lens you want to inspect. Each tile opens the timeline view for that area.
                 </p>
@@ -683,7 +683,7 @@ function App() {
                </span>
             </div>
             <h2 className="text-6xl font-black text-[var(--on-surface)] tracking-tighter uppercase mb-4 italic">
-              {activeCloud} <span className="text-[var(--on-surface-variant)]/40">Observatory</span>
+              Marketing <span className="text-[var(--on-surface-variant)]/40">Command Center</span>
             </h2>
             <div className="flex items-center gap-3 justify-center mb-8">
                <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
@@ -704,7 +704,7 @@ function App() {
           <div className="animate-in fade-in duration-700">
             <header className="mb-12">
               <h2 className="text-5xl font-black tracking-tighter text-[var(--on-surface)] mb-2 uppercase italic">
-                {activeCloud === 'sales' ? 'Sales' : 'Service'} <span className="text-[#0176D3]">Observatory</span>
+                {activeCloud === 'sales' ? 'Sales' : 'Service'} <span className="text-[#0176D3]">Command Center</span>
               </h2>
               <p className="text-[var(--on-surface-variant)] text-lg font-medium">
                 {activeCloud === 'sales'
@@ -999,7 +999,7 @@ function App() {
           </div>
           <div className="flex items-center gap-2 text-[var(--on-surface-variant)]">
             <span className="material-symbols-outlined text-sm">copyright</span>
-            <span className="text-xs font-medium">2026 Salesforce AI Explorer</span>
+            <span className="text-xs font-medium">2026 Agentforce Capabilities Navigator</span>
           </div>
         </div>
       </footer>
