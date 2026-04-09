@@ -1089,8 +1089,8 @@ function App() {
             </header>
 
             <div className="flex gap-10 items-start">
-              {/* Journey Swimlanes View */}
-              {viewMode === 'journey' && JOURNEYS[activeCloud]?.[activeChannel] ? (
+              {/* Journey Swimlanes View - Only when channel is selected */}
+              {activeChannel && viewMode === 'journey' && JOURNEYS[activeCloud]?.[activeChannel] ? (
                 <div className="w-full pb-24">
                   <div className="mb-8">
                     <h3 className="text-2xl font-black text-[var(--on-surface)] mb-2 uppercase tracking-tight">
@@ -1353,8 +1353,8 @@ function App() {
                 </div>
               )}
 
-              {/* Storyline Panel (Right Side) - Only in Capabilities View */}
-              {viewMode === 'capabilities' && (
+              {/* Storyline Panel (Right Side) - Hide only when in Journey view */}
+              {!(activeChannel && viewMode === 'journey') && (
               <div className="flex-1 sticky top-32">
                 <div className="glass-panel border-[var(--border)] rounded-3xl p-8 min-h-[500px] flex flex-col relative overflow-hidden group/panel shadow-2xl">
                   {hoveredCapability ? (
