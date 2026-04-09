@@ -983,6 +983,27 @@ function App() {
         </div>
       )}
 
+      {/* Footer */}
+      <footer className="ml-64 mt-auto py-8 px-12 border-t border-[var(--border)] bg-[var(--surface-container-low)]">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-1 h-12 rounded-full" style={{ backgroundColor: CLOUDS.find(c => c.id === activeCloud)?.accent || '#0176D3' }}></div>
+            <div>
+              <p className="text-sm font-bold text-[var(--on-surface)] tracking-tight">
+                Designed & Developed by <span className="text-[#0176D3]">Rajivkrishnan Jeyaram</span>
+              </p>
+              <p className="text-xs text-[var(--on-surface-variant)] font-medium tracking-wide">
+                Senior Forward Deployed Engineer · Salesforce
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-[var(--on-surface-variant)]">
+            <span className="material-symbols-outlined text-sm">copyright</span>
+            <span className="text-xs font-medium">2026 Salesforce AI Explorer</span>
+          </div>
+        </div>
+      </footer>
+
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 4px;
