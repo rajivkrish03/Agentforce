@@ -1091,7 +1091,7 @@ function App() {
             <div className="flex gap-10 items-start">
               {/* Journey Swimlanes View */}
               {viewMode === 'journey' && JOURNEYS[activeCloud]?.[activeChannel] ? (
-                <div className="w-3/5 pb-24">
+                <div className="w-full pb-24">
                   <div className="mb-8">
                     <h3 className="text-2xl font-black text-[var(--on-surface)] mb-2 uppercase tracking-tight">
                       {JOURNEYS[activeCloud][activeChannel].name}
@@ -1101,7 +1101,7 @@ function App() {
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-5 gap-4">
+                  <div className="grid grid-cols-5 gap-6 max-w-7xl mx-auto">
                     {JOURNEYS[activeCloud][activeChannel].phases.map((phase) => {
                       const phaseCapabilities = JOURNEYS[activeCloud][activeChannel].mapping[phase.id] || [];
                       const capabilities = phaseCapabilities
@@ -1353,7 +1353,8 @@ function App() {
                 </div>
               )}
 
-              {/* Storyline Panel (Right Side) */}
+              {/* Storyline Panel (Right Side) - Only in Capabilities View */}
+              {viewMode === 'capabilities' && (
               <div className="flex-1 sticky top-32">
                 <div className="glass-panel border-[var(--border)] rounded-3xl p-8 min-h-[500px] flex flex-col relative overflow-hidden group/panel shadow-2xl">
                   {hoveredCapability ? (
@@ -1439,6 +1440,7 @@ function App() {
                   <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#0176D3]/5 blur-[80px] pointer-events-none"></div>
                 </div>
               </div>
+              )}
             </div>
           </div>
         )}
