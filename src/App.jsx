@@ -940,7 +940,7 @@ function App() {
                   </div>
                   <div>
                      <h2 className="text-4xl font-black tracking-tighter text-[var(--on-surface)] capitalize leading-none">
-                       {activeChannel ? activeChannel.replace('_', ' ') : `${activeFilter} AI Nodes`}
+                       {activeChannel ? activeChannel.replace('_', ' ') : `${activeFilter} AI`}
                      </h2>
                      <p className="text-[var(--on-surface-variant)] text-xs mt-2 font-bold uppercase tracking-widest">
                        {activeChannel ? `${activeCloud === 'sales' ? 'Sales' : 'Service'} Channel` : 'Global Discovery'}
@@ -1177,9 +1177,6 @@ function App() {
                              <div className="p-2 rounded-lg bg-on-surface/5 border border-[var(--border)]">
                                <span className="material-symbols-outlined text-2xl" style={{ color: ERAS.find(e => e.id === hoveredCapability.era).color }}>{hoveredCapability.icon}</span>
                              </div>
-                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-on-surface/5 border border-[var(--border)] text-[var(--on-surface-variant)]">
-                               {hoveredCapability.era} AI Node
-                             </span>
                           </div>
                           <h3 className="text-4xl font-black tracking-tighter text-[var(--on-surface)] mb-2 leading-tight">
                             {hoveredCapability.fullName.split(' — ')[0]}
