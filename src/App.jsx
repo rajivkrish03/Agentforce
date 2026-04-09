@@ -36,6 +36,36 @@ const ERAS = [
   { id: 'agentic', label: 'Agentic', icon: 'memory', color: '#E31754' },
 ];
 
+const TELEPHONY_PROVIDERS = [
+  {
+    id: 'amazon-connect',
+    name: 'Service Cloud Voice with Amazon Connect',
+    shortName: 'Amazon Connect',
+    icon: 'cloud',
+    color: '#FF9900',
+    description: 'Native integration with AWS Amazon Connect',
+    hasChecklist: true,
+  },
+  {
+    id: 'partner-telephony',
+    name: 'Service Cloud Voice with Partner Telephony',
+    shortName: 'Partner Telephony',
+    icon: 'settings_phone',
+    color: '#06A59A',
+    description: 'Integrate with certified telephony partners',
+    hasChecklist: false,
+  },
+  {
+    id: 'partner-from-connect',
+    name: 'Service Cloud Voice with Partner Telephony from Amazon Connect',
+    shortName: 'Partner from Connect',
+    icon: 'swap_horiz',
+    color: '#7B5EA7',
+    description: 'Migrate from Amazon Connect to Partner Telephony',
+    hasChecklist: false,
+  },
+];
+
 const VOICE_IMPLEMENTATION_CHECKLIST = [
   {
     id: 'environment',
@@ -180,6 +210,7 @@ function App() {
     const saved = localStorage.getItem('voiceChecklistStates');
     return saved ? JSON.parse(saved) : {};
   });
+  const [selectedTelephony, setSelectedTelephony] = useState(null);
 
   useEffect(() => {
     document.documentElement.className = theme;
@@ -928,6 +959,84 @@ function App() {
               </div>
             </header>
 
+            {/* Telephony Provider Banner (Voice Channel Only) */}
+            {activeChannel === 'voice' && (
+              <div className="mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
+                <div className="bg-gradient-to-r from-[#0176D3]/10 via-[#FF9900]/10 to-[#06A59A]/10 border border-[var(--border)] rounded-2xl p-6 backdrop-blur-sm">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-[#0176D3]/20 border border-[#0176D3]/30 flex items-center justify-center">
+                      <span className="material-symbols-outlined text-xl text-[#0176D3]">campaign</span>
+                    </div>
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-wider text-[var(--on-surface-variant)]">Product Rename Notice</p>
+                      <h3 className="text-sm font-bold text-[var(--on-surface)]">
+                        <span className="line-through opacity-60">Service Cloud Voice</span>
+                        <span className="mx-2">→</span>
+                        <span className="text-[#0176D3]">Salesforce Voice</span>
+                      </h3>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-[var(--border)] pt-5 mt-4">
+                    <p className="text-xs font-bold uppercase tracking-widest text-[var(--on-surface-variant)] mb-3">Select Telephony Provider</p>
+                    <div className="grid grid-cols-3 gap-4">
+                      {TELEPHONY_PROVIDERS.map((provider) => (
+                        <button
+                          key={provider.id}
+                          onClick={() => {
+                            setSelectedTelephony(provider.id);
+                            if (!provider.hasChecklist) {
+                              setShowChecklist(false);
+                            }
+                          }}
+                          className={`group relative p-5 rounded-xl border-2 transition-all duration-300 text-left ${
+                            selectedTelephony === provider.id
+                              ? 'border-[var(--on-surface)] bg-on-surface/5 shadow-lg scale-[1.02]'
+                              : 'border-[var(--border)] bg-[var(--surface)] hover:border-[var(--border)] hover:shadow-md hover:-translate-y-1'
+                          }`}
+                          style={{
+                            borderColor: selectedTelephony === provider.id ? provider.color : undefined,
+                            boxShadow: selectedTelephony === provider.id ? `0 0 24px ${provider.color}30` : undefined,
+                          }}
+                        >
+                          <div className="flex items-start gap-3 mb-3">
+                            <div
+                              className="w-8 h-8 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110"
+                              style={{
+                                backgroundColor: `${provider.color}20`,
+                                border: `1px solid ${provider.color}40`,
+                              }}
+                            >
+                              <span className="material-symbols-outlined text-base" style={{ color: provider.color }}>
+                                {provider.icon}
+                              </span>
+                            </div>
+                            {selectedTelephony === provider.id && (
+                              <span className="material-symbols-outlined text-sm ml-auto" style={{ color: provider.color }}>
+                                check_circle
+                              </span>
+                            )}
+                          </div>
+                          <h4 className="text-xs font-black text-[var(--on-surface)] uppercase tracking-tight leading-tight mb-2">
+                            {provider.shortName}
+                          </h4>
+                          <p className="text-[10px] text-[var(--on-surface-variant)] leading-relaxed">
+                            {provider.description}
+                          </p>
+                          {provider.hasChecklist && (
+                            <div className="mt-3 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider" style={{ color: provider.color }}>
+                              <span className="material-symbols-outlined text-xs">checklist</span>
+                              <span>Checklist Available</span>
+                            </div>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="flex gap-10 items-start">
               {/* Feature Grid */}
               <div className="w-3/5 grid grid-cols-12 gap-x-4 gap-y-4 pb-24 auto-rows-max">
@@ -964,8 +1073,8 @@ function App() {
                   </div>
                 ))}
 
-                {/* Implementation Checklist (Voice Channel Only) */}
-                {activeChannel === 'voice' && (
+                {/* Implementation Checklist (Voice Channel + Amazon Connect Only) */}
+                {activeChannel === 'voice' && selectedTelephony === 'amazon-connect' && (
                   <div className="col-span-12 mt-8">
                     <button
                       onClick={() => setShowChecklist(!showChecklist)}
