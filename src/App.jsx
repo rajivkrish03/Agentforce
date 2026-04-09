@@ -993,7 +993,7 @@ function App() {
                 Designed & Developed by <span className="text-[#0176D3]">Rajivkrishnan Jeyaram</span>
               </p>
               <p className="text-xs text-[var(--on-surface-variant)] font-medium tracking-wide">
-                Senior Forward Deployed Engineer · Salesforce
+                Forward Deployed Engineer Senior · Salesforce
               </p>
             </div>
           </div>
