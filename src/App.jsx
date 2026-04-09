@@ -30,6 +30,8 @@ function App() {
   const [activeChannel, setActiveChannel] = useState(null);
   const [activeFilter, setActiveFilter] = useState('all');
   const [activeAgentforceTile, setActiveAgentforceTile] = useState(null);
+  const [selectedParent, setSelectedParent] = useState(null);
+  const [selectedChild, setSelectedChild] = useState(null);
   const [selectedCapability, setSelectedCapability] = useState(null);
   const [hoveredCapability, setHoveredCapability] = useState(null);
   const [theme, setTheme] = useState('dark');
@@ -120,6 +122,9 @@ function App() {
                   setActiveFilter('all');
                   setHoveredCapability(null);
                   setIsOverview(true);
+                  setActiveAgentforceTile(null);
+                  setSelectedParent(null);
+                  setSelectedChild(null);
                 }}
                 className={`font-headline font-bold tracking-tight px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 group relative whitespace-nowrap ${
                   activeCloud === cloud.id 
@@ -163,26 +168,73 @@ function App() {
         <div className="flex-1 overflow-y-auto no-scrollbar pb-8 flex flex-col gap-8">
           {activeCloud === 'agentforce' ? (
             <div>
-              <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/40 mb-4">Agentforce Tiles</p>
-              <nav className="flex flex-col gap-1 px-3">
-                {AGENTFORCE_TILES.map((tile) => (
+              {selectedParent ? (
+                <>
                   <button
-                    key={tile.id}
-                    onClick={() => setActiveAgentforceTile(tile.id)}
-                    className={`group px-3 py-3 rounded-xl flex items-center justify-between transition-all text-left ${
-                      activeAgentforceTile === tile.id
-                        ? 'bg-on-surface/5 text-[var(--on-surface)] ring-1 ring-[var(--border)]'
-                        : 'text-[var(--on-surface-variant)] hover:bg-on-surface/5'
-                    }`}
+                    onClick={() => {
+                      setSelectedParent(null);
+                      setSelectedChild(null);
+                    }}
+                    className="flex items-center gap-2 text-[#7B5EA7] hover:text-[var(--on-surface)] transition-colors mb-4 px-6 group"
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="material-symbols-outlined text-lg" style={{ color: tile.accent }}>{tile.icon}</span>
-                      <span className="font-headline text-[11px] font-black uppercase tracking-widest">{tile.label}</span>
-                    </div>
-                    <span className="text-[10px] font-bold text-[var(--on-surface-variant)]/60">{tile.releases.length}</span>
+                    <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest">Back to Tiles</span>
                   </button>
-                ))}
-              </nav>
+                  <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/40 mb-4">Children</p>
+                  <nav className="flex flex-col gap-1 px-3">
+                    {selectedParent.children?.map((child) => (
+                      <button
+                        key={child.id}
+                        onClick={() => setSelectedChild(child)}
+                        className={`group px-3 py-3 rounded-xl flex items-center justify-between transition-all text-left ${
+                          selectedChild?.id === child.id
+                            ? 'bg-on-surface/5 text-[var(--on-surface)] ring-1 ring-[var(--border)]'
+                            : 'text-[var(--on-surface-variant)] hover:bg-on-surface/5'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="material-symbols-outlined text-lg" style={{ color: child.accent }}>{child.icon}</span>
+                          <span className="font-headline text-[11px] font-black uppercase tracking-widest">{child.label}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </nav>
+                </>
+              ) : (
+                <>
+                  <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/40 mb-4">Agentforce Tiles</p>
+                  <nav className="flex flex-col gap-1 px-3">
+                    {AGENTFORCE_TILES.map((tile) => (
+                      <button
+                        key={tile.id}
+                        onClick={() => {
+                          if (tile.type === 'parent') {
+                            setSelectedParent(tile);
+                            setSelectedChild(null);
+                          } else {
+                            setActiveAgentforceTile(tile.id);
+                          }
+                        }}
+                        className={`group px-3 py-3 rounded-xl flex items-center justify-between transition-all text-left ${
+                          activeAgentforceTile === tile.id
+                            ? 'bg-on-surface/5 text-[var(--on-surface)] ring-1 ring-[var(--border)]'
+                            : 'text-[var(--on-surface-variant)] hover:bg-on-surface/5'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="material-symbols-outlined text-lg" style={{ color: tile.accent }}>{tile.icon}</span>
+                          <span className="font-headline text-[11px] font-black uppercase tracking-widest">{tile.label}</span>
+                        </div>
+                        {tile.type === 'parent' ? (
+                          <span className="material-symbols-outlined text-sm text-[var(--on-surface-variant)]">chevron_right</span>
+                        ) : (
+                          <span className="text-[10px] font-bold text-[var(--on-surface-variant)]/60">{tile.releases?.length || 0}</span>
+                        )}
+                      </button>
+                    ))}
+                  </nav>
+                </>
+              )}
             </div>
           ) : (
             <>
@@ -244,7 +296,165 @@ function App() {
       {/* Main Content */}
       <main className="ml-64 pt-32 p-12 min-h-screen transition-colors duration-500">
         {activeCloud === 'agentforce' ? (
-          !selectedAgentforceTile ? (
+          selectedChild ? (
+            /* Level 3: Child Capabilities View */
+            <div className="animate-in fade-in duration-700">
+              <header className="mb-12">
+                <button
+                  onClick={() => setSelectedChild(null)}
+                  className="flex items-center gap-2 text-[#7B5EA7] hover:text-[var(--on-surface)] transition-colors mb-6 group"
+                >
+                  <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest">Back to Children</span>
+                </button>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] mb-4" style={{ color: selectedChild.accent }}>{selectedChild.label}</p>
+                <h2 className="text-5xl font-black tracking-tighter text-[var(--on-surface)] mb-3 uppercase italic">{selectedChild.name}</h2>
+                <p className="text-[var(--on-surface-variant)] text-lg font-medium max-w-3xl mb-8">
+                  {selectedChild.description}
+                </p>
+              </header>
+
+              {/* Channel Support Section */}
+              {selectedChild.capabilities?.channelSupport && (
+                <div className="mb-12">
+                  <h3 className="text-2xl font-black text-[var(--on-surface)] mb-6 uppercase tracking-tight">Channel Support</h3>
+                  <div className="grid grid-cols-5 gap-6">
+                    {selectedChild.capabilities.channelSupport.map((channel) => (
+                      <div
+                        key={channel.name}
+                        className="bg-[var(--surface-container-low)] p-6 rounded-2xl border border-[var(--border)] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-xl text-center"
+                      >
+                        <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: `${channel.accent}20` }}>
+                          <span className="material-symbols-outlined text-3xl" style={{ color: channel.accent }}>{channel.icon}</span>
+                        </div>
+                        <h4 className="text-sm font-black text-[var(--on-surface)] uppercase tracking-tight mb-2">{channel.name}</h4>
+                        <span className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase ${channel.available ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                          {channel.available ? 'Available' : 'Coming Soon'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Features Section */}
+              {selectedChild.capabilities?.features && (
+                <div>
+                  <h3 className="text-2xl font-black text-[var(--on-surface)] mb-6 uppercase tracking-tight">Features</h3>
+                  <div className="grid grid-cols-3 gap-6">
+                    {selectedChild.capabilities.features.map((feature) => (
+                      <div
+                        key={feature.name}
+                        className="bg-[var(--surface-container-low)] p-6 rounded-2xl border border-[var(--border)] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-xl text-center"
+                      >
+                        <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: `${feature.accent}20` }}>
+                          <span className="material-symbols-outlined text-3xl" style={{ color: feature.accent }}>{feature.icon}</span>
+                        </div>
+                        <h4 className="text-sm font-black text-[var(--on-surface)] uppercase tracking-tight mb-2">{feature.name}</h4>
+                        <span className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase ${feature.available ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                          {feature.available ? 'Available' : 'Coming Soon'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Timeline Section */}
+              {selectedChild.releases && selectedChild.releases.length > 0 && (
+                <div className="mt-16">
+                  <h3 className="text-2xl font-black text-[var(--on-surface)] mb-8 uppercase tracking-tight">Release Timeline</h3>
+                  <div className="relative pl-10">
+                    <div className="absolute left-4 top-0 bottom-0 w-px bg-[var(--border)]"></div>
+                    <div className="space-y-8">
+                      {[...selectedChild.releases].sort((a, b) => new Date(a.date) - new Date(b.date)).map((release) => (
+                        <div key={release.id} className="relative">
+                          <div className="absolute -left-[2.35rem] top-8 w-4 h-4 rounded-full border-4 border-[var(--background)]" style={{ backgroundColor: release.accent }}></div>
+                          <div className="glass-panel rounded-[28px] border border-[var(--border)] p-8 shadow-xl">
+                            <div className="flex items-start justify-between gap-6 mb-5">
+                              <div>
+                                <div className="flex flex-wrap gap-3 mb-3">
+                                  <span
+                                    className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border"
+                                    style={{ color: release.accent, borderColor: `${release.accent}55`, backgroundColor: `${release.accent}12` }}
+                                  >
+                                    {release.dateLabel}
+                                  </span>
+                                </div>
+                                <h3 className="text-2xl font-black text-[var(--on-surface)] leading-tight mb-3">{release.title}</h3>
+                                <p className="text-[var(--on-surface-variant)] leading-relaxed">{release.summary}</p>
+                              </div>
+                              <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${release.accent}20` }}>
+                                <span className="material-symbols-outlined text-2xl" style={{ color: release.accent }}>{release.icon}</span>
+                              </div>
+                            </div>
+                            <a
+                              href={release.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-black uppercase tracking-[0.16em] text-white"
+                              style={{ backgroundColor: release.accent }}
+                            >
+                              Open Release Note
+                              <span className="material-symbols-outlined text-base">north_east</span>
+                            </a>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : selectedParent ? (
+            /* Level 2: Parent Children View */
+            <div className="animate-in fade-in duration-700">
+              <header className="mb-12">
+                <button
+                  onClick={() => setSelectedParent(null)}
+                  className="flex items-center gap-2 text-[#7B5EA7] hover:text-[var(--on-surface)] transition-colors mb-6 group"
+                >
+                  <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest">Back to Tiles</span>
+                </button>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#7B5EA7] mb-4">{selectedParent.label}</p>
+                <h2 className="text-5xl font-black tracking-tighter text-[var(--on-surface)] mb-3 uppercase italic">{selectedParent.name}</h2>
+                <p className="text-[var(--on-surface-variant)] text-lg font-medium max-w-3xl">
+                  {selectedParent.description}
+                </p>
+              </header>
+
+              <div className="grid grid-cols-2 gap-8">
+                {selectedParent.children?.map((child) => (
+                  <button
+                    key={child.id}
+                    onClick={() => setSelectedChild(child)}
+                    className="text-left group bg-[var(--surface-container-low)] p-8 rounded-2xl border border-[var(--border)] hover:-translate-y-1 transition-all duration-500 shadow-sm hover:shadow-2xl relative overflow-hidden"
+                  >
+                    <div
+                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      style={{ background: `radial-gradient(circle at top right, ${child.accent}22, transparent 50%)` }}
+                    />
+                    <div className="relative z-10">
+                      <div className="flex items-start justify-between mb-8">
+                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center border border-white/10" style={{ backgroundColor: `${child.accent}20` }}>
+                          <span className="material-symbols-outlined text-3xl" style={{ color: child.accent }}>{child.icon}</span>
+                        </div>
+                      </div>
+                      <h3 className="text-3xl font-black text-[var(--on-surface)] mb-3">{child.label}</h3>
+                      <p className="text-sm text-[var(--on-surface-variant)] leading-relaxed mb-6">{child.tagline}</p>
+                      <p className="text-sm text-[var(--on-surface)]/80 leading-relaxed mb-8">{child.description}</p>
+                      <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/60">
+                        <span>View capabilities</span>
+                        <span className="material-symbols-outlined" style={{ color: child.accent }}>arrow_forward</span>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : !selectedAgentforceTile ? (
+            /* Level 1: Top-Level Tiles Grid */
             <div className="animate-in fade-in duration-700">
               <header className="mb-12">
                 <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#7B5EA7] mb-4">Agentforce Tiles</p>
@@ -258,7 +468,13 @@ function App() {
                 {AGENTFORCE_TILES.map((tile) => (
                   <button
                     key={tile.id}
-                    onClick={() => setActiveAgentforceTile(tile.id)}
+                    onClick={() => {
+                      if (tile.type === 'parent') {
+                        setSelectedParent(tile);
+                      } else {
+                        setActiveAgentforceTile(tile.id);
+                      }
+                    }}
                     className="text-left group bg-[var(--surface-container-low)] p-8 rounded-2xl border border-[var(--border)] hover:-translate-y-1 transition-all duration-500 shadow-sm hover:shadow-2xl relative overflow-hidden"
                   >
                     <div
@@ -271,14 +487,14 @@ function App() {
                           <span className="material-symbols-outlined text-3xl" style={{ color: tile.accent }}>{tile.icon}</span>
                         </div>
                         <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-[var(--border)] text-[var(--on-surface-variant)]">
-                          {tile.releases.length} updates
+                          {tile.type === 'parent' ? `${tile.children?.length || 0} children` : `${tile.releases?.length || 0} updates`}
                         </span>
                       </div>
                       <h3 className="text-3xl font-black text-[var(--on-surface)] mb-3">{tile.label}</h3>
                       <p className="text-sm text-[var(--on-surface-variant)] leading-relaxed mb-6">{tile.tagline}</p>
                       <p className="text-sm text-[var(--on-surface)]/80 leading-relaxed mb-8">{tile.description}</p>
                       <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/60">
-                        <span>View timeline</span>
+                        <span>{tile.type === 'parent' ? 'View children' : 'View timeline'}</span>
                         <span className="material-symbols-outlined" style={{ color: tile.accent }}>arrow_forward</span>
                       </div>
                     </div>
@@ -293,6 +509,8 @@ function App() {
                   onClick={() => {
                     setActiveAgentforceTile(null);
                     setIsOverview(true);
+                    setSelectedParent(null);
+                    setSelectedChild(null);
                   }}
                   className="flex items-center gap-2 text-[#7B5EA7] hover:text-[var(--on-surface)] transition-colors mb-6 group"
                 >
