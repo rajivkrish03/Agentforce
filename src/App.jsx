@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AGENTFORCE_TILES } from './AgentforcecapabilitiesData';
-import { CAPABILITIES as LATEST_CAPABILITIES } from './ServicecapabilitiesData';
+import { CAPABILITIES as SERVICE_CAPABILITIES } from './ServicecapabilitiesData';
+import { CAPABILITIES as SALES_CAPABILITIES } from './SalescapabilitiesData';
 
 const CLOUDS = [
   { id: 'service', label: 'Service', accent: '#06A59A', icon: 'headset_mic' },
@@ -9,13 +10,23 @@ const CLOUDS = [
   { id: 'agentforce', label: 'Agentforce', accent: '#7B5EA7', icon: 'smart_toy' },
 ];
 
-const CHANNELS = [
+const SERVICE_CHANNELS = [
   { id: 'cases', label: 'Cases', icon: 'description', tagline: 'Unified case lifecycle', counts: { predictive: 5, generative: 5, agentic: 2 } },
   { id: 'messaging', label: 'Messaging', icon: 'chat', tagline: 'Real-time conversational AI', counts: { predictive: 3, generative: 5, agentic: 3 } },
   { id: 'voice', label: 'Voice', icon: 'phone', tagline: 'AI-infused voice interactions', counts: { predictive: 3, generative: 3, agentic: 1 } },
   { id: 'email', label: 'Email', icon: 'mail', tagline: 'Intelligent automated email', counts: { predictive: 1, generative: 3, agentic: 1 } },
   { id: 'field_service', label: 'Field Service', icon: 'build', tagline: 'Mobile workforce intelligence', counts: { predictive: 2, generative: 2, agentic: 2 } },
   { id: 'knowledge', label: 'Knowledge', icon: 'book', tagline: 'Self-service grounding', counts: { predictive: 1, generative: 3, agentic: 1 } },
+];
+
+const SALES_CHANNELS = [
+  { id: 'leads', label: 'Leads', icon: 'person_add', tagline: 'Lead generation and qualification', counts: { predictive: 2, generative: 0, agentic: 4 } },
+  { id: 'opportunities', label: 'Opportunities', icon: 'attach_money', tagline: 'Deal management and coaching', counts: { predictive: 2, generative: 0, agentic: 4 } },
+  { id: 'accounts', label: 'Accounts', icon: 'business', tagline: 'Account strategy and growth', counts: { predictive: 1, generative: 0, agentic: 3 } },
+  { id: 'contacts', label: 'Contacts', icon: 'contacts', tagline: 'Relationship intelligence', counts: { predictive: 2, generative: 0, agentic: 0 } },
+  { id: 'campaigns', label: 'Campaigns', icon: 'campaign', tagline: 'Marketing effectiveness', counts: { predictive: 4, generative: 0, agentic: 1 } },
+  { id: 'activities', label: 'Activities', icon: 'event', tagline: 'Engagement and productivity', counts: { predictive: 4, generative: 0, agentic: 2 } },
+  { id: 'forecasting', label: 'Forecasting', icon: 'assessment', tagline: 'Revenue prediction', counts: { predictive: 1, generative: 0, agentic: 0 } },
 ];
 
 const ERAS = [
@@ -49,7 +60,11 @@ function App() {
     }
   }, [selectedCapability]);
 
-  const channelCounts = LATEST_CAPABILITIES.reduce((acc, capability) => {
+  // Switch between Service and Sales data based on activeCloud
+  const CURRENT_CAPABILITIES = activeCloud === 'sales' ? SALES_CAPABILITIES : SERVICE_CAPABILITIES;
+  const CURRENT_CHANNELS = activeCloud === 'sales' ? SALES_CHANNELS : SERVICE_CHANNELS;
+
+  const channelCounts = CURRENT_CAPABILITIES.reduce((acc, capability) => {
     for (const channel of capability.channels) {
       if (!acc[channel]) {
         acc[channel] = { predictive: 0, generative: 0, agentic: 0 };
@@ -61,7 +76,7 @@ function App() {
     return acc;
   }, {});
 
-  const latestChannels = CHANNELS.map(channel => ({
+  const latestChannels = CURRENT_CHANNELS.map(channel => ({
     ...channel,
     counts: channelCounts[channel.id] || { predictive: 0, generative: 0, agentic: 0 },
   }));
@@ -85,7 +100,7 @@ function App() {
     }
   };
 
-  const filteredCapabilities = LATEST_CAPABILITIES.filter(c => {
+  const filteredCapabilities = CURRENT_CAPABILITIES.filter(c => {
     const matchesFilter = activeFilter === 'all' || c.era === activeFilter;
     const matchesChannel = !activeChannel || c.channels.includes(activeChannel);
     return matchesFilter && matchesChannel;
@@ -264,7 +279,9 @@ function App() {
               </div>
 
               <div>
-                <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/40 mb-4">Channel ({activeCloud === 'service' ? 'Service' : 'All'})</p>
+                <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/40 mb-4">
+                  Channel ({activeCloud === 'service' ? 'Service' : activeCloud === 'sales' ? 'Sales' : 'All'})
+                </p>
                 <nav className="flex flex-col gap-1">
                   {latestChannels.map(channel => (
                     <button
@@ -656,8 +673,8 @@ function App() {
               </div>
             </div>
           )
-        ) : activeCloud !== 'service' ? (
-          /* Placeholder for other clouds / unmapped channels */
+        ) : activeCloud === 'marketing' ? (
+          /* Placeholder for Marketing cloud */
           <div className="flex flex-col items-center justify-center h-[70vh] text-center animate-in fade-in zoom-in-95 duration-700">
             <div className="w-32 h-32 rounded-3xl bg-[var(--surface-container-low)] border border-[var(--border)] flex items-center justify-center mb-10 shadow-2xl relative group">
                <div className="absolute inset-0 bg-primary/10 rounded-3xl blur-2xl group-hover:bg-primary/20 transition-all"></div>
@@ -675,7 +692,7 @@ function App() {
             <p className="text-[var(--on-surface-variant)] max-w-md mx-auto text-lg leading-relaxed mb-12">
               We are currently mapping the AI capabilities for the {activeCloud} ecosystem. Check back soon for the full node discovery experience.
             </p>
-            <button 
+            <button
               onClick={() => setActiveCloud('service')}
               className="px-10 py-4 bg-primary-container text-white font-black rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-all text-xs tracking-widest uppercase"
             >
@@ -686,8 +703,14 @@ function App() {
           /* Channel Overview Grid (Default Landing) */
           <div className="animate-in fade-in duration-700">
             <header className="mb-12">
-              <h2 className="text-5xl font-black tracking-tighter text-[var(--on-surface)] mb-2 uppercase italic">Service <span className="text-[#0176D3]">Observatory</span></h2>
-              <p className="text-[var(--on-surface-variant)] text-lg font-medium">AI-powered service delivery across every touchpoint.</p>
+              <h2 className="text-5xl font-black tracking-tighter text-[var(--on-surface)] mb-2 uppercase italic">
+                {activeCloud === 'sales' ? 'Sales' : 'Service'} <span className="text-[#0176D3]">Observatory</span>
+              </h2>
+              <p className="text-[var(--on-surface-variant)] text-lg font-medium">
+                {activeCloud === 'sales'
+                  ? 'AI-powered revenue generation and customer acquisition.'
+                  : 'AI-powered service delivery across every touchpoint.'}
+              </p>
             </header>
             
             <div className="grid grid-cols-3 gap-8">
@@ -735,7 +758,9 @@ function App() {
                      <h2 className="text-4xl font-black tracking-tighter text-[var(--on-surface)] capitalize leading-none">
                        {activeChannel ? activeChannel.replace('_', ' ') : `${activeFilter} AI Nodes`}
                      </h2>
-                     <p className="text-[var(--on-surface-variant)] text-xs mt-2 font-bold uppercase tracking-widest">{activeChannel ? 'Service Channel' : 'Global Discovery'}</p>
+                     <p className="text-[var(--on-surface-variant)] text-xs mt-2 font-bold uppercase tracking-widest">
+                       {activeChannel ? `${activeCloud === 'sales' ? 'Sales' : 'Service'} Channel` : 'Global Discovery'}
+                     </p>
                   </div>
                 </div>
                 <div className="flex gap-4 mt-8">

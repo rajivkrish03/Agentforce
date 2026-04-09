@@ -30,7 +30,20 @@ Typography uses "Plus Jakarta Sans" (Google Fonts, weights 200–800). Icons use
 
 ### What the App Does
 
-"Salesforce Agentforce AI Observatory" — a periodic table-style interface showcasing Salesforce AI capabilities across three eras (Predictive, Generative, Agentic). It's a static prototype with hardcoded data; the modal component exists in JSX but is hidden (no toggle state wired up yet).
+"Salesforce AI Capabilities Explorer" — an interactive periodic table-style interface showcasing Salesforce AI capabilities across clouds (Service, Sales, Marketing, Agentforce) and three AI eras (Predictive, Generative, Agentic).
+
+**Current Implementation**:
+- **Service Cloud**: Fully functional with 6 channels (Cases, Messaging, Voice, Email, Field Service, Knowledge) and 30+ AI capabilities
+- **Sales Cloud**: Fully functional with 7 channels (Leads, Opportunities, Accounts, Contacts, Campaigns, Activities, Forecasting) and 21 AI capabilities (13 Predictive, 8 Agentic)
+- **Agentforce Cloud**: Hierarchical 3-level navigation - Level 1: top-level tiles, Level 2: parent children (Agent Script, Legacy Builder), Level 3: child capabilities with channel support boxes and feature boxes
+- **Marketing Cloud**: Placeholder view ("coming soon" state)
+- **Interactivity**: Full state management with React hooks — filters, channels, modals, storyline panel all wired up
+- **View Modes**:
+  - Channel overview grid (default landing)
+  - Era-filtered feature grid (e.g., "All Agentic AI features")
+  - Channel detail view with 60/40 split (feature grid + storyline panel)
+  - Agentforce hierarchical drill-down navigation
+  - Full-screen modal for capability details
 
 ---
 
@@ -57,6 +70,74 @@ Salesforce does not publish per-cloud colors officially — all products share t
 | Error | `#EA001E` | Error states |
 
 The app currently maps: `primary` → Sales/Service blue, `secondary` → yellow (`#FFDB3C`), `tertiary` → pink (`#E31754`). As multi-cloud support is added, introduce per-cloud accent tokens alongside these.
+
+---
+
+## Data Structure
+
+AI capabilities are stored in separate data files in `src/`:
+
+### Service Cloud Capabilities — [src/ServicecapabilitiesData.js](src/ServicecapabilitiesData.js)
+
+Export: `CAPABILITIES` array with objects containing:
+- `id` — unique identifier (kebab-case)
+- `symbol` — 2-letter periodic table symbol (e.g., `"Ec"` for Einstein Case Classification)
+- `name` — short name
+- `fullName` — complete official name
+- `era` — `"predictive"` | `"generative"` | `"agentic"`
+- `channels` — array of channel IDs (e.g., `["cases", "messaging"]`)
+- `description` — one-sentence functional description
+- `storyline` — array of 3-4 step strings showing how the feature works
+- `useCases` — array of business value bullets
+- `specs` — object with technical specs (e.g., `{ model: "AutoML", target: "Case Fields" }`)
+- `icon` — Material Symbol icon name
+- `links` — object with optional `docs`, `trailhead`, `video` URLs
+- `setupRequirements` — optional string describing prerequisites
+- `featured` — optional boolean (makes card span 2 columns in grid)
+
+**Service Channels**: `cases`, `messaging`, `voice`, `email`, `field_service`, `knowledge`
+
+### Sales Cloud Capabilities — [src/SalescapabilitiesData.js](src/SalescapabilitiesData.js)
+
+Export: `CAPABILITIES` array with the same structure as Service Cloud.
+
+**Sales Channels**: `leads`, `opportunities`, `accounts`, `contacts`, `campaigns`, `activities`, `forecasting`
+
+**Feature Breakdown**:
+- **Predictive Era (13 features)**: Lead Scoring, Opportunity Scoring, Forecasting, Coach, Conversation Insights, Activity Capture, Email Insights, Recommended Connections, Campaign Insights, Behavior Scoring, Attribution, Send Time Optimization
+- **Agentic Era (8 features)**: Lead Generation, Qualification, Lead Nurturing, Sales Management, Pipeline Management, Account Management, Sales Coach, Prospecting
+- **Generative Era**: None currently (Sales AI focuses on predictive analytics and agentic automation)
+
+### Agentforce Capabilities — [src/AgentforcecapabilitiesData.js](src/AgentforcecapabilitiesData.js)
+
+Export: `AGENTFORCE_TILES` array with hierarchical structure:
+- **Level 1 tiles** (`type: 'standalone'` or `type: 'parent'`)
+  - `id`, `symbol`, `name`, `label` — identifiers and display names
+  - `icon`, `accent` — Material Symbol icon + hex color
+  - `type` — `'standalone'` | `'parent'`
+  - `tagline`, `description` — short and long descriptions
+  - `storyline`, `useCases`, `specs` — same as Service/Sales capabilities
+  - `releases` — array of timeline release objects (for standalone tiles)
+  - `children` — array of child objects (for parent tiles)
+- **Level 2 children** (`type: 'child'`)
+  - Same base fields as Level 1
+  - `capabilities` — object with `channelSupport` and `features` arrays
+  - `releases` — array of timeline release objects
+- **Level 3 capabilities** (nested in `capabilities` object)
+  - `channelSupport` — array of `{ name, icon, accent, available }` objects
+  - `features` — array of `{ name, icon, accent, available }` objects
+
+---
+
+## Common Development Tasks
+
+### Adding a new Sales Cloud capability
+
+1. Open [src/SalescapabilitiesData.js](src/SalescapabilitiesData.js)
+2. Add a new object to the `CAPABILITIES` array following the structure above
+3. Ensure `channels` array includes all relevant channel IDs from: `leads`, `opportunities`, `accounts`, `contacts`, `campaigns`, `activities`, `forecasting`
+4. Pick a unique 2-letter `symbol` that's not already used
+5. The app will automatically include it in channel overview counts and filtered views
 
 ---
 
