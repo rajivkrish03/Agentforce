@@ -205,12 +205,12 @@ function App() {
   const [hoveredCapability, setHoveredCapability] = useState(null);
   const [theme, setTheme] = useState('dark');
   const [isOverview, setIsOverview] = useState(true);
-  const [showChecklist, setShowChecklist] = useState(false);
   const [checklistStates, setChecklistStates] = useState(() => {
     const saved = localStorage.getItem('voiceChecklistStates');
     return saved ? JSON.parse(saved) : {};
   });
   const [selectedTelephony, setSelectedTelephony] = useState(null);
+  const [selectedPhase, setSelectedPhase] = useState(null);
 
   useEffect(() => {
     document.documentElement.className = theme;
@@ -285,7 +285,14 @@ function App() {
     localStorage.setItem('voiceChecklistStates', JSON.stringify(newStates));
   };
 
-  const getChecklistProgress = () => {
+  const getChecklistProgress = (phaseId = null) => {
+    if (phaseId) {
+      const phase = VOICE_IMPLEMENTATION_CHECKLIST.find(p => p.id === phaseId);
+      if (!phase) return { total: 0, completed: 0, percentage: 0 };
+      const total = phase.items.length;
+      const completed = phase.items.filter((_, idx) => checklistStates[`${phaseId}-${idx}`]).length;
+      return { total, completed, percentage: Math.round((completed / total) * 100) };
+    }
     const totalItems = VOICE_IMPLEMENTATION_CHECKLIST.reduce((sum, section) => sum + section.items.length, 0);
     const completedItems = Object.values(checklistStates).filter(Boolean).length;
     return { total: totalItems, completed: completedItems, percentage: Math.round((completedItems / totalItems) * 100) };
@@ -1073,76 +1080,88 @@ function App() {
                   </div>
                 )}
 
-                {/* Implementation Checklist (Voice Channel + Amazon Connect Only) */}
+                {/* Implementation Phases (Voice Channel + Amazon Connect Only) */}
                 {activeChannel === 'voice' && selectedTelephony === 'amazon-connect' && (
                   <div className="col-span-12 mt-8">
-                    <button
-                      onClick={() => setShowChecklist(!showChecklist)}
-                      className="w-full bg-[var(--surface-container-low)] border border-[var(--border)] rounded-2xl p-6 hover:border-primary-container transition-all duration-300 hover:shadow-lg group"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-xl bg-primary-container/20 border border-primary-container/30 flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <span className="material-symbols-outlined text-2xl text-primary-container">checklist</span>
-                          </div>
-                          <div className="text-left">
-                            <h3 className="text-lg font-black text-[var(--on-surface)] uppercase tracking-tight">Implementation Checklist</h3>
-                            <p className="text-xs text-[var(--on-surface-variant)] font-medium">
-                              {getChecklistProgress().completed} of {getChecklistProgress().total} steps completed ({getChecklistProgress().percentage}%)
-                            </p>
-                          </div>
+                    <div className="mb-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h3 className="text-xl font-black text-[var(--on-surface)] uppercase tracking-tight">Implementation Roadmap</h3>
+                          <p className="text-xs text-[var(--on-surface-variant)] font-medium mt-1">
+                            {getChecklistProgress().completed} of {getChecklistProgress().total} steps completed ({getChecklistProgress().percentage}%)
+                          </p>
                         </div>
-                        <span className={`material-symbols-outlined text-2xl text-[var(--on-surface-variant)] transition-transform ${showChecklist ? 'rotate-180' : ''}`}>
-                          expand_more
-                        </span>
+                        <div className="px-4 py-2 rounded-xl bg-[#45C65A]/20 border border-[#45C65A]/30">
+                          <span className="text-sm font-black text-[#45C65A]">{VOICE_IMPLEMENTATION_CHECKLIST.length} Phases</span>
+                        </div>
                       </div>
-
-                      {/* Progress Bar */}
-                      <div className="mt-4 h-2 bg-on-surface/5 rounded-full overflow-hidden">
+                      <div className="h-2 bg-on-surface/5 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-primary-container to-[#45C65A] transition-all duration-500 rounded-full"
+                          className="h-full bg-gradient-to-r from-[#0176D3] via-[#FF9900] to-[#45C65A] transition-all duration-500 rounded-full"
                           style={{ width: `${getChecklistProgress().percentage}%` }}
                         />
                       </div>
-                    </button>
+                    </div>
 
-                    {/* Checklist Sections */}
-                    {showChecklist && (
-                      <div className="mt-6 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        {VOICE_IMPLEMENTATION_CHECKLIST.map((section) => (
-                          <div key={section.id} className="bg-[var(--surface-container-low)] border border-[var(--border)] rounded-2xl p-6 hover:border-[var(--border)] transition-all">
-                            <div className="flex items-center gap-3 mb-4">
-                              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${section.color}20`, border: `1px solid ${section.color}40` }}>
-                                <span className="material-symbols-outlined text-lg" style={{ color: section.color }}>{section.icon}</span>
+                    <div className="grid grid-cols-3 gap-4">
+                      {VOICE_IMPLEMENTATION_CHECKLIST.map((phase, index) => {
+                        const progress = getChecklistProgress(phase.id);
+                        return (
+                          <button
+                            key={phase.id}
+                            onClick={() => setSelectedPhase(phase)}
+                            className="group relative p-5 rounded-2xl border-2 border-[var(--border)] bg-[var(--surface-container-low)] hover:border-[var(--border)] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-left"
+                            style={{
+                              boxShadow: `0 0 0 0 ${phase.color}30`,
+                            }}
+                          >
+                            <div className="flex items-start justify-between mb-4">
+                              <div
+                                className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110"
+                                style={{
+                                  backgroundColor: `${phase.color}20`,
+                                  border: `1px solid ${phase.color}40`,
+                                }}
+                              >
+                                <span className="material-symbols-outlined text-xl" style={{ color: phase.color }}>
+                                  {phase.icon}
+                                </span>
                               </div>
-                              <h4 className="text-sm font-black text-[var(--on-surface)] uppercase tracking-wide">{section.title}</h4>
-                              <span className="ml-auto text-xs font-bold text-[var(--on-surface-variant)]">
-                                {section.items.filter((_, idx) => checklistStates[`${section.id}-${idx}`]).length}/{section.items.length}
-                              </span>
+                              <div className="flex flex-col items-end gap-1">
+                                <span className="text-[10px] font-black uppercase tracking-wider text-[var(--on-surface-variant)]/60">
+                                  Phase {index + 1}
+                                </span>
+                                <div className={`px-2 py-1 rounded-md text-[10px] font-bold ${
+                                  progress.percentage === 100
+                                    ? 'bg-[#45C65A]/20 text-[#45C65A]'
+                                    : progress.percentage > 0
+                                    ? 'bg-[#FF9900]/20 text-[#FF9900]'
+                                    : 'bg-on-surface/5 text-[var(--on-surface-variant)]'
+                                }`}>
+                                  {progress.completed}/{progress.total}
+                                </div>
+                              </div>
                             </div>
-                            <div className="space-y-3">
-                              {section.items.map((item, idx) => (
-                                <label key={idx} className="flex items-start gap-3 cursor-pointer group/item">
-                                  <input
-                                    type="checkbox"
-                                    checked={checklistStates[`${section.id}-${idx}`] || false}
-                                    onChange={() => toggleChecklistItem(section.id, idx)}
-                                    className="mt-1 w-4 h-4 rounded border-2 border-[var(--border)] checked:bg-primary-container checked:border-primary-container cursor-pointer transition-all"
-                                  />
-                                  <span className={`text-sm leading-relaxed transition-all ${
-                                    checklistStates[`${section.id}-${idx}`]
-                                      ? 'text-[var(--on-surface-variant)] line-through opacity-60'
-                                      : 'text-[var(--on-surface)] group-hover/item:text-primary-container'
-                                  }`}>
-                                    {item}
-                                  </span>
-                                </label>
-                              ))}
+                            <h4 className="text-xs font-black text-[var(--on-surface)] uppercase tracking-tight leading-tight mb-3">
+                              {phase.title}
+                            </h4>
+                            <div className="h-1.5 bg-on-surface/5 rounded-full overflow-hidden mb-3">
+                              <div
+                                className="h-full rounded-full transition-all duration-500"
+                                style={{
+                                  width: `${progress.percentage}%`,
+                                  backgroundColor: phase.color,
+                                }}
+                              />
                             </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider" style={{ color: phase.color }}>
+                              <span className="material-symbols-outlined text-xs">arrow_forward</span>
+                              <span>View Details</span>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </div>
@@ -1306,6 +1325,127 @@ function App() {
                   </button>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Implementation Phase Modal */}
+      {selectedPhase && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-8 bg-black/80 backdrop-blur-sm transition-all animate-in fade-in duration-300"
+          onClick={() => setSelectedPhase(null)}
+        >
+          <div
+            className="bg-[var(--surface-container-low)] max-w-4xl w-full max-h-[85vh] rounded-2xl overflow-hidden shadow-2xl border border-[var(--border)] animate-in zoom-in-95 duration-300 flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div
+              className="p-8 border-b border-[var(--border)] relative overflow-hidden"
+              style={{
+                background: `linear-gradient(135deg, ${selectedPhase.color}15, ${selectedPhase.color}05)`,
+              }}
+            >
+              <button
+                className="absolute top-6 right-6 w-10 h-10 rounded-xl bg-on-surface/5 hover:bg-on-surface/10 border border-[var(--border)] text-[var(--on-surface-variant)] hover:text-[var(--on-surface)] transition-all flex items-center justify-center group"
+                onClick={() => setSelectedPhase(null)}
+              >
+                <span className="material-symbols-outlined group-hover:rotate-90 transition-transform">close</span>
+              </button>
+
+              <div className="flex items-start gap-6">
+                <div
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0"
+                  style={{
+                    backgroundColor: `${selectedPhase.color}20`,
+                    border: `2px solid ${selectedPhase.color}40`,
+                  }}
+                >
+                  <span className="material-symbols-outlined text-3xl" style={{ color: selectedPhase.color }}>
+                    {selectedPhase.icon}
+                  </span>
+                </div>
+
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-on-surface/10 border border-[var(--border)] text-[var(--on-surface-variant)]">
+                      Implementation Phase
+                    </span>
+                    <div className={`px-3 py-1 rounded-full text-[10px] font-bold ${
+                      getChecklistProgress(selectedPhase.id).percentage === 100
+                        ? 'bg-[#45C65A]/20 text-[#45C65A] border border-[#45C65A]/30'
+                        : getChecklistProgress(selectedPhase.id).percentage > 0
+                        ? 'bg-[#FF9900]/20 text-[#FF9900] border border-[#FF9900]/30'
+                        : 'bg-on-surface/5 text-[var(--on-surface-variant)] border border-[var(--border)]'
+                    }`}>
+                      {getChecklistProgress(selectedPhase.id).completed}/{getChecklistProgress(selectedPhase.id).total} Complete
+                    </div>
+                  </div>
+                  <h2 className="text-3xl font-black tracking-tighter text-[var(--on-surface)] mb-3 uppercase">
+                    {selectedPhase.title}
+                  </h2>
+                  <div className="flex items-center gap-6">
+                    <div className="flex-1">
+                      <div className="h-2 bg-on-surface/10 rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{
+                            width: `${getChecklistProgress(selectedPhase.id).percentage}%`,
+                            backgroundColor: selectedPhase.color,
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <span className="text-sm font-black text-[var(--on-surface)]">
+                      {getChecklistProgress(selectedPhase.id).percentage}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Body - Checklist Items */}
+            <div className="flex-1 overflow-y-auto p-8">
+              <div className="space-y-4">
+                {selectedPhase.items.map((item, idx) => (
+                  <label
+                    key={idx}
+                    className="flex items-start gap-4 p-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] hover:bg-on-surface/5 cursor-pointer group/item transition-all"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checklistStates[`${selectedPhase.id}-${idx}`] || false}
+                      onChange={() => toggleChecklistItem(selectedPhase.id, idx)}
+                      className="mt-1 w-5 h-5 rounded border-2 border-[var(--border)] checked:bg-primary-container checked:border-primary-container cursor-pointer transition-all shrink-0"
+                    />
+                    <div className="flex-1">
+                      <span
+                        className={`text-sm leading-relaxed transition-all block ${
+                          checklistStates[`${selectedPhase.id}-${idx}`]
+                            ? 'text-[var(--on-surface-variant)] line-through opacity-60'
+                            : 'text-[var(--on-surface)] group-hover/item:text-primary-container'
+                        }`}
+                      >
+                        {item}
+                      </span>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-6 border-t border-[var(--border)] bg-[var(--surface-container)] flex items-center justify-between">
+              <div className="text-xs text-[var(--on-surface-variant)]">
+                <span className="font-bold">{selectedPhase.items.length} tasks</span> in this phase
+              </div>
+              <button
+                onClick={() => setSelectedPhase(null)}
+                className="px-6 py-3 rounded-xl bg-primary-container/10 border border-primary-container/30 text-primary-container font-bold text-sm uppercase tracking-wider hover:bg-primary-container hover:text-white transition-all"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
