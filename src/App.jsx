@@ -206,7 +206,6 @@ function App() {
   const [selectedChild, setSelectedChild] = useState(null);
   const [selectedCapability, setSelectedCapability] = useState(null);
   const [hoveredCapability, setHoveredCapability] = useState(null);
-  const [theme, setTheme] = useState('dark');
   const [isOverview, setIsOverview] = useState(true);
   const [checklistStates, setChecklistStates] = useState(() => {
     const saved = localStorage.getItem('voiceChecklistStates');
@@ -221,8 +220,9 @@ function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // For mobile sidebar
 
   useEffect(() => {
-    document.documentElement.className = theme;
-  }, [theme]);
+    // Set dark mode permanently
+    document.documentElement.className = 'dark';
+  }, []);
 
   useEffect(() => {
     if (selectedCapability) {
@@ -310,7 +310,7 @@ function App() {
   const currentEra = ERAS.find(e => e.id === activeFilter);
 
   return (
-    <div className={`min-h-screen ${theme} bg-[var(--background)] text-[var(--on-surface)] transition-colors duration-500`}>
+    <div className="min-h-screen dark bg-[var(--background)] text-[var(--on-surface)]">
       {/* Top Nav */}
       <nav className="fixed top-0 w-full z-50 bg-[var(--nav-bg)] backdrop-blur-2xl border-b border-[var(--border)] flex justify-between items-center px-4 sm:px-6 lg:px-10 h-16 sm:h-20 lg:h-24 shadow-2xl transition-all duration-500">
         <div className="flex items-center gap-3 sm:gap-4 lg:gap-8">
@@ -357,15 +357,6 @@ function App() {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3 lg:gap-6">
-          <button
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="p-2 lg:p-2.5 rounded-xl border border-[var(--border)] hover:bg-on-surface/5 transition-all text-[var(--on-surface-variant)] hover:text-[var(--on-surface)] flex items-center justify-center bg-[var(--surface-container)]"
-          >
-            <span className="material-symbols-outlined text-lg lg:text-xl">
-              {theme === 'dark' ? 'light_mode' : 'dark_mode'}
-            </span>
-          </button>
-
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
