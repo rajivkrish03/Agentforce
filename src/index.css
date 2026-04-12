@@ -160,3 +160,13 @@ input[type="checkbox"]:hover {
   border-color: #0176D3;
   box-shadow: 0 0 0 3px rgba(1, 118, 211, 0.1);
 }
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

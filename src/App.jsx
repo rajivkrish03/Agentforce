@@ -217,6 +217,8 @@ function App() {
   const [viewMode, setViewMode] = useState('capabilities'); // 'capabilities' | 'journey'
   const [selectedJobs, setSelectedJobs] = useState([]);
   const [showRoadmap, setShowRoadmap] = useState(null); // null or { cloud, channel }
+  const [jobsExpanded, setJobsExpanded] = useState(false); // For collapsible Jobs to Be Done
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // For mobile sidebar
 
   useEffect(() => {
     document.documentElement.className = theme;
@@ -310,15 +312,15 @@ function App() {
   return (
     <div className={`min-h-screen ${theme} bg-[var(--background)] text-[var(--on-surface)] transition-colors duration-500`}>
       {/* Top Nav */}
-      <nav className="fixed top-0 w-full z-50 bg-[var(--nav-bg)] backdrop-blur-2xl border-b border-[var(--border)] flex justify-between items-center px-10 h-24 shadow-2xl transition-all duration-500">
-        <div className="flex items-center gap-8">
-          <h1 className="font-headline font-black tracking-tighter text-[var(--on-surface)] uppercase text-xl flex items-center gap-1 shrink-0">
-            <span className="text-[#0176D3]">AGENTFORCE</span> <span className="text-[var(--on-surface-variant)]">CAPABILITIES NAVIGATOR</span>
+      <nav className="fixed top-0 w-full z-50 bg-[var(--nav-bg)] backdrop-blur-2xl border-b border-[var(--border)] flex justify-between items-center px-4 sm:px-6 lg:px-10 h-16 sm:h-20 lg:h-24 shadow-2xl transition-all duration-500">
+        <div className="flex items-center gap-3 sm:gap-4 lg:gap-8">
+          <h1 className="font-headline font-black tracking-tighter text-[var(--on-surface)] uppercase text-xs sm:text-sm lg:text-xl flex items-center gap-1 shrink-0">
+            <span className="text-[#0176D3]">AGENTFORCE</span> <span className="hidden sm:inline text-[var(--on-surface-variant)]">CAPABILITIES NAVIGATOR</span>
           </h1>
           
-          <div className="h-8 w-px bg-[var(--border)]"></div>
+          <div className="hidden lg:block h-8 w-px bg-[var(--border)]"></div>
 
-          <div className="flex items-center gap-4 overflow-x-auto no-scrollbar">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 lg:gap-4">
             {CLOUDS.map(cloud => (
               <button
                 key={cloud.id}
@@ -331,88 +333,69 @@ function App() {
                   setActiveAgentforceTile(null);
                   setSelectedParent(null);
                   setSelectedChild(null);
+                  setMobileMenuOpen(false);
                 }}
-                className={`font-headline font-bold tracking-tight px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 group relative whitespace-nowrap ${
-                  activeCloud === cloud.id 
-                    ? 'text-[var(--on-surface)] bg-on-surface/5' 
+                className={`font-headline font-bold tracking-tight px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl transition-all flex items-center gap-2 group relative whitespace-nowrap ${
+                  activeCloud === cloud.id
+                    ? 'text-[var(--on-surface)] bg-on-surface/5'
                     : 'text-[var(--on-surface-variant)] hover:text-[var(--on-surface)]'
                 }`}
               >
-                <div 
+                <div
                   className={`p-1.5 rounded-lg transition-transform duration-500 ${activeCloud === cloud.id ? 'scale-110 shadow-lg' : 'opacity-60 grayscale group-hover:grayscale-0'}`}
                   style={{ backgroundColor: activeCloud === cloud.id ? `${cloud.accent}20` : 'transparent', border: activeCloud === cloud.id ? `1px solid ${cloud.accent}40` : '1px solid transparent' }}
                 >
-                  <span className="material-symbols-outlined text-xl" style={{ color: cloud.accent }}>{cloud.icon}</span>
+                  <span className="material-symbols-outlined text-base sm:text-xl" style={{ color: cloud.accent }}>{cloud.icon}</span>
                 </div>
-                <span className={`text-xs uppercase tracking-widest ${activeCloud === cloud.id ? 'font-bold' : 'opacity-80'}`}>{cloud.label}</span>
+                <span className={`text-[10px] sm:text-xs uppercase tracking-widest ${activeCloud === cloud.id ? 'font-bold' : 'opacity-80'}`}>{cloud.label}</span>
                 {activeCloud === cloud.id && (
-                  <div className="absolute -bottom-[26px] left-0 w-full h-[3px] rounded-full scale-x-75" style={{ backgroundColor: cloud.accent }}></div>
+                  <div className="absolute -bottom-[20px] sm:-bottom-[26px] left-0 w-full h-[3px] rounded-full scale-x-75" style={{ backgroundColor: cloud.accent }}></div>
                 )}
               </button>
             ))}
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          {/* View Mode Toggle */}
-          {activeCloud !== 'agentforce' && activeCloud !== 'marketing' && !isOverview && activeChannel && (
-            <div className="flex items-center gap-2 p-1 rounded-xl bg-[var(--surface-container)] border border-[var(--border)]">
-              <button
-                onClick={() => setViewMode('capabilities')}
-                className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-2 ${
-                  viewMode === 'capabilities'
-                    ? 'bg-primary-container text-white shadow-lg'
-                    : 'text-[var(--on-surface-variant)] hover:text-[var(--on-surface)]'
-                }`}
-              >
-                <span className="material-symbols-outlined text-sm">grid_view</span>
-                Capabilities
-              </button>
-              <button
-                onClick={() => setViewMode('journey')}
-                className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-2 ${
-                  viewMode === 'journey'
-                    ? 'bg-primary-container text-white shadow-lg'
-                    : 'text-[var(--on-surface-variant)] hover:text-[var(--on-surface)]'
-                }`}
-              >
-                <span className="material-symbols-outlined text-sm">route</span>
-                Journey
-              </button>
-            </div>
-          )}
-
-          {/* Implementation Roadmap Button */}
-          {activeCloud !== 'agentforce' && activeCloud !== 'marketing' && activeChannel && MATURITY_MODEL[activeCloud]?.[activeChannel] && (
-            <button
-              onClick={() => {
-                console.log('Roadmap clicked:', { cloud: activeCloud, channel: activeChannel });
-                setShowRoadmap({ cloud: activeCloud, channel: activeChannel });
-              }}
-              className="px-4 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface-container)] hover:bg-on-surface/5 transition-all text-[var(--on-surface-variant)] hover:text-[var(--on-surface)] flex items-center gap-2 text-xs font-bold uppercase tracking-widest"
-            >
-              <span className="material-symbols-outlined text-sm">account_tree</span>
-              Roadmap
-            </button>
-          )}
-
+        <div className="flex items-center gap-2 sm:gap-3 lg:gap-6">
           <button
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="p-2.5 rounded-xl border border-[var(--border)] hover:bg-on-surface/5 transition-all text-[var(--on-surface-variant)] hover:text-[var(--on-surface)] flex items-center justify-center bg-[var(--surface-container)]"
+            className="p-2 lg:p-2.5 rounded-xl border border-[var(--border)] hover:bg-on-surface/5 transition-all text-[var(--on-surface-variant)] hover:text-[var(--on-surface)] flex items-center justify-center bg-[var(--surface-container)]"
           >
-            <span className="material-symbols-outlined text-xl">
+            <span className="material-symbols-outlined text-lg lg:text-xl">
               {theme === 'dark' ? 'light_mode' : 'dark_mode'}
             </span>
           </button>
 
-          <div className="w-12 h-12 rounded-2xl bg-[var(--surface-container)] overflow-hidden border border-[var(--border)] p-0.5 shadow-lg shrink-0">
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="lg:hidden p-2 rounded-xl border border-[var(--border)] hover:bg-on-surface/5 transition-all text-[var(--on-surface-variant)] hover:text-[var(--on-surface)] flex items-center justify-center bg-[var(--surface-container)]"
+          >
+            <span className="material-symbols-outlined text-lg">
+              {mobileMenuOpen ? 'close' : 'menu'}
+            </span>
+          </button>
+
+          <div className="hidden sm:block w-10 h-10 lg:w-12 lg:h-12 rounded-2xl bg-[var(--surface-container)] overflow-hidden border border-[var(--border)] p-0.5 shadow-lg shrink-0">
             <img className="w-full h-full rounded-xl object-cover" alt="User" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAl7HNdRh4m28X12qumcIYi_5JhrRAv62KzeWHVQtiszYtiWSmgayu7ti-_4Gk_O4k6BOPX7wKXJYQz_Vzr7a3jaGV-PI7EVocqgs__PIZdoQVk4nCQ5qANCqGCeMWcOLbv8PS7-lRIWSNl7IwSVunMPPTdRp-rCeq-cpFLkiU9aPCobDwTTNafwpki27dsRCd2UXOPAIf2cZzUwU1VLpcfXP8APhHeOchTBWuAFvCJI7jcZ15xtTwAweVcZfClHvms9hTr1lno78VF"/>
           </div>
         </div>
       </nav>
 
-      {/* Sidebar */}
-      <aside className="h-screen w-64 fixed left-0 top-24 bg-[var(--surface-container)] border-r border-[var(--border)] pt-8 flex flex-col transition-colors duration-500 shadow-xl z-40">
+      {/* Mobile Sidebar Overlay */}
+      {mobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Sidebar - Desktop: fixed left, Mobile: slide-over from left */}
+      <aside className={`h-screen w-80 sm:w-64 fixed left-0 bg-[var(--surface-container)] border-r border-[var(--border)] pt-8 flex flex-col transition-all duration-300 shadow-xl z-50 ${
+        mobileMenuOpen ? 'top-16 sm:top-20' : 'top-16 sm:top-20 lg:top-24'
+      } ${
+        mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      }`}>
         <div className="flex-1 overflow-y-auto no-scrollbar pb-8 flex flex-col gap-8">
           {activeCloud === 'agentforce' ? (
             <div>
@@ -433,7 +416,7 @@ function App() {
                     {selectedParent.children?.map((child) => (
                       <button
                         key={child.id}
-                        onClick={() => setSelectedChild(child)}
+                        onClick={() => { setSelectedChild(child); setMobileMenuOpen(false); }}
                         className={`group px-3 py-3 rounded-xl flex items-center justify-between transition-all text-left ${
                           selectedChild?.id === child.id
                             ? 'bg-on-surface/5 text-[var(--on-surface)] ring-1 ring-[var(--border)]'
@@ -462,6 +445,7 @@ function App() {
                           } else {
                             setActiveAgentforceTile(tile.id);
                           }
+                          setMobileMenuOpen(false);
                         }}
                         className={`group px-3 py-3 rounded-xl flex items-center justify-between transition-all text-left ${
                           activeAgentforceTile === tile.id
@@ -492,7 +476,7 @@ function App() {
                   {ERAS.map(era => (
                     <button
                       key={era.id}
-                      onClick={() => { setActiveFilter(era.id); setIsOverview(false); }}
+                      onClick={() => { setActiveFilter(era.id); setIsOverview(false); setMobileMenuOpen(false); }}
                       className={`group px-3 py-3 rounded-xl flex items-center justify-between transition-all text-left ${
                         activeFilter === era.id 
                           ? 'bg-on-surface/5 text-[var(--on-surface)] ring-1 ring-[var(--border)]' 
@@ -511,50 +495,62 @@ function App() {
                 </nav>
               </div>
 
-              {/* Jobs to Be Done Section */}
+              {/* Jobs to Be Done Section - Collapsible */}
               <div>
-                <p className="px-6 text-[10px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/40 mb-4">Jobs to Be Done</p>
-                <nav className="flex flex-col gap-1 px-3 max-h-64 overflow-y-auto">
-                  {JOBS.map(job => {
-                    const isSelected = selectedJobs.includes(job.id);
-                    const matchCount = CURRENT_CAPABILITIES.filter(c =>
-                      c.jobsToBeDone?.includes(job.id) &&
-                      (activeFilter === 'all' || c.era === activeFilter) &&
-                      (!activeChannel || c.channels.includes(activeChannel))
-                    ).length;
+                <button
+                  onClick={() => setJobsExpanded(!jobsExpanded)}
+                  className="w-full px-6 py-3 text-left flex items-center justify-between hover:bg-on-surface/5 transition-all rounded-xl"
+                >
+                  <p className="text-[10px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/40">
+                    Jobs to Be Done
+                  </p>
+                  <span className="material-symbols-outlined text-sm text-[var(--on-surface-variant)]">
+                    {jobsExpanded ? 'expand_less' : 'expand_more'}
+                  </span>
+                </button>
+                {jobsExpanded && (
+                  <nav className="flex flex-col gap-1 px-3 mt-2 pb-4">
+                    {JOBS.map(job => {
+                      const isSelected = selectedJobs.includes(job.id);
+                      const matchCount = CURRENT_CAPABILITIES.filter(c =>
+                        c.jobsToBeDone?.includes(job.id) &&
+                        (activeFilter === 'all' || c.era === activeFilter) &&
+                        (!activeChannel || c.channels.includes(activeChannel))
+                      ).length;
 
-                    return (
-                      <button
-                        key={job.id}
-                        onClick={() => {
-                          if (isSelected) {
-                            setSelectedJobs(selectedJobs.filter(j => j !== job.id));
-                          } else {
-                            setSelectedJobs([...selectedJobs, job.id]);
-                          }
-                        }}
-                        className={`group px-3 py-2.5 rounded-xl flex items-center justify-between transition-all text-left ${
-                          isSelected
-                            ? 'bg-on-surface/5 text-[var(--on-surface)] ring-1 ring-[var(--border)]'
-                            : 'text-[var(--on-surface-variant)] hover:bg-on-surface/5'
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
-                            isSelected ? 'bg-primary-container border-primary-container' : 'border-[var(--border)]'
-                          }`}>
-                            {isSelected && <span className="material-symbols-outlined text-white text-xs">check</span>}
+                      return (
+                        <button
+                          key={job.id}
+                          onClick={() => {
+                            if (isSelected) {
+                              setSelectedJobs(selectedJobs.filter(j => j !== job.id));
+                            } else {
+                              setSelectedJobs([...selectedJobs, job.id]);
+                            }
+                          }}
+                          className={`group px-3 py-2.5 rounded-xl flex items-center justify-between transition-all text-left ${
+                            isSelected
+                              ? 'bg-on-surface/5 text-[var(--on-surface)] ring-1 ring-[var(--border)]'
+                              : 'text-[var(--on-surface-variant)] hover:bg-on-surface/5'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
+                              isSelected ? 'bg-primary-container border-primary-container' : 'border-[var(--border)]'
+                            }`}>
+                              {isSelected && <span className="material-symbols-outlined text-white text-xs">check</span>}
+                            </div>
+                            <span className="material-symbols-outlined text-base" style={{ color: job.color }}>{job.icon}</span>
+                            <span className="font-headline text-[10px] font-black uppercase tracking-widest">{job.label}</span>
                           </div>
-                          <span className="material-symbols-outlined text-base" style={{ color: job.color }}>{job.icon}</span>
-                          <span className="font-headline text-[10px] font-black uppercase tracking-widest">{job.label}</span>
-                        </div>
-                        <span className="text-[9px] font-bold text-[var(--on-surface-variant)]/60 bg-on-surface/5 px-1.5 py-0.5 rounded">
-                          {matchCount}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </nav>
+                          <span className="text-[9px] font-bold text-[var(--on-surface-variant)]/60 bg-on-surface/5 px-1.5 py-0.5 rounded">
+                            {matchCount}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </nav>
+                )}
               </div>
 
               <div>
@@ -565,7 +561,7 @@ function App() {
                   {latestChannels.map(channel => (
                     <button
                       key={channel.id}
-                      onClick={() => { setActiveChannel(channel.id); setIsOverview(false); }}
+                      onClick={() => { setActiveChannel(channel.id); setIsOverview(false); setMobileMenuOpen(false); }}
                       className={`group px-6 py-2.5 flex items-center gap-4 transition-all text-left ${
                         activeChannel === channel.id 
                           ? 'bg-primary-container/10 text-primary-container border-l-4 border-primary-container' 
@@ -578,6 +574,68 @@ function App() {
                   ))}
                 </nav>
               </div>
+
+              {/* View Mode & Roadmap Controls - Only show when a channel is selected */}
+              {activeChannel && !isOverview && (
+                <div className="px-3 mt-6 pt-6 border-t border-[var(--border)]">
+                  <p className="px-3 text-[10px] uppercase tracking-[0.2em] font-black text-[var(--on-surface-variant)]/40 mb-3">
+                    View Options
+                  </p>
+                  <div className="flex items-center gap-2">
+                    {/* Capabilities View Button */}
+                    <button
+                      onClick={() => setViewMode('capabilities')}
+                      className={`group relative flex-1 p-3 rounded-xl transition-all flex items-center justify-center ${
+                        viewMode === 'capabilities'
+                          ? 'bg-primary-container/10 text-primary-container ring-1 ring-primary-container'
+                          : 'bg-on-surface/5 text-[var(--on-surface-variant)] hover:bg-on-surface/10'
+                      }`}
+                      title="Capabilities View"
+                    >
+                      <span className="material-symbols-outlined text-xl">grid_view</span>
+                      {/* Tooltip - bottom positioned to avoid cutoff */}
+                      <span className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[10px] font-bold uppercase tracking-wider whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg z-50">
+                        Capabilities
+                      </span>
+                    </button>
+
+                    {/* Journey View Button */}
+                    <button
+                      onClick={() => setViewMode('journey')}
+                      className={`group relative flex-1 p-3 rounded-xl transition-all flex items-center justify-center ${
+                        viewMode === 'journey'
+                          ? 'bg-primary-container/10 text-primary-container ring-1 ring-primary-container'
+                          : 'bg-on-surface/5 text-[var(--on-surface-variant)] hover:bg-on-surface/10'
+                      }`}
+                      title="Journey View"
+                    >
+                      <span className="material-symbols-outlined text-xl">route</span>
+                      {/* Tooltip - bottom positioned to avoid cutoff */}
+                      <span className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[10px] font-bold uppercase tracking-wider whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg z-50">
+                        Journey
+                      </span>
+                    </button>
+
+                    {/* Roadmap Button - Only show if roadmap exists for this cloud/channel */}
+                    {MATURITY_MODEL[activeCloud]?.[activeChannel] && (
+                      <button
+                        onClick={() => {
+                          console.log('Roadmap clicked:', { cloud: activeCloud, channel: activeChannel });
+                          setShowRoadmap({ cloud: activeCloud, channel: activeChannel });
+                        }}
+                        className="group relative flex-1 p-3 rounded-xl transition-all flex items-center justify-center bg-on-surface/5 text-[var(--on-surface-variant)] hover:bg-on-surface/10"
+                        title="Implementation Roadmap"
+                      >
+                        <span className="material-symbols-outlined text-xl">account_tree</span>
+                        {/* Tooltip - bottom positioned to avoid cutoff */}
+                        <span className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[10px] font-bold uppercase tracking-wider whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg z-50">
+                          Roadmap
+                        </span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>
@@ -590,7 +648,7 @@ function App() {
       </aside>
 
       {/* Main Content */}
-      <main className="ml-64 pt-32 p-12 min-h-screen transition-colors duration-500">
+      <main className="lg:ml-64 pt-20 sm:pt-24 lg:pt-32 px-4 sm:px-6 lg:px-12 py-6 sm:py-8 lg:py-12 min-h-screen transition-colors duration-500">
         {activeCloud === 'agentforce' ? (
           selectedChild ? (
             /* Level 3: Child Capabilities View */
@@ -614,7 +672,7 @@ function App() {
               {selectedChild.capabilities?.channelSupport && (
                 <div className="mb-12">
                   <h3 className="text-2xl font-black text-[var(--on-surface)] mb-6 uppercase tracking-tight">Channel Support</h3>
-                  <div className="grid grid-cols-5 gap-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
                     {selectedChild.capabilities.channelSupport.map((channel) => (
                       <div
                         key={channel.name}
@@ -637,7 +695,7 @@ function App() {
               {selectedChild.capabilities?.features && (
                 <div>
                   <h3 className="text-2xl font-black text-[var(--on-surface)] mb-6 uppercase tracking-tight">Features</h3>
-                  <div className="grid grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {selectedChild.capabilities.features.map((feature) => (
                       <div
                         key={feature.name}
@@ -720,7 +778,7 @@ function App() {
                 </p>
               </header>
 
-              <div className="grid grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
                 {selectedParent.children?.map((child) => (
                   <button
                     key={child.id}
@@ -760,7 +818,7 @@ function App() {
                 </p>
               </header>
 
-              <div className="grid grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                 {AGENTFORCE_TILES.map((tile) => (
                   <button
                     key={tile.id}
@@ -911,7 +969,7 @@ function App() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                         <div>
                           <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0176D3]/60 mb-3 italic">Business Value</h4>
                           <ul className="space-y-2">
@@ -991,8 +1049,8 @@ function App() {
                   : 'AI-powered service delivery across every touchpoint.'}
               </p>
             </header>
-            
-            <div className="grid grid-cols-3 gap-8">
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
               {latestChannels.map(channel => (
                 <div 
                   key={channel.id}
@@ -1088,7 +1146,7 @@ function App() {
               </div>
             </header>
 
-            <div className="flex gap-10 items-start">
+            <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 items-start">
               {/* Journey Swimlanes View - Only when channel is selected */}
               {activeChannel && viewMode === 'journey' && JOURNEYS[activeCloud]?.[activeChannel] ? (
                 <div className="w-full pb-24">
@@ -1101,7 +1159,7 @@ function App() {
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-5 gap-6 max-w-7xl mx-auto">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 max-w-7xl mx-auto">
                     {JOURNEYS[activeCloud][activeChannel].phases.map((phase) => {
                       const phaseCapabilities = JOURNEYS[activeCloud][activeChannel].mapping[phase.id] || [];
                       const capabilities = phaseCapabilities
@@ -1154,7 +1212,7 @@ function App() {
                 </div>
               ) : (
                 /* Feature Grid */
-                <div className="w-3/5 grid grid-cols-12 gap-x-4 gap-y-4 pb-24 auto-rows-max">
+                <div className="w-full lg:w-3/5 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-x-3 gap-y-3 sm:gap-x-4 sm:gap-y-4 pb-24 auto-rows-max">
                 {filteredCapabilities.map(cap => (
                   <div 
                     key={cap.id} 
@@ -1208,7 +1266,7 @@ function App() {
 
                       <div className="border-t border-[var(--border)] pt-5 mt-4">
                         <p className="text-xs font-bold uppercase tracking-widest text-[var(--on-surface-variant)] mb-3">Select Telephony Provider</p>
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                           {TELEPHONY_PROVIDERS.map((provider) => (
                             <button
                               key={provider.id}
@@ -1289,7 +1347,7 @@ function App() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                       {VOICE_IMPLEMENTATION_CHECKLIST.map((phase, index) => {
                         const progress = getChecklistProgress(phase.id);
                         return (
@@ -1353,10 +1411,10 @@ function App() {
                 </div>
               )}
 
-              {/* Storyline Panel (Right Side) - Hide only when in Journey view */}
+              {/* Storyline Panel (Right Side) - Hide on mobile when no capability hovered, hide when in Journey view */}
               {!(activeChannel && viewMode === 'journey') && (
-              <div className="flex-1 sticky top-32">
-                <div className="glass-panel border-[var(--border)] rounded-3xl p-8 min-h-[500px] flex flex-col relative overflow-hidden group/panel shadow-2xl">
+              <div className={`flex-1 lg:sticky top-32 ${!hoveredCapability ? 'hidden lg:flex' : 'flex'}`}>
+                <div className="glass-panel border-[var(--border)] rounded-3xl p-6 sm:p-8 min-h-[400px] sm:min-h-[500px] flex flex-col relative overflow-hidden group/panel shadow-2xl w-full">
                   {hoveredCapability ? (
                     <div className="animate-in fade-in slide-in-from-right-8 duration-500 flex flex-col h-full">
                       <div className="flex items-start justify-between mb-8">
@@ -1391,7 +1449,7 @@ function App() {
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                            <div>
                              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0176D3]/60 mb-3 italic">Business Value</h4>
                              <ul className="space-y-2">
@@ -1485,7 +1543,7 @@ function App() {
                       <p className="text-sm text-[var(--on-surface-variant)] leading-relaxed">{selectedCapability.setupRequirements}</p>
                     </div>
                   )}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     {Object.entries(selectedCapability.specs).map(([key, value]) => (
                       <div key={key} className="p-4 bg-[var(--surface-container)] rounded-xl border border-[var(--border)]">
                         <p className="text-[10px] text-primary-container font-black uppercase tracking-widest mb-1 opacity-80">{key.replace('_', ' ')}</p>
@@ -1755,7 +1813,7 @@ function App() {
                       {/* Capabilities */}
                       <div className="mb-4">
                         <p className="text-[10px] font-black uppercase tracking-wider text-[var(--on-surface-variant)] mb-3">Capabilities to Implement</p>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                           {level.capabilities.map((capId) => {
                             const cap = CURRENT_CAPABILITIES.find(c => c.id === capId);
                             if (!cap) return null;
@@ -1783,7 +1841,7 @@ function App() {
                       </div>
 
                       {/* Outcomes */}
-                      <div className="grid grid-cols-3 gap-3 mb-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 mb-4">
                         {level.outcomes.map((outcome, i) => (
                           <div key={i} className="p-3 rounded-lg bg-on-surface/5 border border-[var(--border)] text-center">
                             <p className="text-[10px] text-[var(--on-surface)] leading-tight">{outcome}</p>
