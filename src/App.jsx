@@ -660,7 +660,7 @@ function App() {
               </header>
 
               {/* Channel Support Section */}
-              {selectedChild.capabilities?.channelSupport && (
+              {selectedChild.capabilities?.channelSupport && selectedChild.capabilities.channelSupport.length > 0 && (
                 <div className="mb-12">
                   <h3 className="text-2xl font-black text-[var(--on-surface)] mb-6 uppercase tracking-tight">Channel Support</h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
@@ -686,19 +686,24 @@ function App() {
               {selectedChild.capabilities?.features && (
                 <div>
                   <h3 className="text-2xl font-black text-[var(--on-surface)] mb-6 uppercase tracking-tight">Features</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {selectedChild.capabilities.features.map((feature) => (
                       <div
                         key={feature.name}
-                        className="bg-[var(--surface-container-low)] p-6 rounded-2xl border border-[var(--border)] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-xl text-center"
+                        className="bg-[var(--surface-container-low)] p-5 rounded-2xl border border-[var(--border)] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-xl"
                       >
-                        <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: `${feature.accent}20` }}>
-                          <span className="material-symbols-outlined text-3xl" style={{ color: feature.accent }}>{feature.icon}</span>
+                        <div className="flex items-start gap-3 mb-3">
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${feature.accent}20` }}>
+                            <span className="material-symbols-outlined text-xl" style={{ color: feature.accent }}>{feature.icon}</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-base font-black text-[var(--on-surface)] mb-1 leading-tight">{feature.name}</h4>
+                            <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${feature.available ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                              {feature.available ? 'GA' : 'Coming'}
+                            </span>
+                          </div>
                         </div>
-                        <h4 className="text-sm font-black text-[var(--on-surface)] uppercase tracking-tight mb-2">{feature.name}</h4>
-                        <span className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase ${feature.available ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                          {feature.available ? 'Available' : 'Coming Soon'}
-                        </span>
+                        <p className="text-sm text-[var(--on-surface-variant)] leading-relaxed">{feature.description}</p>
                       </div>
                     ))}
                   </div>
@@ -708,43 +713,71 @@ function App() {
               {/* Timeline Section */}
               {selectedChild.releases && selectedChild.releases.length > 0 && (
                 <div className="mt-16">
-                  <h3 className="text-2xl font-black text-[var(--on-surface)] mb-8 uppercase tracking-tight">Release Timeline</h3>
-                  <div className="relative pl-10">
-                    <div className="absolute left-4 top-0 bottom-0 w-px bg-[var(--border)]"></div>
-                    <div className="space-y-8">
-                      {[...selectedChild.releases].sort((a, b) => new Date(a.date) - new Date(b.date)).map((release) => (
-                        <div key={release.id} className="relative">
-                          <div className="absolute -left-[2.35rem] top-8 w-4 h-4 rounded-full border-4 border-[var(--background)]" style={{ backgroundColor: release.accent }}></div>
-                          <div className="glass-panel rounded-[28px] border border-[var(--border)] p-8 shadow-xl">
-                            <div className="flex items-start justify-between gap-6 mb-5">
-                              <div>
-                                <div className="flex flex-wrap gap-3 mb-3">
+                  <div className="flex items-end justify-between mb-8">
+                    <h3 className="text-2xl font-black text-[var(--on-surface)] uppercase tracking-tight">Feature Evolution</h3>
+                    {selectedChild.releases.length > 1 && (() => {
+                      const sortedReleases = [...selectedChild.releases].sort((a, b) => new Date(a.date) - new Date(b.date));
+                      const firstDate = new Date(sortedReleases[0].date);
+                      const lastDate = new Date(sortedReleases[sortedReleases.length - 1].date);
+                      const formatDate = (date) => date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                      return (
+                        <span className="text-sm font-bold text-[var(--on-surface-variant)] tracking-wide">
+                          {formatDate(firstDate)} → {formatDate(lastDate)}
+                        </span>
+                      );
+                    })()}
+                  </div>
+                  <div className="relative pl-12">
+                    <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[var(--border)] via-[var(--border)] to-transparent"></div>
+                    <div className="space-y-6">
+                      {[...selectedChild.releases].sort((a, b) => new Date(b.date) - new Date(a.date)).map((release, index, arr) => (
+                        <a
+                          key={release.id}
+                          href={release.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="relative block group"
+                        >
+                          <div className="absolute -left-[1.85rem] top-6 w-3 h-3 rounded-full border-2 border-[var(--background)] group-hover:scale-125 transition-transform" style={{ backgroundColor: release.accent }}></div>
+                          <div className="absolute -left-[2.35rem] top-[1.65rem] w-4 h-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity animate-pulse" style={{ backgroundColor: `${release.accent}40` }}></div>
+
+                          <div className="glass-panel rounded-2xl border border-[var(--border)] p-6 shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+                            {/* Milestone Badge */}
+                            <div className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center text-xs font-black" style={{ backgroundColor: `${release.accent}20`, color: release.accent }}>
+                              {arr.length - index}
+                            </div>
+
+                            <div className="flex items-start gap-4 pr-10">
+                              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform" style={{ backgroundColor: `${release.accent}20` }}>
+                                <span className="material-symbols-outlined text-xl" style={{ color: release.accent }}>{release.icon}</span>
+                              </div>
+
+                              <div className="flex-1 min-w-0">
+                                <div className="flex flex-wrap items-center gap-2 mb-2">
                                   <span
-                                    className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border"
-                                    style={{ color: release.accent, borderColor: `${release.accent}55`, backgroundColor: `${release.accent}12` }}
+                                    className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider"
+                                    style={{ color: release.accent, backgroundColor: `${release.accent}15`, border: `1px solid ${release.accent}40` }}
                                   >
                                     {release.dateLabel}
                                   </span>
+                                  {index === 0 && (
+                                    <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-green-500/20 text-green-400 border border-green-500/40">
+                                      Latest
+                                    </span>
+                                  )}
                                 </div>
-                                <h3 className="text-2xl font-black text-[var(--on-surface)] leading-tight mb-3">{release.title}</h3>
-                                <p className="text-[var(--on-surface-variant)] leading-relaxed">{release.summary}</p>
-                              </div>
-                              <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${release.accent}20` }}>
-                                <span className="material-symbols-outlined text-2xl" style={{ color: release.accent }}>{release.icon}</span>
+
+                                <h4 className="text-lg font-black text-[var(--on-surface)] leading-tight mb-2 group-hover:underline">{release.title}</h4>
+                                <p className="text-sm text-[var(--on-surface-variant)] leading-relaxed">{release.summary}</p>
                               </div>
                             </div>
-                            <a
-                              href={release.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-black uppercase tracking-[0.16em] text-white"
-                              style={{ backgroundColor: release.accent }}
-                            >
-                              Open Release Note
-                              <span className="material-symbols-outlined text-base">north_east</span>
-                            </a>
+
+                            {/* Hover Arrow */}
+                            <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <span className="material-symbols-outlined text-base" style={{ color: release.accent }}>north_east</span>
+                            </div>
                           </div>
-                        </div>
+                        </a>
                       ))}
                     </div>
                   </div>
