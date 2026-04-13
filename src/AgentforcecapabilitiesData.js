@@ -61,6 +61,7 @@ export const AGENTFORCE_TILES = [
         specs: {
           availability: 'Beta from December 4, 2025',
           builder: 'New Agentforce Builder',
+          model: 'GPT-4.1',
           focus: 'Determinism + LLM reasoning',
         },
         capabilities: {
@@ -70,6 +71,7 @@ export const AGENTFORCE_TILES = [
             { name: 'Service Agent', icon: 'support_agent', accent: '#0176D3', available: true },
             { name: 'Employee Agent', icon: 'badge', accent: '#9C27B0', available: true },
             { name: 'Enhanced Chat v2', icon: 'chat_bubble', accent: '#00BFA5', available: true },
+            { name: 'Voice', icon: 'phone', accent: '#06A59A', available: false },
           ],
           features: [
             { name: 'Supports RAG', icon: 'library_books', accent: '#FFDB3C', available: true },
@@ -205,6 +207,7 @@ export const AGENTFORCE_TILES = [
         ],
         specs: {
           transition: 'Beta + GA',
+          model: 'GPT-4o',
           focus: 'Builder migration',
         },
         capabilities: {
