@@ -659,25 +659,148 @@ function App() {
                 </p>
               </header>
 
+              {/* How It Works Flow - Only for Voice Engine */}
+              {selectedChild.id === 'voice-engine' && (
+                <div className="mb-16">
+                  <h3 className="text-2xl font-black text-[var(--on-surface)] uppercase tracking-tight mb-8">How It Works</h3>
+                  <div className="relative">
+                    {/* Flow Steps */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {[
+                        {
+                          step: 1,
+                          title: 'Customer Call',
+                          icon: 'call',
+                          accent: '#06A59A',
+                          description: 'Customer calls support line via PSTN or SIP telephony',
+                          tech: 'Protocol: PSTN / SIP'
+                        },
+                        {
+                          step: 2,
+                          title: 'Speech-to-Text',
+                          icon: 'mic',
+                          accent: '#0176D3',
+                          description: 'Deepgram Nova-2 transcribes speech with 95%+ accuracy',
+                          tech: 'Provider: Deepgram Nova-2'
+                        },
+                        {
+                          step: 3,
+                          title: 'Reasoning',
+                          icon: 'psychology',
+                          accent: '#FFDB3C',
+                          description: 'OpenAI GPT via Flash Planner processes intent and context',
+                          tech: 'LLM: OpenAI GPT + Flash Planner'
+                        },
+                        {
+                          step: 4,
+                          title: 'Agent Instructions',
+                          icon: 'developer_mode',
+                          accent: '#7B5EA7',
+                          description: 'Agentforce Builder script guides conversation flow and actions',
+                          tech: 'Runtime: Agent Builder'
+                        },
+                        {
+                          step: 5,
+                          title: 'Text-to-Speech',
+                          icon: 'campaign',
+                          accent: '#E31754',
+                          description: 'ElevenLabs Turbo v2.5 synthesizes natural voice response',
+                          tech: 'Provider: ElevenLabs Turbo v2.5'
+                        },
+                        {
+                          step: 6,
+                          title: 'Escalation',
+                          icon: 'transfer_within_a_station',
+                          accent: '#FE9339',
+                          description: 'Context-preserving handoff to human agents via Omni-Channel',
+                          tech: 'Routing: Omni-Channel Flow'
+                        }
+                      ].map((flowStep, index, arr) => (
+                        <div key={flowStep.step} className="relative">
+                          <div className="glass-panel rounded-2xl border border-[var(--border)] p-6 shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 h-full">
+                            {/* Step Badge */}
+                            <div className="flex items-start justify-between mb-4">
+                              <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${flowStep.accent}20` }}>
+                                <span className="material-symbols-outlined text-2xl" style={{ color: flowStep.accent }}>{flowStep.icon}</span>
+                              </div>
+                              <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black" style={{ backgroundColor: `${flowStep.accent}20`, color: flowStep.accent }}>
+                                {flowStep.step}
+                              </div>
+                            </div>
+
+                            {/* Content */}
+                            <h4 className="text-lg font-black text-[var(--on-surface)] mb-2">{flowStep.title}</h4>
+                            <p className="text-sm text-[var(--on-surface-variant)] leading-relaxed mb-3">{flowStep.description}</p>
+                            <div className="px-3 py-1.5 rounded-lg text-xs font-mono text-[var(--on-surface-variant)] border border-[var(--border)]" style={{ backgroundColor: `${flowStep.accent}10` }}>
+                              {flowStep.tech}
+                            </div>
+
+                            {/* Arrow to Next Step (hidden on last and on mobile at column breaks) */}
+                            {index < arr.length - 1 && (
+                              <div className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 hidden lg:block">
+                                <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ backgroundColor: flowStep.accent }}>
+                                  <span className="material-symbols-outlined text-sm text-white">arrow_forward</span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Latency Indicator */}
+                    <div className="mt-8 glass-panel rounded-xl border border-[var(--border)] p-4 flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-green-500/20">
+                        <span className="material-symbols-outlined text-xl text-green-400">speed</span>
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-sm font-bold text-[var(--on-surface)]">End-to-End Latency: &lt;500ms</div>
+                        <div className="text-xs text-[var(--on-surface-variant)]">STT: &lt;200ms • Reasoning: &lt;100ms • TTS: &lt;300ms</div>
+                      </div>
+                      <div className="px-3 py-1.5 rounded-full bg-green-500/20 text-green-400 text-xs font-black uppercase tracking-wider">
+                        Real-time
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Channel Support Section */}
               {selectedChild.capabilities?.channelSupport && selectedChild.capabilities.channelSupport.length > 0 && (
                 <div className="mb-12">
                   <h3 className="text-2xl font-black text-[var(--on-surface)] mb-6 uppercase tracking-tight">Channel Support</h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
-                    {selectedChild.capabilities.channelSupport.map((channel) => (
-                      <div
-                        key={channel.name}
-                        className="bg-[var(--surface-container-low)] p-6 rounded-2xl border border-[var(--border)] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-xl text-center"
-                      >
-                        <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: `${channel.accent}20` }}>
-                          <span className="material-symbols-outlined text-3xl" style={{ color: channel.accent }}>{channel.icon}</span>
-                        </div>
-                        <h4 className="text-sm font-black text-[var(--on-surface)] uppercase tracking-tight mb-2">{channel.name}</h4>
-                        <span className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase ${channel.available ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                          {channel.available ? 'Available' : 'Coming Soon'}
-                        </span>
-                      </div>
-                    ))}
+                    {selectedChild.capabilities.channelSupport.map((channel) => {
+                      const ChannelWrapper = channel.docs ? 'a' : 'div';
+                      const wrapperProps = channel.docs ? {
+                        href: channel.docs,
+                        target: '_blank',
+                        rel: 'noopener noreferrer',
+                        className: 'bg-[var(--surface-container-low)] p-6 rounded-2xl border border-[var(--border)] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-xl text-center block group relative'
+                      } : {
+                        className: 'bg-[var(--surface-container-low)] p-6 rounded-2xl border border-[var(--border)] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-xl text-center'
+                      };
+
+                      return (
+                        <ChannelWrapper
+                          key={channel.name}
+                          {...wrapperProps}
+                        >
+                          <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: `${channel.accent}20` }}>
+                            <span className="material-symbols-outlined text-3xl" style={{ color: channel.accent }}>{channel.icon}</span>
+                          </div>
+                          <h4 className={`text-sm font-black text-[var(--on-surface)] uppercase tracking-tight mb-2 ${channel.docs ? 'group-hover:underline' : ''}`}>{channel.name}</h4>
+                          <span className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase ${channel.available ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                            {channel.available ? 'Available' : 'Coming Soon'}
+                          </span>
+                          {channel.docs && (
+                            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <span className="material-symbols-outlined text-sm" style={{ color: channel.accent }}>north_east</span>
+                            </div>
+                          )}
+                        </ChannelWrapper>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -687,25 +810,43 @@ function App() {
                 <div>
                   <h3 className="text-2xl font-black text-[var(--on-surface)] mb-6 uppercase tracking-tight">Features</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {selectedChild.capabilities.features.map((feature) => (
-                      <div
-                        key={feature.name}
-                        className="bg-[var(--surface-container-low)] p-5 rounded-2xl border border-[var(--border)] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-xl"
-                      >
-                        <div className="flex items-start gap-3 mb-3">
-                          <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${feature.accent}20` }}>
-                            <span className="material-symbols-outlined text-xl" style={{ color: feature.accent }}>{feature.icon}</span>
+                    {selectedChild.capabilities.features.map((feature) => {
+                      const FeatureWrapper = feature.docs ? 'a' : 'div';
+                      const wrapperProps = feature.docs ? {
+                        href: feature.docs,
+                        target: '_blank',
+                        rel: 'noopener noreferrer',
+                        className: 'bg-[var(--surface-container-low)] p-5 rounded-2xl border border-[var(--border)] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-xl block group relative'
+                      } : {
+                        className: 'bg-[var(--surface-container-low)] p-5 rounded-2xl border border-[var(--border)] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-xl'
+                      };
+
+                      return (
+                        <FeatureWrapper
+                          key={feature.name}
+                          {...wrapperProps}
+                        >
+                          <div className="flex items-start gap-3 mb-3">
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${feature.accent}20` }}>
+                              <span className="material-symbols-outlined text-xl" style={{ color: feature.accent }}>{feature.icon}</span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className={`text-base font-black text-[var(--on-surface)] mb-1 leading-tight ${feature.docs ? 'group-hover:underline' : ''}`}>{feature.name}</h4>
+                              <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${feature.available ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                                {feature.available ? 'GA' : 'Coming'}
+                              </span>
+                            </div>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <h4 className="text-base font-black text-[var(--on-surface)] mb-1 leading-tight">{feature.name}</h4>
-                            <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${feature.available ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                              {feature.available ? 'GA' : 'Coming'}
-                            </span>
-                          </div>
-                        </div>
-                        <p className="text-sm text-[var(--on-surface-variant)] leading-relaxed">{feature.description}</p>
-                      </div>
-                    ))}
+                          <p className="text-sm text-[var(--on-surface-variant)] leading-relaxed mb-2">{feature.description}</p>
+                          {feature.docs && (
+                            <div className="flex items-center gap-1 text-xs text-[var(--on-surface-variant)] mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <span className="material-symbols-outlined text-sm" style={{ color: feature.accent }}>north_east</span>
+                              <span>View docs</span>
+                            </div>
+                          )}
+                        </FeatureWrapper>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -783,6 +924,64 @@ function App() {
                   </div>
                 </div>
               )}
+
+              {/* Documentation Links Section */}
+              {selectedChild.links && Object.keys(selectedChild.links).length > 0 && (
+                <div className="mt-16">
+                  <h3 className="text-2xl font-black text-[var(--on-surface)] uppercase tracking-tight mb-8">Documentation & Resources</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {Object.entries(selectedChild.links).map(([key, url]) => {
+                      const linkLabels = {
+                        docs: { label: 'Documentation', icon: 'description' },
+                        setup: { label: 'Setup Guide', icon: 'settings' },
+                        releaseNotes: { label: 'Release Notes', icon: 'new_releases' },
+                        trailhead: { label: 'Trailhead', icon: 'school' },
+                        video: { label: 'Video Tutorials', icon: 'play_circle' },
+                        partners: { label: 'Partners', icon: 'handshake' },
+                        pricing: { label: 'Pricing', icon: 'payments' },
+                        devGuide: { label: 'Dev Guide', icon: 'code' },
+                        deepgram: { label: 'Deepgram Docs', icon: 'mic' },
+                        openai: { label: 'OpenAI Docs', icon: 'psychology' },
+                        elevenlabs: { label: 'ElevenLabs Docs', icon: 'campaign' },
+                        privacy: { label: 'Privacy Policy', icon: 'lock' },
+                        keyTerms: { label: 'Key Terms', icon: 'settings_voice' },
+                        pronunciation: { label: 'Pronunciation', icon: 'spellcheck' },
+                        voiceTuning: { label: 'Voice Tuning', icon: 'tune' },
+                        ipa: { label: 'IPA Reference', icon: 'translate' },
+                        serviceCloudVoice: { label: 'Service Cloud Voice', icon: 'phone' },
+                        amazonConnect: { label: 'Amazon Connect', icon: 'cloud_circle' },
+                        genesysCloud: { label: 'Genesys Cloud', icon: 'hub' },
+                        omniChannel: { label: 'Omni-Channel', icon: 'alt_route' },
+                        billing: { label: 'Billing', icon: 'monetization_on' },
+                        logs: { label: 'Logs', icon: 'description' },
+                        analytics: { label: 'Analytics', icon: 'analytics' },
+                        studio: { label: 'Studio', icon: 'dashboard' },
+                        compliance: { label: 'Compliance', icon: 'inventory' },
+                        api: { label: 'API Docs', icon: 'api' },
+                      };
+                      const linkInfo = linkLabels[key] || { label: key, icon: 'link' };
+                      return (
+                        <a
+                          key={key}
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="glass-panel rounded-xl border border-[var(--border)] p-4 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex items-center gap-3"
+                        >
+                          <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform" style={{ backgroundColor: `${selectedChild.accent}20` }}>
+                            <span className="material-symbols-outlined text-lg" style={{ color: selectedChild.accent }}>{linkInfo.icon}</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-bold text-[var(--on-surface)] group-hover:underline">{linkInfo.label}</div>
+                            <div className="text-xs text-[var(--on-surface-variant)] truncate">{new URL(url).hostname}</div>
+                          </div>
+                          <span className="material-symbols-outlined text-base text-[var(--on-surface-variant)] opacity-0 group-hover:opacity-100 transition-opacity">north_east</span>
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           ) : selectedParent ? (
             /* Level 2: Parent Children View */
@@ -801,6 +1000,112 @@ function App() {
                   {selectedParent.description}
                 </p>
               </header>
+
+              {/* How It Works Flow - Only for Agentforce Voice Parent */}
+              {selectedParent.id === 'agentforce-voice' && (
+                <div className="mb-16">
+                  <h3 className="text-2xl font-black text-[var(--on-surface)] uppercase tracking-tight mb-8">How It Works</h3>
+                  <div className="relative">
+                    {/* Flow Steps */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {[
+                        {
+                          step: 1,
+                          title: 'Customer Call',
+                          icon: 'call',
+                          accent: '#06A59A',
+                          description: 'Customer calls support line via PSTN or SIP telephony',
+                          tech: 'Protocol: PSTN / SIP'
+                        },
+                        {
+                          step: 2,
+                          title: 'Speech-to-Text',
+                          icon: 'mic',
+                          accent: '#0176D3',
+                          description: 'Deepgram Nova-2 transcribes speech with 95%+ accuracy',
+                          tech: 'Provider: Deepgram Nova-2'
+                        },
+                        {
+                          step: 3,
+                          title: 'Reasoning',
+                          icon: 'psychology',
+                          accent: '#FFDB3C',
+                          description: 'OpenAI GPT via Flash Planner processes intent and context',
+                          tech: 'LLM: OpenAI GPT + Flash Planner'
+                        },
+                        {
+                          step: 4,
+                          title: 'Agent Instructions',
+                          icon: 'developer_mode',
+                          accent: '#7B5EA7',
+                          description: 'Agentforce Builder script guides conversation flow and actions',
+                          tech: 'Runtime: Agent Builder'
+                        },
+                        {
+                          step: 5,
+                          title: 'Text-to-Speech',
+                          icon: 'campaign',
+                          accent: '#E31754',
+                          description: 'ElevenLabs Turbo v2.5 synthesizes natural voice response',
+                          tech: 'Provider: ElevenLabs Turbo v2.5'
+                        },
+                        {
+                          step: 6,
+                          title: 'Escalation',
+                          icon: 'transfer_within_a_station',
+                          accent: '#FE9339',
+                          description: 'Context-preserving handoff to human agents via Omni-Channel',
+                          tech: 'Routing: Omni-Channel Flow'
+                        }
+                      ].map((flowStep, index, arr) => (
+                        <div key={flowStep.step} className="relative">
+                          <div className="glass-panel rounded-2xl border border-[var(--border)] p-6 shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 h-full">
+                            {/* Step Badge */}
+                            <div className="flex items-start justify-between mb-4">
+                              <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${flowStep.accent}20` }}>
+                                <span className="material-symbols-outlined text-2xl" style={{ color: flowStep.accent }}>{flowStep.icon}</span>
+                              </div>
+                              <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black" style={{ backgroundColor: `${flowStep.accent}20`, color: flowStep.accent }}>
+                                {flowStep.step}
+                              </div>
+                            </div>
+
+                            {/* Content */}
+                            <h4 className="text-lg font-black text-[var(--on-surface)] mb-2">{flowStep.title}</h4>
+                            <p className="text-sm text-[var(--on-surface-variant)] leading-relaxed mb-3">{flowStep.description}</p>
+                            <div className="px-3 py-1.5 rounded-lg text-xs font-mono text-[var(--on-surface-variant)] border border-[var(--border)]" style={{ backgroundColor: `${flowStep.accent}10` }}>
+                              {flowStep.tech}
+                            </div>
+
+                            {/* Arrow to Next Step (hidden on last and on mobile at column breaks) */}
+                            {index < arr.length - 1 && (
+                              <div className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 hidden lg:block">
+                                <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ backgroundColor: flowStep.accent }}>
+                                  <span className="material-symbols-outlined text-sm text-white">arrow_forward</span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Latency Indicator */}
+                    <div className="mt-8 glass-panel rounded-xl border border-[var(--border)] p-4 flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-green-500/20">
+                        <span className="material-symbols-outlined text-xl text-green-400">speed</span>
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-sm font-bold text-[var(--on-surface)]">End-to-End Latency: &lt;500ms</div>
+                        <div className="text-xs text-[var(--on-surface-variant)]">STT: &lt;200ms • Reasoning: &lt;100ms • TTS: &lt;300ms</div>
+                      </div>
+                      <div className="px-3 py-1.5 rounded-full bg-green-500/20 text-green-400 text-xs font-black uppercase tracking-wider">
+                        Real-time
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
                 {selectedParent.children?.map((child) => (
@@ -830,6 +1135,46 @@ function App() {
                   </button>
                 ))}
               </div>
+
+              {/* Documentation Links Section for Parent */}
+              {selectedParent.links && Object.keys(selectedParent.links).length > 0 && (
+                <div className="mt-16">
+                  <h3 className="text-2xl font-black text-[var(--on-surface)] uppercase tracking-tight mb-8">Documentation & Resources</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {Object.entries(selectedParent.links).map(([key, url]) => {
+                      const linkLabels = {
+                        docs: { label: 'Documentation', icon: 'description' },
+                        setup: { label: 'Setup Guide', icon: 'settings' },
+                        releaseNotes: { label: 'Release Notes', icon: 'new_releases' },
+                        trailhead: { label: 'Trailhead', icon: 'school' },
+                        video: { label: 'Video Tutorials', icon: 'play_circle' },
+                        partners: { label: 'Partners', icon: 'handshake' },
+                        pricing: { label: 'Pricing', icon: 'payments' },
+                        devGuide: { label: 'Dev Guide', icon: 'code' },
+                      };
+                      const linkInfo = linkLabels[key] || { label: key, icon: 'link' };
+                      return (
+                        <a
+                          key={key}
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="glass-panel rounded-xl border border-[var(--border)] p-4 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex items-center gap-3"
+                        >
+                          <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform" style={{ backgroundColor: `${selectedParent.accent}20` }}>
+                            <span className="material-symbols-outlined text-lg" style={{ color: selectedParent.accent }}>{linkInfo.icon}</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-bold text-[var(--on-surface)] group-hover:underline">{linkInfo.label}</div>
+                            <div className="text-xs text-[var(--on-surface-variant)] truncate">{new URL(url).hostname}</div>
+                          </div>
+                          <span className="material-symbols-outlined text-base text-[var(--on-surface-variant)] opacity-0 group-hover:opacity-100 transition-opacity">north_east</span>
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           ) : !selectedAgentforceTile ? (
             /* Level 1: Top-Level Tiles Grid */
