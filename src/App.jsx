@@ -39,6 +39,47 @@ const ERAS = [
   { id: 'agentic', label: 'Agentic', icon: 'memory', color: '#E31754' },
 ];
 
+// Helper: Generate contextual problem based on solution text
+const generateProblem = (solutionText, index) => {
+  const lower = solutionText.toLowerCase();
+
+  // Pattern matching for common solution patterns
+  if (lower.includes('create') || lower.includes('open') || lower.includes('setup')) {
+    return { title: 'Complex Setup Delays Launch', icon: 'schedule' };
+  }
+  if (lower.includes('compose') || lower.includes('build') || lower.includes('design')) {
+    return { title: 'Building From Scratch Is Slow', icon: 'construction' };
+  }
+  if (lower.includes('preview') || lower.includes('test') || lower.includes('validate')) {
+    return { title: 'Unpredictable Production Issues', icon: 'bug_report' };
+  }
+  if (lower.includes('deploy') || lower.includes('publish') || lower.includes('activate')) {
+    return { title: 'Risky Manual Deployments', icon: 'warning' };
+  }
+  if (lower.includes('escalate') || lower.includes('route') || lower.includes('assign')) {
+    return { title: 'Context Gets Lost In Handoffs', icon: 'sync_problem' };
+  }
+  if (lower.includes('monitor') || lower.includes('track') || lower.includes('analyze')) {
+    return { title: 'No Visibility Into Performance', icon: 'visibility_off' };
+  }
+  if (lower.includes('customize') || lower.includes('configure') || lower.includes('tune')) {
+    return { title: 'One-Size-Fits-All Limitations', icon: 'block' };
+  }
+  if (lower.includes('integrate') || lower.includes('connect') || lower.includes('sync')) {
+    return { title: 'Siloed Systems Create Gaps', icon: 'link_off' };
+  }
+
+  // Fallback problems based on index
+  const fallbacks = [
+    { title: 'Manual Work Slows Teams Down', icon: 'schedule' },
+    { title: 'Context Gets Lost Between Steps', icon: 'sync_problem' },
+    { title: 'Unpredictable Results Hurt Trust', icon: 'error' },
+    { title: 'Complex Setup Requires Expertise', icon: 'school' }
+  ];
+
+  return fallbacks[index % fallbacks.length];
+};
+
 const TELEPHONY_PROVIDERS = [
   {
     id: 'amazon-connect',
@@ -205,6 +246,7 @@ function App() {
   const [selectedParent, setSelectedParent] = useState(null);
   const [selectedChild, setSelectedChild] = useState(null);
   const [selectedCapability, setSelectedCapability] = useState(null);
+  const [selectedProblemBlock, setSelectedProblemBlock] = useState(null);
   const [hoveredCapability, setHoveredCapability] = useState(null);
   const [isOverview, setIsOverview] = useState(true);
   const [checklistStates, setChecklistStates] = useState(() => {
@@ -659,6 +701,203 @@ function App() {
                 </p>
               </header>
 
+              {/* Issue to Resolution Flow Section */}
+              {selectedChild.flowSteps && selectedChild.flowSteps.length > 0 && (
+                <div className="mb-12">
+                  <h3 className="text-2xl font-black text-[var(--on-surface)] mb-6 uppercase tracking-tight">Issue to Resolution</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative">
+                    {/* Connecting line for desktop */}
+                    <div className="hidden lg:block absolute top-16 left-0 right-0 h-0.5 bg-gradient-to-r from-red-500/30 via-blue-500/30 via-orange-500/30 to-green-500/30 z-0" style={{ width: 'calc(100% - 12rem)', margin: '0 6rem' }}></div>
+
+                    {selectedChild.flowSteps.map((step, idx) => (
+                      <div key={idx} className="relative z-10">
+                        <div className="glass-panel border-[var(--border)] rounded-3xl p-6 hover:-translate-y-1 transition-all duration-300 h-full" style={{ borderLeftColor: step.accent, borderLeftWidth: '4px' }}>
+                          <div className="flex flex-col items-center text-center mb-4">
+                            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-3 relative" style={{ backgroundColor: `${step.accent}20` }}>
+                              <span className="material-symbols-outlined text-3xl" style={{ color: step.accent }}>{step.icon}</span>
+                            </div>
+                            <span className="text-xs font-black uppercase tracking-wider text-[var(--on-surface-variant)] mb-2">{step.stage}</span>
+                          </div>
+                          <h4 className="text-base font-black text-[var(--on-surface)] mb-3 leading-tight">{step.title}</h4>
+                          <p className="text-sm text-[var(--on-surface-variant)] leading-relaxed">{step.description}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Problem → Solution Blocks */}
+              {selectedChild.storyline && selectedChild.storyline.length > 0 && (
+                <div className="mb-12">
+                  <div className="flex items-end justify-between mb-6">
+                    <h3 className="text-2xl font-black text-[var(--on-surface)] uppercase tracking-tight">Problems We Solve</h3>
+                    <span className="text-sm font-bold text-[var(--on-surface-variant)] uppercase tracking-wide">
+                      Click any challenge to see which features help
+                    </span>
+                  </div>
+
+                  {/* 2x2 Grid of Problem → Solution Blocks */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {selectedChild.storyline.slice(0, 4).map((step, idx) => {
+                      // Auto-generate problems based on step content
+                      const problem = generateProblem(step, idx);
+                      const solutionIcons = ['check_circle', 'bolt', 'verified', 'emoji_objects'];
+                      const isExpanded = selectedProblemBlock === idx;
+
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => setSelectedProblemBlock(isExpanded ? null : idx)}
+                          className="glass-panel border-[var(--border)] rounded-3xl p-6 relative overflow-hidden group hover:shadow-2xl transition-all duration-500 animate-in fade-in zoom-in-95 text-left cursor-pointer"
+                          style={{ animationDelay: `${idx * 150}ms` }}
+                        >
+                          {/* Background gradient */}
+                          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
+                            background: `radial-gradient(circle at top right, ${selectedChild.accent}10, transparent 70%)`
+                          }}></div>
+
+                          <div className="relative z-10">
+                            {/* Block Number Badge */}
+                            <div className="flex items-center justify-between mb-6">
+                              <span className="text-[9px] font-black uppercase tracking-[0.3em] px-3 py-1.5 rounded-lg border" style={{
+                                backgroundColor: `${selectedChild.accent}15`,
+                                borderColor: `${selectedChild.accent}40`,
+                                color: selectedChild.accent
+                              }}>
+                                Challenge {idx + 1}
+                              </span>
+                              <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${selectedChild.accent}20` }}>
+                                <span className="text-lg font-black" style={{ color: selectedChild.accent }}>{idx + 1}</span>
+                              </div>
+                            </div>
+
+                            {/* Problem Section */}
+                            <div className="mb-6 pb-6 border-b border-[var(--border)]">
+                              <div className="flex items-start gap-3 mb-3">
+                                <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#EA001E]/20 shrink-0">
+                                  <span className="material-symbols-outlined text-[#EA001E] text-xl">
+                                    {problem.icon}
+                                  </span>
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#EA001E] mb-1">Problem</p>
+                                  <h4 className="text-base font-black text-[var(--on-surface)] leading-tight">
+                                    {problem.title}
+                                  </h4>
+                                </div>
+                              </div>
+                              <p className="text-sm text-[var(--on-surface-variant)] leading-relaxed ml-[52px]">
+                                Without automation, teams waste time on repetitive tasks and lose critical context.
+                              </p>
+                            </div>
+
+                            {/* Solution Section */}
+                            <div>
+                              <div className="flex items-start gap-3 mb-3">
+                                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${selectedChild.accent}20` }}>
+                                  <span className="material-symbols-outlined text-xl" style={{ color: selectedChild.accent }}>
+                                    {solutionIcons[idx % solutionIcons.length]}
+                                  </span>
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-[9px] font-black uppercase tracking-[0.2em] mb-1" style={{ color: selectedChild.accent }}>Solution</p>
+                                  <h4 className="text-base font-black text-[var(--on-surface)] leading-tight">
+                                    {step}
+                                  </h4>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Expandable Features Section */}
+                            {isExpanded && (
+                              <div className="mt-6 pt-6 border-t border-[var(--border)] animate-in fade-in slide-in-from-top-4 duration-300">
+                                <h5 className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--on-surface-variant)] mb-4 flex items-center gap-2">
+                                  <span className="material-symbols-outlined text-sm" style={{ color: selectedChild.accent }}>
+                                    extension
+                                  </span>
+                                  Features That Solve This
+                                </h5>
+                                <div className="space-y-3">
+                                  {/* Show related features from the child's capabilities */}
+                                  {selectedChild.capabilities?.features && selectedChild.capabilities.features.slice(0, 3).map((feature, fIdx) => (
+                                    <div key={fIdx} className="flex items-start gap-3 p-3 rounded-xl border border-[var(--border)] bg-[var(--surface)]/30">
+                                      <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${feature.accent || selectedChild.accent}20` }}>
+                                        <span className="material-symbols-outlined text-base" style={{ color: feature.accent || selectedChild.accent }}>
+                                          {feature.icon}
+                                        </span>
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-bold text-[var(--on-surface)] mb-1">{feature.name}</p>
+                                        {feature.description && (
+                                          <p className="text-xs text-[var(--on-surface-variant)] leading-relaxed">{feature.description}</p>
+                                        )}
+                                      </div>
+                                      {feature.available && (
+                                        <span className="material-symbols-outlined text-[#45C65A] text-lg shrink-0">check_circle</span>
+                                      )}
+                                    </div>
+                                  ))}
+
+                                  {/* If no features available, show generic capabilities */}
+                                  {(!selectedChild.capabilities?.features || selectedChild.capabilities.features.length === 0) && (
+                                    <div className="flex items-center gap-3 p-4 rounded-xl bg-[var(--surface)]/30">
+                                      <span className="material-symbols-outlined text-2xl" style={{ color: selectedChild.accent }}>
+                                        {selectedChild.icon}
+                                      </span>
+                                      <div>
+                                        <p className="text-sm font-bold text-[var(--on-surface)] mb-1">{selectedChild.name}</p>
+                                        <p className="text-xs text-[var(--on-surface-variant)]">
+                                          Core capabilities built into the platform
+                                        </p>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* View All Link */}
+                                <div className="mt-4 flex justify-center">
+                                  <div className="text-xs font-bold uppercase tracking-wide flex items-center gap-2" style={{ color: selectedChild.accent }}>
+                                    <span>Click again to collapse</span>
+                                    <span className="material-symbols-outlined text-sm">expand_less</span>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Click indicator when collapsed */}
+                            {!isExpanded && (
+                              <div className="absolute bottom-4 right-4 flex items-center gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
+                                <span className="text-[10px] font-black uppercase tracking-wider text-[var(--on-surface-variant)]">
+                                  View Features
+                                </span>
+                                <span className="material-symbols-outlined text-lg" style={{ color: selectedChild.accent }}>
+                                  expand_more
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Arrow indicator showing transformation (only when collapsed) */}
+                            {!isExpanded && (
+                              <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-10 group-hover:opacity-30 transition-opacity pointer-events-none">
+                                <span className="material-symbols-outlined text-6xl" style={{ color: selectedChild.accent }}>
+                                  arrow_forward
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Hover glow effect */}
+                          <div className="absolute -inset-0.5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-xl" style={{
+                            backgroundColor: `${selectedChild.accent}20`
+                          }}></div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Channel Support Section */}
               {selectedChild.capabilities?.channelSupport && selectedChild.capabilities.channelSupport.length > 0 && (
                 <div className="mb-12">
@@ -742,6 +981,43 @@ function App() {
                       );
                     })}
                   </div>
+                </div>
+              )}
+
+              {/* Use Cases and Specs Section */}
+              {((selectedChild.useCases && selectedChild.useCases.length > 0) || (selectedChild.specs && Object.keys(selectedChild.specs).length > 0)) && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+                  {/* Use Cases */}
+                  {selectedChild.useCases && selectedChild.useCases.length > 0 && (
+                    <div className="glass-panel border-[var(--border)] rounded-3xl p-8">
+                      <h3 className="text-xl font-black text-[var(--on-surface)] mb-6 uppercase tracking-tight">Use Cases</h3>
+                      <ul className="space-y-3">
+                        {selectedChild.useCases.map((useCase, idx) => (
+                          <li key={idx} className="flex items-start gap-3">
+                            <span className="material-symbols-outlined text-lg mt-0.5" style={{ color: selectedChild.accent }}>check_circle</span>
+                            <span className="text-sm text-[var(--on-surface)] font-medium leading-relaxed">{useCase}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Specs */}
+                  {selectedChild.specs && Object.keys(selectedChild.specs).length > 0 && (
+                    <div className="glass-panel border-[var(--border)] rounded-3xl p-8">
+                      <h3 className="text-xl font-black text-[var(--on-surface)] mb-6 uppercase tracking-tight">Specifications</h3>
+                      <dl className="space-y-4">
+                        {Object.entries(selectedChild.specs).map(([key, value]) => (
+                          <div key={key}>
+                            <dt className="text-xs font-bold uppercase tracking-wider text-[var(--on-surface-variant)] mb-1">
+                              {key.replace(/([A-Z])/g, ' $1').trim()}
+                            </dt>
+                            <dd className="text-sm font-medium text-[var(--on-surface)]">{value}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1112,17 +1388,55 @@ function App() {
 
                     <div className="space-y-8 mt-4 pt-8 border-t border-[var(--border)] overflow-y-auto max-h-[40vh] pr-4 custom-scrollbar">
                       <div>
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-container mb-4">Functional Storyline</h4>
-                        <div className="space-y-6 relative">
-                          <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-on-surface/5"></div>
-                          {tileStoryline.map((step, idx) => (
-                            <div key={idx} className="flex gap-6 items-start relative">
-                              <div className="w-6 h-6 rounded-full bg-surface border-2 border-[var(--border)] flex items-center justify-center relative z-10 shrink-0 mt-1">
-                                <span className="text-[10px] font-black text-[var(--on-surface)]">{idx + 1}</span>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-container mb-4">How It Works</h4>
+                        <div className="space-y-4 relative">
+                          {tileStoryline.map((step, idx) => {
+                            const accentColor = selectedAgentforceTile?.accent || '#7B5EA7';
+                            return (
+                              <div key={idx} className="animate-in fade-in slide-in-from-left-4 duration-500" style={{ animationDelay: `${idx * 100}ms` }}>
+                                <div className="group/step flex items-start gap-3">
+                                  {/* Step indicator with glow */}
+                                  <div className="relative flex-shrink-0">
+                                    <div
+                                      className="w-8 h-8 rounded-xl flex items-center justify-center border transition-all duration-300 group-hover/step:scale-110"
+                                      style={{
+                                        backgroundColor: `${accentColor}20`,
+                                        borderColor: `${accentColor}60`,
+                                        boxShadow: `0 0 12px ${accentColor}30`
+                                      }}
+                                    >
+                                      <span className="text-xs font-black" style={{ color: accentColor }}>{idx + 1}</span>
+                                    </div>
+
+                                    {/* Connector line */}
+                                    {idx < tileStoryline.length - 1 && (
+                                      <div className="absolute left-1/2 top-full -translate-x-1/2 w-px h-4" style={{
+                                        backgroundColor: `${accentColor}30`
+                                      }}></div>
+                                    )}
+                                  </div>
+
+                                  {/* Step content */}
+                                  <div className="flex-1 pt-1">
+                                    <p className="text-sm text-[var(--on-surface)] font-medium leading-relaxed">
+                                      {step}
+                                    </p>
+                                  </div>
+
+                                  {/* Step icon */}
+                                  <div className="w-6 h-6 rounded-lg flex items-center justify-center transition-all duration-300 group-hover/step:scale-110" style={{
+                                    backgroundColor: `${accentColor}15`
+                                  }}>
+                                    <span className="material-symbols-outlined text-sm" style={{ color: accentColor }}>
+                                      {idx === 0 ? 'play_arrow' :
+                                       idx === tileStoryline.length - 1 ? 'check_circle' :
+                                       'arrow_forward'}
+                                    </span>
+                                  </div>
+                                </div>
                               </div>
-                              <p className="text-sm text-[var(--on-surface)] font-medium pt-1">{step}</p>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </div>
 
@@ -1589,17 +1903,55 @@ function App() {
 
                       <div className="space-y-8 mt-4 pt-8 border-t border-[var(--border)] overflow-y-auto max-h-[40vh] pr-4 custom-scrollbar">
                         <div>
-                          <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-container mb-4">Functional Storyline</h4>
-                          <div className="space-y-6 relative">
-                            <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-on-surface/5"></div>
-                            {hoveredCapability.storyline.map((step, idx) => (
-                              <div key={idx} className="flex gap-6 items-start relative">
-                                <div className="w-6 h-6 rounded-full bg-surface border-2 border-[var(--border)] flex items-center justify-center relative z-10 shrink-0 mt-1 transition-all group-hover/panel:border-primary">
-                                  <span className="text-[10px] font-black text-[var(--on-surface)]">{idx + 1}</span>
+                          <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-container mb-4">How It Works</h4>
+                          <div className="space-y-4 relative">
+                            {hoveredCapability.storyline.map((step, idx) => {
+                              const eraColor = ERAS.find(e => e.id === hoveredCapability.era)?.color || '#0176D3';
+                              return (
+                                <div key={idx} className="animate-in fade-in slide-in-from-left-4 duration-500" style={{ animationDelay: `${idx * 100}ms` }}>
+                                  <div className="group/step flex items-start gap-3">
+                                    {/* Step indicator with glow */}
+                                    <div className="relative flex-shrink-0">
+                                      <div
+                                        className="w-8 h-8 rounded-xl flex items-center justify-center border transition-all duration-300 group-hover/step:scale-110"
+                                        style={{
+                                          backgroundColor: `${eraColor}20`,
+                                          borderColor: `${eraColor}60`,
+                                          boxShadow: `0 0 12px ${eraColor}30`
+                                        }}
+                                      >
+                                        <span className="text-xs font-black" style={{ color: eraColor }}>{idx + 1}</span>
+                                      </div>
+
+                                      {/* Connector line */}
+                                      {idx < hoveredCapability.storyline.length - 1 && (
+                                        <div className="absolute left-1/2 top-full -translate-x-1/2 w-px h-4" style={{
+                                          backgroundColor: `${eraColor}30`
+                                        }}></div>
+                                      )}
+                                    </div>
+
+                                    {/* Step content */}
+                                    <div className="flex-1 pt-1">
+                                      <p className="text-sm text-[var(--on-surface)] font-medium leading-relaxed group-hover/step:text-primary transition-colors">
+                                        {step}
+                                      </p>
+                                    </div>
+
+                                    {/* Step icon */}
+                                    <div className="w-6 h-6 rounded-lg flex items-center justify-center transition-all duration-300 group-hover/step:scale-110" style={{
+                                      backgroundColor: `${eraColor}15`
+                                    }}>
+                                      <span className="material-symbols-outlined text-sm" style={{ color: eraColor }}>
+                                        {idx === 0 ? 'play_arrow' :
+                                         idx === hoveredCapability.storyline.length - 1 ? 'check_circle' :
+                                         'arrow_forward'}
+                                      </span>
+                                    </div>
+                                  </div>
                                 </div>
-                                <p className="text-sm text-[var(--on-surface)] font-medium pt-1 hover:text-primary transition-colors">{step}</p>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         </div>
 
