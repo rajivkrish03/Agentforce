@@ -5,6 +5,7 @@ import { CAPABILITIES as SALES_CAPABILITIES } from './SalescapabilitiesData';
 import { JOBS } from './JobsData';
 import { JOURNEYS } from './JourneysData';
 import { MATURITY_MODEL } from './MaturityModelData';
+import { AGENTIC_SYSTEMS, ANNOUNCEMENTS, VOICE_LANGUAGE_ROADMAP } from './AnnouncementsData';
 
 const CLOUDS = [
   { id: 'service', label: 'Service', accent: '#06A59A', icon: 'headset_mic' },
@@ -260,6 +261,7 @@ function App() {
   const [showRoadmap, setShowRoadmap] = useState(null); // null or { cloud, channel }
   const [jobsExpanded, setJobsExpanded] = useState(false); // For collapsible Jobs to Be Done
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // For mobile sidebar
+  const [showAnnouncementsModal, setShowAnnouncementsModal] = useState(false);
 
   useEffect(() => {
     // Set dark mode permanently
@@ -267,12 +269,12 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (selectedCapability) {
+    if (selectedCapability || showAnnouncementsModal) {
       document.body.classList.add('overflow-hidden');
     } else {
       document.body.classList.remove('overflow-hidden');
     }
-  }, [selectedCapability]);
+  }, [selectedCapability, showAnnouncementsModal]);
 
   // Switch between Service and Sales data based on activeCloud
   const CURRENT_CAPABILITIES = activeCloud === 'sales' ? SALES_CAPABILITIES : SERVICE_CAPABILITIES;
@@ -498,6 +500,19 @@ function App() {
                       </button>
                     ))}
                   </nav>
+
+                  <div className="px-3 mt-6">
+                    <button
+                      onClick={() => {
+                        setShowAnnouncementsModal(true);
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-[#7B5EA7] to-[#9C27B0] text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-purple-500/30 transition-all group"
+                    >
+                      <span className="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">campaign</span>
+                      <span>Announcements</span>
+                    </button>
+                  </div>
                 </>
               )}
             </div>
@@ -1463,6 +1478,50 @@ function App() {
                           </div>
                         </div>
                       </div>
+
+                      {/* Announcements Section */}
+                      {selectedAgentforceTile.announcements && selectedAgentforceTile.announcements.length > 0 && (
+                        <div className="mt-8 pt-8 border-t border-[var(--border)]">
+                          <div className="flex items-center gap-2 mb-4">
+                            <span className="material-symbols-outlined text-lg text-[#7B5EA7]">campaign</span>
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#7B5EA7]/80">Latest Announcements</h4>
+                          </div>
+                          <div className="space-y-3">
+                            {selectedAgentforceTile.announcements.map((announcement, idx) => (
+                              <div key={idx} className="glass-panel p-4 rounded-xl border border-[var(--border)] hover:border-opacity-50 transition-all group">
+                                <div className="flex items-start gap-3">
+                                  <div className="p-2 rounded-lg" style={{ backgroundColor: `${announcement.accent}15` }}>
+                                    <span className="material-symbols-outlined text-lg" style={{ color: announcement.accent }}>{announcement.icon}</span>
+                                  </div>
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <h5 className="text-xs font-black uppercase tracking-wider text-[var(--on-surface)]">
+                                        {announcement.title}
+                                      </h5>
+                                      <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${
+                                        announcement.status === 'GA' ? 'bg-[#45C65A] text-white' :
+                                        announcement.status.includes('Beta') || announcement.status.includes('Pilot') ? 'bg-[#FFDB3C] text-[#0B0B0F]' :
+                                        'bg-[#FE9339] text-white'
+                                      }`}>
+                                        {announcement.status}
+                                      </span>
+                                    </div>
+                                    <p className="text-[10px] text-[var(--on-surface-variant)] mb-2">{announcement.summary}</p>
+                                    <ul className="space-y-1">
+                                      {announcement.highlights.slice(0, 2).map((highlight, hIdx) => (
+                                        <li key={hIdx} className="text-[9px] text-[var(--on-surface-variant)] flex items-start gap-1.5">
+                                          <span className="material-symbols-outlined text-[10px]" style={{ color: announcement.accent }}>check_circle</span>
+                                          <span>{highlight}</span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     <div className="mt-8 pt-8 border-t border-[var(--border)] flex gap-4">
@@ -2371,6 +2430,251 @@ function App() {
               >
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Announcements Modal */}
+      {showAnnouncementsModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-6 animate-in fade-in duration-300"
+          onClick={() => setShowAnnouncementsModal(false)}
+        >
+          <div className="glass-panel w-full max-w-6xl max-h-[90vh] overflow-y-auto custom-scrollbar rounded-2xl p-8 animate-in zoom-in-95 duration-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-start justify-between mb-8">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#7B5EA7] mb-2">Platform Update</p>
+                <h2 className="text-4xl font-black tracking-tighter text-[var(--on-surface)] mb-3">Announcements</h2>
+                <p className="text-[var(--on-surface-variant)] text-base max-w-2xl">
+                  The latest updates, releases, and roadmap for the Agentic Enterprise Platform.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowAnnouncementsModal(false)}
+                className="p-2 rounded-full hover:bg-on-surface/10 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[var(--on-surface-variant)]">close</span>
+              </button>
+            </div>
+
+            {/* 4 Systems Overview */}
+            <div className="mb-12">
+              <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[var(--on-surface-variant)] mb-4">The Agentic Enterprise Platform</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {AGENTIC_SYSTEMS.map((system) => (
+                  <div
+                    key={system.id}
+                    className="glass-panel p-6 rounded-xl border border-[var(--border)] hover:border-opacity-50 transition-all group"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 rounded-xl" style={{ backgroundColor: `${system.accent}15` }}>
+                        <span className="material-symbols-outlined text-2xl" style={{ color: system.accent }}>{system.icon}</span>
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-sm font-black uppercase tracking-wider text-[var(--on-surface)] mb-2">{system.name}</h4>
+                        <p className="text-xs text-[var(--on-surface-variant)] mb-3">{system.description}</p>
+                        {system.examples && (
+                          <div className="flex flex-wrap gap-1.5">
+                            {system.examples.map((example, idx) => (
+                              <span key={idx} className="text-[10px] px-2 py-1 rounded-md bg-on-surface/5 text-[var(--on-surface-variant)]">
+                                {example}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        {system.layers && (
+                          <div className="space-y-2 mt-3">
+                            {system.layers.map((layer, idx) => (
+                              <div key={idx}>
+                                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--on-surface-variant)] mb-1">{layer.label}</p>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {layer.items.map((item, itemIdx) => (
+                                    <span key={itemIdx} className="text-[10px] px-2 py-1 rounded-md bg-on-surface/5 text-[var(--on-surface-variant)]">
+                                      {item}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* GA Announcements */}
+            <div className="mb-12">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="px-3 py-1 rounded-full bg-[#45C65A] text-white text-[10px] font-black uppercase tracking-wider">
+                  GA Now
+                </div>
+                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[var(--on-surface-variant)]">Generally Available</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {ANNOUNCEMENTS.ga.map((announcement) => (
+                  <button
+                    key={announcement.id}
+                    onClick={() => {
+                      setShowAnnouncementsModal(false);
+                      setActiveAgentforceTile(announcement.tileId);
+                    }}
+                    className="glass-panel p-6 rounded-xl border border-[var(--border)] hover:border-opacity-50 transition-all group text-left hover:shadow-lg"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 rounded-xl" style={{ backgroundColor: `${announcement.accent}15` }}>
+                        <span className="material-symbols-outlined text-2xl" style={{ color: announcement.accent }}>{announcement.icon}</span>
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-sm font-black uppercase tracking-wider text-[var(--on-surface)] mb-2 group-hover:text-[#7B5EA7] transition-colors">
+                          {announcement.title}
+                        </h4>
+                        <p className="text-xs text-[var(--on-surface-variant)] mb-3">{announcement.summary}</p>
+                        <ul className="space-y-1 mb-3">
+                          {announcement.highlights.map((highlight, idx) => (
+                            <li key={idx} className="text-[10px] text-[var(--on-surface-variant)] flex items-start gap-2">
+                              <span className="material-symbols-outlined text-xs" style={{ color: announcement.accent }}>check_circle</span>
+                              <span>{highlight}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="flex items-center gap-2 text-[10px] font-bold text-[#7B5EA7] group-hover:gap-3 transition-all">
+                          <span>View Tile</span>
+                          <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Beta/Pilot Announcements */}
+            <div className="mb-12">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="px-3 py-1 rounded-full bg-[#FFDB3C] text-[#0B0B0F] text-[10px] font-black uppercase tracking-wider">
+                  Beta / Pilot
+                </div>
+                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[var(--on-surface-variant)]">Coming Soon</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {ANNOUNCEMENTS.beta.map((announcement) => (
+                  <button
+                    key={announcement.id}
+                    onClick={() => {
+                      setShowAnnouncementsModal(false);
+                      setActiveAgentforceTile(announcement.tileId);
+                    }}
+                    className="glass-panel p-6 rounded-xl border border-[var(--border)] hover:border-opacity-50 transition-all group text-left hover:shadow-lg"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 rounded-xl" style={{ backgroundColor: `${announcement.accent}15` }}>
+                        <span className="material-symbols-outlined text-2xl" style={{ color: announcement.accent }}>{announcement.icon}</span>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="text-sm font-black uppercase tracking-wider text-[var(--on-surface)] group-hover:text-[#7B5EA7] transition-colors">
+                            {announcement.title}
+                          </h4>
+                          <span className="px-2 py-0.5 rounded-full bg-[#FFDB3C] text-[#0B0B0F] text-[9px] font-black uppercase">
+                            {announcement.status}
+                          </span>
+                        </div>
+                        <p className="text-xs text-[var(--on-surface-variant)] mb-3">{announcement.summary}</p>
+                        <ul className="space-y-1 mb-3">
+                          {announcement.highlights.map((highlight, idx) => (
+                            <li key={idx} className="text-[10px] text-[var(--on-surface-variant)] flex items-start gap-2">
+                              <span className="material-symbols-outlined text-xs" style={{ color: announcement.accent }}>check_circle</span>
+                              <span>{highlight}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="flex items-center gap-2 text-[10px] font-bold text-[#7B5EA7] group-hover:gap-3 transition-all">
+                          <span>View Tile</span>
+                          <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Roadmap */}
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="px-3 py-1 rounded-full bg-[#FE9339] text-white text-[10px] font-black uppercase tracking-wider">
+                  Roadmap
+                </div>
+                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[var(--on-surface-variant)]">Future Releases</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {ANNOUNCEMENTS.roadmap.map((announcement) => (
+                  <button
+                    key={announcement.id}
+                    onClick={() => {
+                      setShowAnnouncementsModal(false);
+                      setActiveAgentforceTile(announcement.tileId);
+                    }}
+                    className="glass-panel p-5 rounded-xl border border-[var(--border)] hover:border-opacity-50 transition-all group text-left hover:shadow-lg"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 rounded-lg" style={{ backgroundColor: `${announcement.accent}15` }}>
+                        <span className="material-symbols-outlined text-xl" style={{ color: announcement.accent }}>{announcement.icon}</span>
+                      </div>
+                      <div className="flex-1">
+                        <div className="mb-2">
+                          <span className="text-[9px] font-bold text-[var(--on-surface-variant)] uppercase tracking-wider">{announcement.dateLabel}</span>
+                        </div>
+                        <h4 className="text-xs font-black uppercase tracking-wider text-[var(--on-surface)] mb-2 group-hover:text-[#7B5EA7] transition-colors leading-tight">
+                          {announcement.title}
+                        </h4>
+                        <p className="text-[10px] text-[var(--on-surface-variant)] mb-2">{announcement.summary}</p>
+                        <ul className="space-y-1">
+                          {announcement.highlights.map((highlight, idx) => (
+                            <li key={idx} className="text-[9px] text-[var(--on-surface-variant)] flex items-start gap-1.5">
+                              <span className="material-symbols-outlined text-[10px]" style={{ color: announcement.accent }}>chevron_right</span>
+                              <span>{highlight}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Voice Language Roadmap */}
+            <div className="mt-12 glass-panel p-6 rounded-xl border border-[#06A59A]/30">
+              <div className="flex items-center gap-3 mb-6">
+                <span className="material-symbols-outlined text-2xl text-[#06A59A]">translate</span>
+                <h3 className="text-sm font-black uppercase tracking-[0.3em] text-[var(--on-surface)]">Agentforce Voice Multi-Language Roadmap</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {VOICE_LANGUAGE_ROADMAP.map((phase, idx) => (
+                  <div key={idx} className="p-5 rounded-xl bg-on-surface/5 border border-[var(--border)]">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: phase.accent }}></div>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-[var(--on-surface-variant)]">{phase.phase}</span>
+                    </div>
+                    <p className="text-xs font-bold text-[var(--on-surface)] mb-3">{phase.dateLabel}</p>
+                    <ul className="space-y-1">
+                      {phase.languages.map((lang, langIdx) => (
+                        <li key={langIdx} className="text-[10px] text-[var(--on-surface-variant)] flex items-center gap-2">
+                          <span className="material-symbols-outlined text-xs" style={{ color: phase.accent }}>check</span>
+                          <span>{lang}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
